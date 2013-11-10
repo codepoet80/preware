@@ -10,6 +10,9 @@ enyo.depends(
 	"EmptyPanel.js",
 	"GrabberToolbar.js",
 	"ListItem.js",
+	"ManageFeedsDialog.js",
+	"SettingsDialog.js",
 	"Toast.js",
+	"UpdateFeeds.js",
 	"model"
 );
