@@ -24,7 +24,7 @@ enyo.kind({
 	currentCategory: "",
 	availablePackages: [],
 	currentPackage: {},
-	
+
 	//used to propagate settings events, until we have some app menu.
 	events: {
 		onSettings: "",
@@ -95,6 +95,7 @@ enyo.kind({
 								{kind: "ListItem", content: "Available Packages", ontap: "showAvailableTypeList" },
 								{kind: "ListItem", content: "Installed Packages", ontap: "showInstalledPackages" },
 								{kind: "ListItem", content: "List of Everything", ontap: "showListOfEverything" },
+								{tag: "hr"},
 								{kind: "ListItem", content: "Settings", ontap: "doSettings" },
 								//{kind: "ListItem", content: "Manage Feeds", ontap: "doManageFeeds" },
 								{kind: "ListItem", content: "Reload Package List", ontap: "reloadTapped" }
@@ -105,7 +106,7 @@ enyo.kind({
 				{kind: "onyx.Toolbar"}
 			]
 		},
-		
+
 		//Types
 		{
 			name: "TypePanels",
@@ -140,7 +141,7 @@ enyo.kind({
 				}
 			]
 		},
-		
+
 		//Categories
 		{
 			name: "CategoryPanels",
@@ -341,8 +342,8 @@ enyo.kind({
 			]
 		}
 	],
-	
-	
+
+
 	//Handlers
 	create: function (inSender, inEvent) {
 		this.inherited(arguments);
@@ -441,7 +442,7 @@ enyo.kind({
 		var i, pkg;
 		this.currentPackageFilter = this.packageFilters.all;
 		this.availablePackages = [];
-		
+
 		for (i = 0; i < preware.PackagesModel.packages.length; i += 1) {
 			pkg = preware.PackagesModel.packages[i];
 			if (this.availablePackages.indexOf(pkg) === -1) {
@@ -449,7 +450,7 @@ enyo.kind({
 			}
 		}
 		this.sortPackageList("date");
-		
+
 		this.$.PackageRepeater.setCount(this.availablePackages.length);
 		this.$.PackagePanels.setIndex(1);
 		this.showTypeAndCategoriesPanels(false);
@@ -459,7 +460,7 @@ enyo.kind({
 		var i, pkg;
 		this.currentPackageFilter = this.packageFilters.updatable;
 		this.availablePackages = [];
-		
+
 		for (i = 0; i < preware.PackagesModel.packages.length; i += 1) {
 			pkg = preware.PackagesModel.packages[i];
 			if (pkg.hasUpdate) {
@@ -469,7 +470,7 @@ enyo.kind({
 			}
 		}
 		this.sortPackageList();
-		
+
 		this.$.PackageRepeater.setCount(this.availablePackages.length);
 		this.$.PackagePanels.setIndex(1);
 		this.showTypeAndCategoriesPanels(false);
@@ -479,7 +480,7 @@ enyo.kind({
 		var i, pkg;
 		this.currentPackageFilter = this.packageFilters.installed;
 		this.availablePackages = [];
-		
+
 		for (i = 0; i < preware.PackagesModel.packages.length; i += 1) {
 			pkg = preware.PackagesModel.packages[i];
 			if (pkg.isInstalled) {
@@ -489,7 +490,7 @@ enyo.kind({
 			}
 		}
 		this.sortPackageList();
-		
+
 		this.$.PackageRepeater.setCount(this.availablePackages.length);
 		this.$.PackagePanels.setIndex(1);
 		this.showTypeAndCategoriesPanels(false);
@@ -585,17 +586,17 @@ enyo.kind({
 		this.log("Done loading, num Packages: " + preware.PackagesModel.packages.length);
 		// so if we're inactive we know to push a scene when we return
 		//this.isLoading = false;
-	
+
 		// show that we're done (while the pushed scene is going)
 		this.processStatusUpdate(this, {message: $L("<strong>Done!</strong>")});
 		//this.hideProgress();
-	
+
 		// we're done loading so let the device sleep if it needs to
 		// TODO: convert stayAwake.js to enyo, implement stayAwake.start() etc
 		//this.stayAwake.end();
-	
+
 		//alert(packages.packages.length);
-	
+
 		if ((!this.isActive || !this.isVisible)) {
 			// if we're not the active scene, let them know via banner:
 			if (this.onlyLoad) {
@@ -604,7 +605,7 @@ enyo.kind({
 				navigator.notification.showBanner($L("Preware: Done Updating Feeds"), {source: 'updateNotification'}, 'miniicon.png');
 			}
 		}
-	
+
 		// show the menu
 		var storedThis = this;
 		setTimeout(function () {
