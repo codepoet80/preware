@@ -15,10 +15,10 @@ enyo.singleton({
 			onLoadFeedsFinished: "doneLoadingFeeds"
 		}
 	],
-	
+
 	//emited signals:
 	// onUpdateFeedsFinished: {} //emitted when loading is finished.
-	
+
 	//Handlers
 	//this is called from FeedsModel after we loaded the feed configuration from disk.
 	//This is triggered from multiple occasions:
@@ -27,7 +27,7 @@ enyo.singleton({
 	doneLoadingFeeds: function (inSender, inEvent) {
 		this.log("loaded feeds: " + JSON.stringify(inEvent));
 		this.feeds = inEvent.feeds;
-		
+
 		if (this.downloaded || this.onlyLoad) {
 			this.log("Not downloading, because onlyLoad: " + this.onlyLoad + " and alreadyDownloaded: " + this.downloaded);
 			this.parseFeeds(inSender, inEvent);
@@ -52,7 +52,7 @@ enyo.singleton({
 	log: function (text) {
 		console.error(text);
 	},
-	
+
 	//Unused functions... ??
 	versionTap: function (inSender, inEvent) {
 		preware.IPKGService.version(this.gotVersion.bind(this));
@@ -68,12 +68,12 @@ enyo.singleton({
 	gotMachineName: function (machineName) {
 		this.log("Got Machine Name: " + machineName + " (" + JSON.stringify(machineName) + ")");
 	},
-	
-	
+
+
 	//start the update process.
 	//first we need some device information.
 	//we need device profile and palm profile for a call to
-	//IPKGService.setAuthParams. This probably is necessary for 
+	//IPKGService.setAuthParams. This probably is necessary for
 	//App Catalog apps...?
 	//If that does not work, we just get the machine name and are done.
 	startUpdateFeeds: function (force) {
@@ -82,12 +82,12 @@ enyo.singleton({
 		} else {
 			this.log("PalmServiceBridge found.");
 		}
-		
+
 		this.log("device.version: " + (device ? device.version : "undefined"));
 		this.log("device.name: " + (device ? device.name : "undefined"));
-		
+
 		this.log("================== 17");
-		
+
 		switch (preware.PrefCookie.get().updateInterval) {
 		case "launch":
 			this.onlyLoad = false;
@@ -122,17 +122,17 @@ enyo.singleton({
 			this.onlyLoad = true;
 			break;
 		}
-		
+
 		if (force) {
 			console.error("Forced to download, will download anyway.");
 			this.onlyLoad = false;
 		}
-		
+
 		this.log("Start Loading Feeds");
 		this.downloaded = false;
 		preware.DeviceProfile.getDeviceProfile(this.gotDeviceProfile.bind(this), false);
 	},
-	
+
 	gotDeviceProfile: function (inSender, inEvent) {
 		this.log("Got Device Profile: " + (inEvent ? inEvent.success : ""));
 		if (!inEvent.success || !inEvent.deviceProfile) {
@@ -163,11 +163,11 @@ enyo.singleton({
 		preware.IPKGService.getMachineName(this.onDeviceType.bind(this));
 		this.log("Requesting Machine Name");
 	},
-	
+
 	//if we reached here, we got all the configuration stuff we needed.
 	onDeviceType: function (inResponse) {
 		this.log("Got machine name: " + JSON.stringify(inResponse));
-		
+
 		if (!this.onlyLoad) {
 			// start by checking the internet connection
 			this.log("Requesting Connection Status");
@@ -189,7 +189,7 @@ enyo.singleton({
 		}
 		this.log("Got Connection Status. Connection: " + hasNet);
 		this.log("Complete Response: " + JSON.stringify(response));
-		
+
 		this.log("=====================> WORK AROUND SOME BUG ON LUNA-NEXT! IGNORE CONNECTION RESULT.");
 		hasNet = true;
 		// run version check
@@ -232,24 +232,29 @@ enyo.singleton({
 			console.error("app#onVersionCheck: " + e);
 		}
 	},
-	
+
 	//trigger update of one feed:
 	downloadFeedRequest: function (num) {
 		// update display
 		enyo.Signals.send("onPackagesStatusUpdate", {message: $L("<strong>Downloading Feed Information</strong><br>") + this.feeds[num].name});
-	
+
 		// subscribe to new feed
 		preware.IPKGService.downloadFeed(this.downloadFeedResponse.bind(this, num),
 										this.feeds[num].gzipped, this.feeds[num].name, this.feeds[num].url);
-		
-		var start = Date.now();
+
+		var start = Date.now(), tries = 0;
 		function preventTimeout() {
 			var checkTime = Date.now(), diffInSec = (checkTime - start) / 1000;
-			console.error("Wating for result since " + diffInSec);
-			if (diffInSec > 10) {
-				preware.IPKGService.downloadFeed(this.downloadFeedResponse.bind(this, num),
-										this.feeds[num].gzipped, this.feeds[num].name, this.feeds[num].url);
-				start = checkTime;
+			console.error("Waiting for result since " + diffInSec);
+			if (tries < 10) {
+				if (diffInSec > 10) {
+					preware.IPKGService.downloadFeed(this.downloadFeedResponse.bind(this, num),
+											this.feeds[num].gzipped, this.feeds[num].name, this.feeds[num].url);
+					start = checkTime;
+					tries += 1;
+				}
+			} else {
+				this.downloadFeedResponse(num, {stage: "failed", errorText: "Download timed out."});
 			}
 		}
 		this.timeouts[num] = setInterval(preventTimeout.bind(this), 1000);
@@ -275,16 +280,16 @@ enyo.singleton({
 					obj.loadFeeds();
 				}
 				enyo.Signals.send("onPackagesStatusUpdate", {message: msg});
-					
+
 				obj.downloaded = true;
 			}
 		}
-		
+
 		this.log("DownloadFeedResponse: " + num + ", payload: " + JSON.stringify(payload));
 		if (!payload.returnValue || payload.stage === "failed") {
 			this.log(payload.errorText + '<br>' + (payload.stdErr ? payload.stdErr.join("<br>") : ""));
 			this.error = true;
-			
+
 			goToNextFeed(this);
 		} else if (payload.stage === "status") {
 			enyo.Signals.send("onPackagesStatusUpdate", {message: $L("<strong>Downloading Feed Information</strong><br>") + this.feeds[num].name + "<br><br>" + payload.status});
