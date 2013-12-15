@@ -350,10 +350,14 @@ enyo.kind({
 		//TODO: remove! work around for missing on device ready:
 		console.error("Rework around cordova issue...");
 		setTimeout(this.handleDeviceReady.bind(this), 500);
+		this.fired = false;
 	},
 	handleDeviceReady: function (inSender, inEvent) {
-		console.error("Device ready fired.");
-		UpdateFeeds.startUpdateFeeds();
+		if (!this.fired) {
+			this.fired;
+			console.error("Device ready fired.");
+			UpdateFeeds.startUpdateFeeds();
+		}
 	},
 	reloadTapped: function (inSender, inEvent) {
 		UpdateFeeds.startUpdateFeeds(true);
