@@ -1,30 +1,32 @@
 /*jslint sloppy: true */
-/*global enyo, preware, $L, navigator, console */
+/*global enyo, preware, $L, console */
 
 enyo.singleton({
 	name: "preware.IPKGService",
 	identifier: 'palm://org.webosinternals.ipkgservice',
 	log: "",
 	logNum: 1,
-	generalSuccess: function (callback, inResponse) {
-		if (callback) {
-			callback(inResponse);
-		}
-	},
-	generalFailure: function (callback, inError) {
-		console.error("IPKGService#generalFailure: " + inError);
-		if (callback) {
-			callback(inError);
-		}
-	},
 	doServiceCall: function (callback, method, parameters) {
-		var request = navigator.service.Request(this.identifier, {
-			method: method,
-			parameters: parameters,
-			onSuccess: this.generalSuccess.bind(this, callback),
-			onFailure: this.generalFailure.bind(this, callback)
-		});
-		return request;
+		var request = new enyo.ServiceRequest({
+				service: this.identifier,
+				method: method,
+				subscribe: parameters ? parameters.subscribe : false
+			}), 
+			generalSuccess = function (inSender, inResponse) {
+				if (callback) {
+					callback(inResponse);
+				}
+			},
+			generalFailure = function (inSender, inError) {
+				console.error("IPKGService#generalFailure: " + JSON.stringify(inError));
+				if (callback) {
+					callback(inError);
+				}
+			};
+		
+		request.response(generalSuccess.bind(this));
+		request.error(generalFailure.bind(this));
+		return request.go(parameters);
 	},
 	version: function (callback) {
 		return this.doServiceCall(callback, "version");

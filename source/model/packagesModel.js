@@ -1,5 +1,5 @@
 /*jslint sloppy: true, regexp: true, nomen: true */
-/*global enyo, preware, IPKGService, $L, device, navigator, Mojo, console */
+/*global enyo, preware, IPKGService, $L, device, Mojo, console */
 
 enyo.singleton({
 	name: "preware.PackagesModel",
@@ -270,35 +270,39 @@ enyo.singleton({
 	
 	loadPackage: function (infoObj, url) {
 		var newPkg, pkgNum, pkgUpd;
+		
 		// Skip packages that are in the status file, but are not actually installed
 		if (infoObj.Status &&
 				(infoObj.Status.include('not-installed') || infoObj.Status.include('deinstall'))) {
-			//alert('+ 1');
+			console.error("Skip package because of status.");
 			return;
 		}
 
 		// load the package from the info
 		//device.version looks like 3.0.5 SDK, cut away part after the space.
 		if (!this.deviceVersion) {
-			if (device.version.indexOf(" ") >= 0) {
+			if (device.version && device.version.indexOf(" ") >= 0) {
 				this.deviceVersion = device.version.substring(0, device.version.indexOf(" "));
 			} else {
 				this.deviceVersion = device.version;
 			}
 		}
-		//console.error("device.version: " + this.deviceVersion);
+		if (!this.deviceVersion || this.deviceVersion === "0.0.0") {
+			console.error("Work around luna-next issue. Set version to 3.0.5");
+			this.deviceVersion = "3.0.5";
+		}
 		
 		newPkg = new preware.PackageModel(infoObj);
 		if (this.deviceVersion && this.deviceVersion.match(/^[0-9:.\-]+$/)) {
 			// Filter out apps with a minimum webos version that is greater then current
 			if (this.versionNewer(this.deviceVersion, newPkg.minWebOSVersion)) {
-				//alert('+ 2');
+				console.error("Skip package because of device version " + this.deviceVersion + " < " + newPkg.minWebOSVersion);
 				return;
 			}
 			
 			// Filter out apps with a maximum webos version that is less then current
 			if (this.versionNewer(newPkg.maxWebOSVersion, this.deviceVersion)) {
-				//alert('+ 3');
+				console.error("Skip package because of device version " + this.deviceVersion + " > " + newPkg.maxWebOSVersion);
 				return;
 			}
 		} else {
@@ -308,15 +312,14 @@ enyo.singleton({
 		// Filter out apps that don't match the host device
 		if (!preware.PrefCookie.get().ignoreDevices && newPkg.devices && newPkg.devices.length > 0 &&
 				newPkg.devices.indexOf(device.name) === -1) {
-			//alert('+ 4');
-			console.error("Ignoring package because of wrong device name...");
+			console.error("Ignoring package because of wrong device name, requested name: " + newPkg.devices + " is name: " + device.name);
 			return;
 		}
 		
 		// Filter out paid apps if desired
 		if ((preware.PrefCookie.get().onlyShowFree) && (newPkg.price !== undefined) &&
 				(newPkg.price !== "0") && (newPkg.price !== "0.00")) {
-			//console.error("Ignoring package because of price tag...");
+			console.error("Ignoring package because of price tag...");
 			return;
 		}
 
@@ -324,14 +327,12 @@ enyo.singleton({
 		if ((preware.PrefCookie.get().onlyShowEnglish) &&
 				newPkg.languages && newPkg.languages.length &&
 				!newPkg.inLanguage("en")) {
-			//console.error("Ignoring package because of wrong language.");
-			//alert('+ 6');
+			console.error("Ignoring package because of wrong language.");
 			return;
 		}
 
 		// default location is none is set
 		if (!newPkg.location && newPkg.filename && url) {
-			//alert('+ 7');
 			newPkg.location = url + '/' + newPkg.filename;
 		}
 
@@ -607,7 +608,7 @@ enyo.singleton({
 	},
 	
 	doMultiInstall: function (number) {
-		var pkg = this.packages[this.multiPkgs[number]];
+		var pkg = this.packages[this.multiPkgs[number]], request;
 		console.error("in doMultiInstall, number: " + number);
 		try {
 			// call install for dependencies
@@ -650,20 +651,22 @@ enyo.singleton({
 					console.error("Trying to launch software manager.");
 					this.dirtyFeeds = true;
 					if (Mojo && Mojo.Environment && Mojo.Environment.DeviceInfo && Mojo.Environment.DeviceInfo.platformVersionMajor === 1) {
-						navigator.Service.Request('palm://com.palm.applicationManager', {
-							method: 'launch',
-							parameters: {
-								id: "com.palm.app.findapps",
-								params: { myapps: '' }
-							}
+						request = new enyo.ServiceRequest({
+							service: "palm://com.palm.applicationManager",
+							method: "launch"
+						});
+						request.go({
+							id: "com.palm.app.findapps",
+							params: { myapps: '' }
 						});
 					} else {
-						navigator.Service.Request('palm://com.palm.applicationManager', {
-							method: 'launch',
-							parameters: {
-								id: "com.palm.app.swmanager",
-								params: { launchType: "updates" }
-							}
+						request = new enyo.ServiceRequest({
+							service: "palm://com.palm.applicationManager",
+							method: "launch"
+						});
+						request.go({
+							id: "com.palm.app.swmanager",
+							params: { launchType: "updates" }
 						});
 					}
 				}

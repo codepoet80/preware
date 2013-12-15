@@ -10,7 +10,7 @@ enyo.singleton({
 	},*/
 	doDeviceProfileReady: function(payload) {
 		if (this.callback) {
-			this.callback(null, payload);
+			this.callback(null, payload); //TODO: rework this into a signal
 		}
 	},
 	doDeviceIdReady: function(payload) {
@@ -21,11 +21,13 @@ enyo.singleton({
 	getDeviceProfile: function(callback, reload) {
 		this.callback = callback;
 		if (this.deviceProfile && !reload) {
+			console.error("already had device profile, return stored one.");
 			this.doDeviceProfileReady({deviceProfile: this.deviceProfile, success: true, message: ""});
 		} else {
 			this.deviceProfile = false;
 			this.deviceId = false;
 			
+			console.error("getting device profile from service.");
 			preware.IPKGService.impersonate(this._gotDeviceProfile.bind(this),
 							"com.palm.configurator",
 							"com.palm.deviceprofile",
@@ -33,14 +35,15 @@ enyo.singleton({
 		}
 	},
 	_gotDeviceProfile: function(payload) {	 
-		if (payload.returnValue === false) {
-			this.doDeviceProfileReady({deviceProfile: false, success: false, message: payload.errorText});
-		} else {
+		console.error("Got device profile from service, payload: " + JSON.stringify(payload));
+		if (payload.returnValue === true) {
 			this.deviceProfile = payload.deviceInfo;
 			if (this.deviceProfile.deviceId === "") {
 				this.deviceProfile.deviceId = this.deviceProfile.nduId;
 			}
 			this.doDeviceProfileReady({deviceProfile: this.deviceProfile, success: true, message: ""});
+		} else {
+			this.doDeviceProfileReady({deviceProfile: false, success: false, message: payload.errorText});
 		}
 	},
 	getDeviceId: function(callback, reload) {

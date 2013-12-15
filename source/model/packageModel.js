@@ -2,7 +2,7 @@
  * information on package standard is:
  * http://www.webos-internals.org/wiki/Packaging_Standards
  */
-/*global enyo, preware, IPKGService, navigator, isNumeric, trim, $L */
+/*global enyo, preware, IPKGService, isNumeric, trim, $L */
  
 enyo.kind({
 	name: "preware.PackageModel",
@@ -863,23 +863,22 @@ enyo.kind({
 	/* ------- below are for package actions -------- */
 	launch: function() {
 		if (this.isInstalled && this.type === 'Application') {
-			navigator.service.Request("palm://com.palm.applicationManager/",
-			{
-				method: 'launch',
-				parameters: {id: this.pkg}
-				//onSuccess: enyo.bind(this, "handleGetPreferencesResponse")
+			var request = new enyo.ServiceRequest({
+				service: "palm://com.palm.applicationManager/",
+				method: "launch"
 			});
+			//request.response(this, this.handleGetPreferencesResponse);
+			return request.go({id: this.pkg});
 		}
 	},
 	doRedirect: function() {
-		navigator.Service.Request('palm://com.palm.applicationManager', 
-			{
-				method: 'open',
-				parameters: 
-				{
+		var request = new enyo.ServiceRequest({
+			service: "palm://com.palm.applicationManager",
+			method: "open"
+		});
+		return request.go({
 					target: "http://developer.palm.com/appredirect/?packageid="+this.pkg
-				}
-			});
+		});
 	},
 	
 	//multi is piped through from packagesModel.doMultiInstall.

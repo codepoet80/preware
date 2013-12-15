@@ -1,6 +1,6 @@
 // Preware App kind and main window.
 /*jslint sloppy: true */
-/*global enyo, onyx, preware, $L, navigator, device, PalmServiceBridge */
+/*global enyo, onyx, preware, $L, device, PalmServiceBridge */
 
 //to reload changes on device: luna-send -n 1 palm://com.palm.applicationManager/rescan {}
 

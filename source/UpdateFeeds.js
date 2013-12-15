@@ -1,5 +1,5 @@
 /*jslint sloppy: true, continue:true */
-/*global enyo, navigator, window, device, console, preware, $L, setInterval, clearInterval, setTimeout */
+/*global enyo, window, device, console, preware, $L, setInterval, clearInterval, setTimeout */
 
 enyo.singleton({
 	name: "UpdateFeeds",
@@ -86,7 +86,7 @@ enyo.singleton({
 		this.log("device.version: " + (device ? device.version : "undefined"));
 		this.log("device.name: " + (device ? device.name : "undefined"));
 
-		this.log("================== 17");
+		this.log("================== 20");
 
 		switch (preware.PrefCookie.get().updateInterval) {
 		case "launch":
@@ -171,27 +171,28 @@ enyo.singleton({
 		if (!this.onlyLoad) {
 			// start by checking the internet connection
 			this.log("Requesting Connection Status");
-			navigator.service.Request("palm://com.palm.connectionmanager/", {
-				method: "getstatus",
-				onComplete: this.onConnection.bind(this)
+			var request = new enyo.ServiceRequest({
+				service: "palm://com.palm.connectionmanager/",
+				method: "getstatus"
 			});
+			request.response(this, this.onConnection);
+			request.error(this, this.onConnection);
+			request.go();
 		} else {
 			this.loadFeeds();
 		}
 	},
 	//connection check happens before download. If no connection, only existing feeds will be loaded.
-	onConnection: function (response) {
+	onConnection: function (inSender, inResponse) {
 		var hasNet = false;
-		if (response && response.returnValue === true &&
-				(response.isInternetConnectionAvailable === true ||
-					(response.wifi && response.wifi.state === "connected"))) {
+		if (inResponse && inResponse.returnValue === true &&
+				(inResponse.isInternetConnectionAvailable === true ||
+					(inResponse.wifi && inResponse.wifi.state === "connected"))) {
 			hasNet = true;
 		}
 		this.log("Got Connection Status. Connection: " + hasNet);
-		this.log("Complete Response: " + JSON.stringify(response));
+		this.log("Complete Response: " + JSON.stringify(inResponse));
 
-		this.log("=====================> WORK AROUND SOME BUG ON LUNA-NEXT! IGNORE CONNECTION RESULT.");
-		hasNet = true;
 		// run version check
 		this.log("Run Version Check");
 		preware.IPKGService.version(this.onVersionCheck.bind(this, hasNet));
@@ -220,6 +221,7 @@ enyo.singleton({
 						// initiate update if we have a connection
 						this.log("start to download feeds");
 						this.downloaded = false;
+						this.error = false;
 						preware.FeedsModel.loadFeeds();
 						this.log("...");
 					} else {
@@ -245,7 +247,7 @@ enyo.singleton({
 		var start = Date.now(), tries = 0;
 		function preventTimeout() {
 			var checkTime = Date.now(), diffInSec = (checkTime - start) / 1000;
-			console.error("Waiting for result since " + diffInSec);
+			console.error("Waiting for result since " + diffInSec + " with " + tries + " tries already failed.");
 			if (tries < 10) {
 				if (diffInSec > 10) {
 					preware.IPKGService.downloadFeed(this.downloadFeedResponse.bind(this, num),
