@@ -953,6 +953,8 @@ enyo.kind({
 	onInstall: function(multi, payload) {
 		var msg, msgError;
 		try {
+			console.error("Got result from install: " + JSON.stringify(payload));
+		
 			// log payload for display
 			preware.IPKGService.logPayload(payload);
 			
@@ -965,7 +967,7 @@ enyo.kind({
 					msgError = true;
 				}
 				if (payload.stage === "failed") {
-					msg = $L("Error Installing: See IPKG Log");
+					msg = $L("Error Installing: " + payload.stdErr ? payload.stdErr.join("") : payload.stdCout ? payload.stdCout.join("") : "See IPKG log.");
 					msgError = true;
 				}	else if (payload.stage === "status") {
 					this.doProgressMessage({message: $L("Downloading / Installing<br />") + payload.status});
@@ -1020,10 +1022,10 @@ enyo.kind({
 			if (msgError) {
 				console.error("assistant.actionMessage not yet replaced, logging instead");
 				enyo.log(
-					msg,
-					[{label:$L("Ok"), value:'ok'}, {label:$L("IPKG Log"), value:'view-log'}],
-					this.errorLogFunction.bindAsEventListener(this)
+					msg
+					//[{label:$L("Ok"), value:'ok'}, {label:$L("IPKG Log"), value:'view-log'}]
 				);
+				this.doSimpleMessage("ERROR: " + msg);
 			} else {
 				this.doSimpleMessage(msg);
 			}
