@@ -6,7 +6,7 @@
 
 enyo.kind({
 	name: "App",
-	layoutKind: "FittableRowsLayout",
+	//layoutKind: "FittableRowsLayout",
 	components: [
 		{
 			kind: "Signals",
@@ -15,7 +15,7 @@ enyo.kind({
 			onCoreNaviDrag: "handleCoreNaviDrag",
 			onCoreNaviDragFinish: "handleCoreNaviDragFinish"
 		},
-		{name: "AppPanels", kind: "AppPanels", fit: true, onSettings: "showSettingsDialog", onManageFeeds: "showManageFeedsDialog"},
+		{name: "AppPanels", kind: "AppPanels", onSettings: "showSettingsDialog", onManageFeeds: "showManageFeedsDialog"},
 		{kind: "CoreNavi", fingerTracking: true},
 		{name: "SettingsDialog", kind: "SettingsDialog"},
 		{name: "ManageFeedsDialog", kind: "ManageFeedsDialog"},

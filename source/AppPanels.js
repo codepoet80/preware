@@ -4,11 +4,11 @@
 enyo.kind({
 	name: "AppPanels",
 	kind: "Panels",
-	fit: true,
 	// Lags on old webkit
 	//realtimeFit: true,
 	arrangerKind: "CollapsingArranger",
 	classes: "app-panels",
+	style: "width: 100%; height: 100%;",
 	// required ipkgservice
 	ipkgServiceVersion: 14,
 	// filtered category/package lists
@@ -90,6 +90,7 @@ enyo.kind({
 							classes: "enyo-fill",
 							style: "background-image:url('assets/bg.png')",
 							touch: true,
+							fit: true,
 							components: [
 								{kind: "ListItem", content: "Package Updates", ontap: "showUpdatablePackages" },
 								{kind: "ListItem", content: "Available Packages", ontap: "showAvailableTypeList" },
