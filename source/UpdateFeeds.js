@@ -1,5 +1,5 @@
 /*jslint sloppy: true, continue:true */
-/*global enyo, window, device, console, preware, $L, setInterval, clearInterval, setTimeout */
+/*global enyo, window, device, console, preware, $L, setTimeout, clearTimeout, setTimeout */
 
 enyo.singleton({
 	name: "UpdateFeeds",
@@ -28,8 +28,8 @@ enyo.singleton({
 		this.log("loaded feeds: " + JSON.stringify(inEvent));
 		this.feeds = inEvent.feeds;
 
-		if (this.downloaded || this.onlyLoad) {
-			this.log("Not downloading, because onlyLoad: " + this.onlyLoad + " and alreadyDownloaded: " + this.downloaded);
+		if (this.downloaded || this.onlyLoad || !this.hasNet) {
+			this.log("Not downloading, because onlyLoad: " + this.onlyLoad + " and alreadyDownloaded: " + this.downloaded + " and hasNet: " + this.hasNet) ;
 			this.parseFeeds(inSender, inEvent);
 		} else {
 			this.log("Downloading feeds...");
@@ -106,16 +106,16 @@ enyo.singleton({
 				if (dateLastUpdate.getYear() === dateNow.getYear()
 						&& dateLastUpdate.getMonth() === dateNow.getMonth()
 						&& dateLastUpdate.getDate() === dateNow.getDate()) {
-					console.error("Already updated feeds today, don't do it again. Dates: " + dateLastUpdate + " and " + dateNow);
+					this.log("Already updated feeds today, don't do it again. Dates: " + dateLastUpdate + " and " + dateNow);
 					this.onlyLoad = true;
 				} else {
-					console.error("Not updated feeds today, do it again. Dates: " + dateLastUpdate + " and " + dateNow);
+					this.log("Not updated feeds today, do it again. Dates: " + dateLastUpdate + " and " + dateNow);
 					this.onlyLoad = false;
 				}
 			}
 			break;
 		case "ask":
-			console.error("Ask not yet implemented! Falling back to manual.");
+			this.log("Ask not yet implemented! Falling back to manual.");
 			this.onlyLoad = true;
 			break;
 		default:
@@ -124,7 +124,7 @@ enyo.singleton({
 		}
 
 		if (force) {
-			console.error("Forced to download, will download anyway.");
+			this.log("Forced to download, will download anyway.");
 			this.onlyLoad = false;
 		}
 
@@ -184,20 +184,20 @@ enyo.singleton({
 	},
 	//connection check happens before download. If no connection, only existing feeds will be loaded.
 	onConnection: function (inSender, inResponse) {
-		var hasNet = false;
+		this.hasNet = false;
 		if (inResponse && inResponse.returnValue === true &&
 				(inResponse.isInternetConnectionAvailable === true ||
 					(inResponse.wifi && inResponse.wifi.state === "connected"))) {
-			hasNet = true;
+			this.hasNet = true;
 		}
-		this.log("Got Connection Status. Connection: " + hasNet);
+		this.log("Got Connection Status. Connection: " + this.hasNet);
 		this.log("Complete Response: " + JSON.stringify(inResponse));
 
 		// run version check
 		this.log("Run Version Check");
-		preware.IPKGService.version(this.onVersionCheck.bind(this, hasNet));
+		preware.IPKGService.version(this.onVersionCheck.bind(this));
 	},
-	onVersionCheck: function (hasNet, payload) {
+	onVersionCheck: function (payload) {
 		this.log("Version Check Returned: " + JSON.stringify(payload));
 		try {
 			// log payload for display
@@ -217,26 +217,19 @@ enyo.singleton({
 					// this is if this version is too old for the version number stuff
 					this.log($L("The service version is too old. First try rebooting your device, or reinstall Preware and try again."));
 				} else {
-					if (hasNet && !this.onlyLoad) {
-						// initiate update if we have a connection
-						this.log("start to download feeds");
-						this.downloaded = false;
-						this.error = false;
-						preware.FeedsModel.loadFeeds();
-						this.log("...");
-					} else {
-						// if not, go right to loading the pkg info
-						this.loadFeeds();
-					}
+					this.downloaded = false;
+					this.error = false;
+					this.loadFeeds(); //load feed configuration anyway. Result will decide what do next..
 				}
 			}
 		} catch (e) {
-			console.error("app#onVersionCheck: " + e);
+			this.log("app#onVersionCheck: " + e);
 		}
 	},
 
 	//trigger update of one feed:
 	downloadFeedRequest: function (num) {
+		this.log("=================== downloadFeedRequest: " + num);
 		// update display
 		enyo.Signals.send("onPackagesStatusUpdate", {message: $L("<strong>Downloading Feed Information</strong><br>") + this.feeds[num].name});
 
@@ -247,56 +240,58 @@ enyo.singleton({
 		var start = Date.now(), tries = 0;
 		function preventTimeout() {
 			var checkTime = Date.now(), diffInSec = (checkTime - start) / 1000;
-			console.error("Waiting for result since " + diffInSec + " with " + tries + " tries already failed.");
-			if (tries < 10) {
-				if (diffInSec > 10) {
+			this.log("Waiting for result for feed " + num + " since " + diffInSec + " with " + tries + " tries already failed.");
+			if (tries < 5) {
+				if (diffInSec > 30) {
 					preware.IPKGService.downloadFeed(this.downloadFeedResponse.bind(this, num),
 											this.feeds[num].gzipped, this.feeds[num].name, this.feeds[num].url);
 					start = checkTime;
 					tries += 1;
 				}
+				this.timeouts[num] = setTimeout(preventTimeout.bind(this), 1000);
 			} else {
 				this.downloadFeedResponse(num, {stage: "failed", errorText: "Download timed out."});
 			}
 		}
-		this.timeouts[num] = setInterval(preventTimeout.bind(this), 1000);
-		console.error("Startet timeout check with id " + this.timeouts[num]);
+		this.timeouts[num] = setTimeout(preventTimeout.bind(this), 1000);
+		this.log("Startet timeout check with id " + this.timeouts[num]);
 	},
 	downloadFeedResponse: function (num, payload) {
-		function goToNextFeed(obj) {
-			clearInterval(obj.timeouts[num]);
+		var goToNextFeed = function() {
+			this.log("Clearing timeout: " + this.timeouts[num]);
+			clearTimeout(this.timeouts[num]);
 			num = num + 1;
-			if (num < obj.feeds.length) {
+			if (num < this.feeds.length) {
 				// start next
-				obj.downloadFeedRequest(num);
+				this.downloadFeedRequest(num);
 			} else {
 				// we're done
 				var msg = "<strong>" + $L("Done Downloading!") + "</strong>";
-				if (obj.error) {
+				if (this.error) {
 					msg += "<br>" + $L("Some feeds failed to download.");
-					setTimeout(obj.loadFeeds.bind(obj), 5000);
+					setTimeout(this.loadFeeds.bind(this), 5000);
 				} else {
 					// well updating looks to have finished, lets log the date:
-					console.error("Putting " + Math.round(Date.now() / 1000) + " as lastUpdate");
+					this.log("Putting " + Math.round(Date.now() / 1000) + " as lastUpdate");
 					preware.PrefCookie.put('lastUpdate', Math.round(Date.now() / 1000));
-					obj.loadFeeds();
+					this.loadFeeds();
 				}
 				enyo.Signals.send("onPackagesStatusUpdate", {message: msg});
 
-				obj.downloaded = true;
+				this.downloaded = true;
 			}
-		}
+		};
 
 		this.log("DownloadFeedResponse: " + num + ", payload: " + JSON.stringify(payload));
 		if (!payload.returnValue || payload.stage === "failed") {
 			this.log(payload.errorText + '<br>' + (payload.stdErr ? payload.stdErr.join("<br>") : ""));
 			this.error = true;
 
-			goToNextFeed(this);
+			goToNextFeed.call(this);
 		} else if (payload.stage === "status") {
 			enyo.Signals.send("onPackagesStatusUpdate", {message: $L("<strong>Downloading Feed Information</strong><br>") + this.feeds[num].name + "<br><br>" + payload.status});
 		} else if (payload.stage === "completed") {
-			goToNextFeed(this);
+			goToNextFeed.call(this);
 		}
 	},
 	loadFeeds: function () {
@@ -305,7 +300,7 @@ enyo.singleton({
 		preware.FeedsModel.loadFeeds();
 	},
 	parseFeeds: function (inSender, inEvent) {
-		this.log("Starting PackagesModel.loadFeeds");
+		console.log("Starting PackagesModel.loadFeeds");
 		preware.PackagesModel.loadFeeds(inEvent.feeds, this.onlyLoad);
 	}
 });
