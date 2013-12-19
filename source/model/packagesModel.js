@@ -41,7 +41,7 @@ enyo.singleton({
 	unknownFixed: 0,
 	
 	//emited signals:
-	// onPackagesStatusUpdate: { //emitted during load to allow status output.
+	// onPackageProgressMessage: { //emitted during load to allow status output.
 	//																 message: "some status message", 
 	//																 progress: true/false => show progress meter true/false
 	//																 progValue: [1-100]		=> progress value
@@ -62,7 +62,7 @@ enyo.singleton({
 		if (obj.progress === true) {
 			msg += " - Progress: " + obj.progValue;
 		}
-		enyo.Signals.send("onPackagesStatusUpdate", {message: msg});
+		enyo.Signals.send("onPackageProgressMessage", {message: msg});
 	},
 	doSimpleMessage: function (msg) {
 		enyo.Signals.send("onBackendSimpleMessage", msg);
@@ -116,6 +116,7 @@ enyo.singleton({
 	
 	//request more package information from IPKGService, i.e. next feed.
 	infoListRequest: function (num) {
+		console.log("infoListRequest " + num);
 		// update display
 		this.displayStatus({
 			message: $L("<strong>Loading Package Information</strong><br>") + this.feeds[num],
@@ -144,52 +145,58 @@ enyo.singleton({
 						error: true,
 						message: $L("The Package Manager Service is not running. Did you remember to install it? If you did, first try restarting Preware, then try rebooting your device and not launching Preware until you have a stable network connection available.")
 					});
-					this.doneUpdating();
+					setTimeout(this.doneUpdating.bind(this), 5000); //TODO: make sure that user can see the errro.
 					return;
 				} else {
 					// Do not do this until we work out how to handle multiple errors.
-					// this.updateAssistant.errorMessage('Preware', payload.errorText, this.updateAssistant.doneUpdating);
-					doneLoading = true;
+					//this.updateAssistant.errorMessage('Preware', payload.errorText, this.updateAssistant.doneUpdating);
+					console.error("Got error: " + payload.errorText);
+					this.displayStatus({
+						error: true,
+						message: $L("Error during load feed: ") + payload.errorText
+					});
+					this.doneUpdating();
+					return;
 				}
-			}
-			
-			// no stage means its not a subscription, and we should have all the contents right now
-			if (!payload.stage) {
-				if (payload.contents) {
-					this.parsePackages(payload.contents, this.urls[num]);
-				}
-				
-				// flag so the end of this function knows to move on to the next feed
-				doneLoading = true;
-			} else {
-				//alert('--- ' + num + ' ---');
-				//for (p in payload) alert(p);
-				//alert('stage: ' + payload.stage);
-				//alert('filesize: ' + payload.filesize);
-				//alert('chunksize: ' + payload.chunksize);
-				//alert('datasize: ' + payload.datasize);
-				
-				if (payload.stage === 'start') {
-					// at start we clear the old data to make sure its empty
-					this.rawData = '';
-				} else if (payload.stage === 'middle') {
-					// in the middle, we append the data
+			} else { //no error
+				// no stage means its not a subscription, and we should have all the contents right now
+				if (!payload.stage) {
 					if (payload.contents) {
-						this.rawData += payload.contents;
-						position = this.rawData.lastIndexOf("\n\n");
-						if (position !== -1) {
-							this.parsePackages(this.rawData.substr(0, position), this.urls[num]);
-							this.rawData = this.rawData.substr(position);
-						}
-					}
-				} else if (payload.stage === 'end') {
-					// at end, we parse the data we've recieved this whole time
-					if (this.rawData !== '') {
-						this.parsePackages(this.rawData, this.urls[num]);
+						this.parsePackages(payload.contents, this.urls[num]);
 					}
 					
 					// flag so the end of this function knows to move on to the next feed
 					doneLoading = true;
+				} else {
+					//alert('--- ' + num + ' ---');
+					//for (p in payload) alert(p);
+					//alert('stage: ' + payload.stage);
+					//alert('filesize: ' + payload.filesize);
+					//alert('chunksize: ' + payload.chunksize);
+					//alert('datasize: ' + payload.datasize);
+					
+					if (payload.stage === 'start') {
+						// at start we clear the old data to make sure its empty
+						this.rawData = '';
+					} else if (payload.stage === 'middle') {
+						// in the middle, we append the data
+						if (payload.contents) {
+							this.rawData += payload.contents;
+							position = this.rawData.lastIndexOf("\n\n");
+							if (position !== -1) {
+								this.parsePackages(this.rawData.substr(0, position), this.urls[num]);
+								this.rawData = this.rawData.substr(position);
+							}
+						}
+					} else if (payload.stage === 'end') {
+						// at end, we parse the data we've recieved this whole time
+						if (this.rawData !== '') {
+							this.parsePackages(this.rawData, this.urls[num]);
+						}
+						
+						// flag so the end of this function knows to move on to the next feed
+						doneLoading = true;
+					}
 				}
 			}
 		} catch (e) {
@@ -199,7 +206,8 @@ enyo.singleton({
 		if (doneLoading) {
 			if (this.feeds[(num + 1)]) {
 				// start next
-				this.infoListRequest((num + 1));
+				console.error("Start next feed.");
+				this.infoListRequest(num + 1);
 			} else {
 				// we're done
 				this.displayStatus({
