@@ -355,7 +355,7 @@ enyo.kind({
 	},
 	handleDeviceReady: function (inSender, inEvent) {
 		if (!this.fired) {
-			this.fired;
+			this.fired = true;
 			console.error("Device ready fired.");
 			UpdateFeeds.startUpdateFeeds();
 		}

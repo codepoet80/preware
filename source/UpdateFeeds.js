@@ -83,10 +83,12 @@ enyo.singleton({
 			this.log("PalmServiceBridge found.");
 		}
 
+        if (!window.device) {
+            window.device = {};
+        }
+        
 		this.log("device.version: " + (device ? device.version : "undefined"));
 		this.log("device.name: " + (device ? device.name : "undefined"));
-
-		this.log("================== 20");
 
 		switch (preware.PrefCookie.get().updateInterval) {
 		case "launch":
