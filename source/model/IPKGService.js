@@ -134,13 +134,15 @@ enyo.singleton({
 	},
 	getAppinfoFile: function (callback, pkg) {
 		var params = {
-			"package": pkg
+			"package": pkg,
+			subscribe: true
 		};
 		return this.doServiceCall(callback, "getAppinfoFile", params);
 	},
 	getControlFile: function (callback, pkg) {
 		var params = {
-			"package": pkg
+			"package": pkg,
+			subscribe: true
 		};
 		return this.doServiceCall(callback, "getControlFile", params);
 	},
