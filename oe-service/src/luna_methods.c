@@ -1653,7 +1653,7 @@ bool do_install(LSMessage *message, char *filename, char *url, bool useSvc) {
   /* Extract the package id */
   char package[MAXNAMLEN];
   snprintf(command, MAXLINLEN,
-	   "/usr/bin/ar p %s control.tar.gz | /bin/tar -O -z -x --no-anchored -f - control | /bin/sed -n -e 's/^Package: //p' 2>&1", pathname);
+    "/usr/bin/ar p %s control.tar.gz | /bin/tar -O -z -x -f - ./control | /bin/sed -n -e 's/^Package: //p' 2>&1", pathname);
   strcpy(run_command_buffer, "");
   if (run_command(command, NULL, NULL) && strlen(run_command_buffer)) {
     strcpy(package, run_command_buffer);
