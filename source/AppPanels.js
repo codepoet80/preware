@@ -609,9 +609,11 @@ enyo.kind({
 		if ((!this.isActive || !this.isVisible)) {
 			// if we're not the active scene, let them know via banner:
 			if (this.onlyLoad) {
-				navigator.notification.showBanner($L("Preware: Done Loading Feeds"), {source: 'updateNotification'}, 'miniicon.png');
+				//TODO: show banner notification.
+				//navigator.notification.showBanner($L("Preware: Done Loading Feeds"), {source: 'updateNotification'}, 'miniicon.png');
 			} else {
-				navigator.notification.showBanner($L("Preware: Done Updating Feeds"), {source: 'updateNotification'}, 'miniicon.png');
+				//TODO: show banner notification.
+				//navigator.notification.showBanner($L("Preware: Done Updating Feeds"), {source: 'updateNotification'}, 'miniicon.png');
 			}
 		}
 
