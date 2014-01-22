@@ -53,23 +53,6 @@ enyo.singleton({
 		console.error(text);
 	},
 
-	//Unused functions... ??
-	versionTap: function (inSender, inEvent) {
-		preware.IPKGService.version(this.gotVersion.bind(this));
-		this.log("Getting Version");
-	},
-	gotVersion: function (version) {
-		this.log("Version: " + JSON.stringify(version) + "<br>");
-	},
-	machineName: function () {
-		preware.IPKGService.getMachineName(this.gotMachineName.bind(this));
-		this.log("Requesting Machine Name");
-	},
-	gotMachineName: function (machineName) {
-		this.log("Got Machine Name: " + machineName + " (" + JSON.stringify(machineName) + ")");
-	},
-
-
 	//start the update process.
 	//first we need some device information.
 	//we need device profile and palm profile for a call to

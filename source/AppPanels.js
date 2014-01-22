@@ -1,5 +1,5 @@
 /*jslint sloppy: true, continue:true */
-/*global enyo, navigator, window, device, console, preware, $L, setTimeout, UpdateFeeds */
+/*global enyo, window, device, console, preware, $L, setTimeout, UpdateFeeds */
 
 enyo.kind({
 	name: "AppPanels",
