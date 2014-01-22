@@ -348,8 +348,6 @@ enyo.kind({
 	//Handlers
 	create: function (inSender, inEvent) {
 		this.inherited(arguments);
-		//TODO: remove! work around for missing on device ready:
-		console.error("Rework around cordova issue...");
 		setTimeout(this.handleDeviceReady.bind(this), 500);
 		this.fired = false;
 	},
