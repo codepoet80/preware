@@ -540,7 +540,7 @@ bool rescan_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
 // Restart Luna, and return the output to webOS.
 //
 bool restart_luna_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
-  return simple_command(message, "/usr/bin/killall -HUP LunaSysMgr 2>&1");
+  return simple_command(message, "/bin/systemctl restart luna-next 2>&1");
 }
 
 //
