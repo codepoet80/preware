@@ -7,12 +7,17 @@ enyo.singleton({
 	log: "",
 	logNum: 1,
 	doServiceCall: function (callback, method, parameters) {
-		var request = new enyo.ServiceRequest({
-				service: this.identifier,
-				method: method,
-				subscribe: parameters ? parameters.subscribe : false
-			}), 
-			generalSuccess = function (inSender, inResponse) {
+		if (this.request && this.request.getSubscribe()) {
+			this.request.cancel();
+		}
+		this.request = new enyo.ServiceRequest({
+			service: this.identifier,
+			method: method,
+			subscribe: parameters ? parameters.subscribe : false,
+			resubscribe: parameters ? parameters.subscribe : false
+		});
+		var generalSuccess = function (inSender, inResponse) {
+				//console.log("IPKService#generalSuccess: " + JSON.stringify(inResponse));
 				if (callback) {
 					callback(inResponse);
 				}
@@ -23,10 +28,11 @@ enyo.singleton({
 					callback(inError);
 				}
 			};
-		
-		request.response(generalSuccess.bind(this));
-		request.error(generalFailure.bind(this));
-		return request.go(parameters);
+
+		//console.log("Complete request: luna-send -n 10 " + this.identifier + "/" + method + " '" + JSON.stringify(parameters)  + "'");
+		this.request.response(generalSuccess.bind(this));
+		this.request.error(generalFailure.bind(this));
+		return this.request.go(parameters);
 	},
 	version: function (callback) {
 		return this.doServiceCall(callback, "version");
@@ -179,7 +185,7 @@ enyo.singleton({
 		this.logNum = 1;
 	},
 	logPayload: function (payload, stage) {
-		if ((payload.stage && (payload.stage !== "status")) || stage) {
+		if ((payload.stage && (payload.stage !== "status") && (payload.stage !== "complete")) || stage) {
 			var s, stdPlus;
 			this.log += '<div class="container ' + (this.logNum % 2 ? 'one' : 'two') + '">';
 			
