@@ -19,17 +19,9 @@ enyo.kind({
 	// onPackageRefresh: {} // emitted at operations that require UI to reload package information.
 
 	doSimpleMessage: function (msg) {
-		enyo.Signals.send("onBackendSimpleMessage", msg);
+		enyo.Signals.send("onBackendSimpleMessage", {message: msg});
 	},
 	doProgressMessage: function (obj) {
-		var msg = "";
-		if (obj.error) {
-			msg = "ERROR: ";
-		}
-		msg += obj.msg;
-		if (obj.progress) {
-			msg += " - Progress: " + obj.progValue;
-		}
 		enyo.Signals.send("onPackageProgressMessage", obj);
 	},
 
@@ -903,6 +895,7 @@ enyo.kind({
 			// start action
 			this.doProgressMessage({message: $L("Downloading / Installing<br />") + this.title});
 
+			preware.IPKGService.logClear();
 			// call install service
 			preware.IPKGService.install(this.onInstall.bind(this, multi), this.filename, this.location.replace(/ /g, "%20"));
 		} catch (e) {
@@ -924,6 +917,7 @@ enyo.kind({
 			// start action
 			this.doProgressMessage({message: $L("Downloading / Updating") + this.title});
 
+			preware.IPKGService.logClear();
 			if (preware.typeConditions.can(this.type, 'updateAsReplace')) {
 				preware.IPKGService.replace(this.onUpdate.bind(this, multi), this.pkg, this.filename, this.location.replace(/ /g, "%20"));
 				this.doProgressMessage({message: 'Downloading / Replacing<br />' + this.title});
@@ -949,6 +943,7 @@ enyo.kind({
 			// start action
 			this.doProgressMessage({message: $L("Removing")});
 
+			preware.IPKGService.logClear();
 			// call remove service
 			preware.IPKGService.remove(this.onRemove.bind(this), this.pkg);
 		} catch (e) {
@@ -958,9 +953,8 @@ enyo.kind({
 
 	onInstall: function (multi, payload) {
 		var msg, msgError;
-		try {
-			console.error("Got result from install: " + JSON.stringify(payload));
 
+		try {
 			// log payload for display
 			preware.IPKGService.logPayload(payload);
 
@@ -973,7 +967,7 @@ enyo.kind({
 					msgError = true;
 				}
 				if (payload.stage === "failed") {
-					msg = $L("Error Installing: " + payload.stdErr ? payload.stdErr.join("") : payload.stdCout ? payload.stdCout.join("") : "See IPKG log.");
+					msg = $L("Error Installing: ") + preware.IPKGService.getIPKLog();
 					msgError = true;
 				} else if (payload.stage === "status") {
 					this.doProgressMessage({message: $L("Downloading / Installing<br />") + payload.status});
@@ -1030,7 +1024,7 @@ enyo.kind({
 					msg
 					//[{label:$L("Ok"), value:'ok'}, {label:$L("IPKG Log"), value:'view-log'}]
 				);
-				this.doSimpleMessage("ERROR: " + msg);
+				this.doSimpleMessage(msg);
 			} else {
 				this.doSimpleMessage(msg);
 			}
@@ -1053,7 +1047,7 @@ enyo.kind({
 					msgError = true;
 				}
 				if (payload.stage === "failed") {
-					msg = $L("Error Updating: See IPKG Log");
+					msg = $L("Error Updating: " + preware.IPKGService.getIPKLog());
 					msgError = true;
 				} else if (payload.stage === "status") {
 					this.doProgressMessage({message: $L("Downloading / Updating<br />") + payload.status});
@@ -1113,6 +1107,7 @@ enyo.kind({
 					//[{label:$L("Ok"), value:'ok'}, {label:$L("IPKG Log"), value:'view-log'}],
 					//this.errorLogFunction.bindAsEventListener(this)
 				);
+				this.doSimpleMessage(msg);
 			} else {
 				this.doSimpleMessage(msg);
 			}
@@ -1131,7 +1126,7 @@ enyo.kind({
 				msgError = true;
 			} else {
 				if (!payload.returnValue) {
-					msg = $L("Error Removing: No Further Information");
+					msg = $L("Error Removing: " + preware.IPKGService.getIPKLog());
 					msgError = true;
 				}
 				if (payload.stage === "failed") {

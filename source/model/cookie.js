@@ -66,12 +66,11 @@ enyo.singleton({
 	},
 	getAllValues: function () {
 		var field, value;
-		console.error("====================== Trying to read cookie.");
 		if (enyo.getCookie("preware-cookie-set")) {
 			for (field in this.prefs) {
 				if (this.prefs.hasOwnProperty(field)) {
 					value = enyo.getCookie(field);
-					console.error("COOKIE, READ: " + field + " = " + value);
+					console.log("COOKIE, READ: " + field + " = " + value);
 					if (value !== undefined) {
 						this.prefs[field] = value;
 					}
@@ -89,17 +88,15 @@ enyo.singleton({
 			}
 			
 			if (value !== undefined) {
-				console.error("Setting single value " + obj + " = " + value);
 				this.prefs[obj] = value;
 				enyo.setCookie(obj, value); //take a shortcut here.
 				enyo.setCookie("preware-cookie-set", true);
 			} else {
-				console.error("Setting all values.");
 				this.prefs = obj;
 				this.setAllValues();
 			}
 		} catch (e) {
-			console.error('preferenceCookie#put: ' + e);
+			console.log('preferenceCookie#put: ' + e);
 		}
 	},
 	setAllValues: function () {

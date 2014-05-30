@@ -207,7 +207,6 @@ enyo.kind({
 	handleDeviceReady: function (inSender, inEvent) {
 		if (!this.fired) {
 			this.fired = true;
-			console.error("Device ready fired.");
 			UpdateFeeds.startUpdateFeeds();
 		}
 	},
@@ -261,7 +260,7 @@ enyo.kind({
 	//Action Functions
 	log: function (text) {
 		//this.inherited(arguments);
-		console.error(text);
+		console.log(text);
 		this.$.SpinnerText.setContent(text);
 	},
 	showTypeAndCategoriesPanels: function (show) {
@@ -325,8 +324,10 @@ enyo.kind({
 			// if we're not the active scene, let them know via banner:
 			if (this.onlyLoad) {
 				//TODO: show banner notification.
+				console.log("Preware: Done Loading Feeds.");
 				//navigator.notification.showBanner($L("Preware: Done Loading Feeds"), {source: 'updateNotification'}, 'miniicon.png');
 			} else {
+				console.log("Preware: Done Updating Feeds.");
 				//TODO: show banner notification.
 				//navigator.notification.showBanner($L("Preware: Done Updating Feeds"), {source: 'updateNotification'}, 'miniicon.png');
 			}

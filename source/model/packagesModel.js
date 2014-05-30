@@ -52,20 +52,10 @@ enyo.singleton({
 	//methods:
 	//this replaces link to updateAssistant with a signal.
 	displayStatus: function (obj) {
-		var msg = "";
-		if (obj.error === true) {
-			msg = "ERROR: ";
-		}
-		if (obj.msg !== undefined) {
-			msg += obj.msg;
-		}
-		if (obj.progress === true) {
-			msg += " - Progress: " + obj.progValue;
-		}
-		enyo.Signals.send("onPackageProgressMessage", {message: msg});
+		enyo.Signals.send("onPackageProgressMessage", obj);
 	},
 	doSimpleMessage: function (msg) {
-		enyo.Signals.send("onBackendSimpleMessage", msg);
+		enyo.Signals.send("onBackendSimpleMessage", {message: msg});
 	},
 	
 	doneUpdating: function () {
@@ -282,7 +272,7 @@ enyo.singleton({
 		// Skip packages that are in the status file, but are not actually installed
 		if (infoObj.Status &&
 				(infoObj.Status.include('not-installed') || infoObj.Status.include('deinstall'))) {
-			console.error("Skip package because of status.");
+			console.log("Skip package because of status.");
 			return;
 		}
 
@@ -296,7 +286,7 @@ enyo.singleton({
 			}
 		}
 		if (!this.deviceVersion || this.deviceVersion === "0.0.0") {
-			console.error("Work around luna-next issue. Set version to 3.0.5");
+			console.log("Work around luna-next issue. Set version to 3.0.5, had version: " + this.deviceVersion);
 			this.deviceVersion = "3.0.5";
 		}
 		
@@ -304,30 +294,30 @@ enyo.singleton({
 		if (this.deviceVersion && this.deviceVersion.match(/^[0-9:.\-]+$/)) {
 			// Filter out apps with a minimum webos version that is greater then current
 			if (this.versionNewer(this.deviceVersion, newPkg.minWebOSVersion)) {
-				console.error("Skip package because of device version " + this.deviceVersion + " < " + newPkg.minWebOSVersion);
+				console.log("Skip package because of device version " + this.deviceVersion + " < " + newPkg.minWebOSVersion);
 				return;
 			}
 			
 			// Filter out apps with a maximum webos version that is less then current
 			if (this.versionNewer(newPkg.maxWebOSVersion, this.deviceVersion)) {
-				console.error("Skip package because of device version " + this.deviceVersion + " > " + newPkg.maxWebOSVersion);
+				console.log("Skip package because of device version " + this.deviceVersion + " > " + newPkg.maxWebOSVersion);
 				return;
 			}
 		} else {
-			console.error("Could not get OS version, so packges did not get filtered.");
+			console.log("Could not get OS version, so packges did not get filtered.");
 		}
 		
 		// Filter out apps that don't match the host device
 		if (!preware.PrefCookie.get().ignoreDevices && newPkg.devices && newPkg.devices.length > 0 &&
 				newPkg.devices.indexOf(device.name) === -1) {
-			console.error("Ignoring package because of wrong device name, requested name: " + newPkg.devices + " is name: " + device.name);
+			console.log("Ignoring package because of wrong device name, requested name: " + newPkg.devices + " is name: " + device.name);
 			return;
 		}
 		
 		// Filter out paid apps if desired
 		if ((preware.PrefCookie.get().onlyShowFree) && (newPkg.price !== undefined) &&
 				(newPkg.price !== "0") && (newPkg.price !== "0.00")) {
-			console.error("Ignoring package because of price tag...");
+			console.log("Ignoring package because of price tag...");
 			return;
 		}
 
@@ -335,7 +325,7 @@ enyo.singleton({
 		if ((preware.PrefCookie.get().onlyShowEnglish) &&
 				newPkg.languages && newPkg.languages.length &&
 				!newPkg.inLanguage("en")) {
-			console.error("Ignoring package because of wrong language.");
+			console.log("Ignoring package because of wrong language.");
 			return;
 		}
 
@@ -599,8 +589,6 @@ enyo.singleton({
 		case 'ok':
 			//this.assistant.displayAction($L("Installing / Updating"));
 			//this.assistant.startAction();
-			console.error("MultiPkg: " + this.multiPkg.pkg);
-			console.error("Pushing: " + this.packagesReversed[this.multiPkg.pkg] - 1);
 			this.multiPkgs.push(this.packagesReversed[this.multiPkg.pkg] - 1); //add package with dependencies to be list of packages to be installed as last one.
 			this.doMultiInstall(0);
 			break;
@@ -617,23 +605,15 @@ enyo.singleton({
 	
 	doMultiInstall: function (number) {
 		var pkg = this.packages[this.multiPkgs[number]], request;
-		console.error("in doMultiInstall, number: " + number);
 		try {
 			// call install for dependencies
 			if (number < this.multiPkgs.length) {
-				console.error("package: " + JSON.stringify(this.multiPkgs[number]));
-				if (pkg) {
-					console.error("packages List: " + pkg.title + " appcat: " + pkg.appCatalog + " installed: " + pkg.isInstalled);
-				} else {
-					console.error("Package not in pkg list??");
-				}
 				//package is from appCatalog (?)
 				if (pkg.appCatalog && preware.PrefCookie.get().useTuckerbox) {
 					this.doMyApps = true;
 					this.doMultiInstall(number + 1);
 				} else if (pkg.isInstalled) {
 					if (!pkg.location) {
-						console.error('No location');
 						// see note above about this skipping if the type can't be updated
 						this.doMultiInstall(number + 1);
 					} else if (preware.typeConditions.can(pkg.type, 'update')) {
@@ -646,7 +626,6 @@ enyo.singleton({
 					}
 				} else {
 					if (!pkg.location) {
-						console.error('No location');
 						// see note above about this skipping if the type can't be updated
 						this.doMultiInstall(number + 1);
 					} else {
@@ -654,9 +633,7 @@ enyo.singleton({
 					}
 				}
 			} else { // end actions!
-				console.error("Last app installed. Ending actions.");
 				if (this.doMyApps) {
-					console.error("Trying to launch software manager.");
 					this.dirtyFeeds = true;
 					if (Mojo && Mojo.Environment && Mojo.Environment.DeviceInfo && Mojo.Environment.DeviceInfo.platformVersionMajor === 1) {
 						request = new enyo.ServiceRequest({
@@ -681,7 +658,7 @@ enyo.singleton({
 
 				if (this.multiFlags.RestartLuna || this.multiFlags.RestartJava || this.multiFlags.RestartDevice) {
 					console.error("assistant.actionMessage not yet replaced, logging instead");
-					console.error(
+					console.log(
 						$L("Packages installed:<br /><br />") + this.multiActionMessage(this.multiFlags)
 						//[{label:$L("Ok"), value:'ok'}, {label:$L("Later"), value:'skip'}],
 						//this.multiActionFunction.bindAsEventListener(this, this.multiFlags)

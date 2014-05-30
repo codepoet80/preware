@@ -36,7 +36,6 @@ enyo.singleton({
 	
 	onConfigs: function (payload) {
 		var x, c, tmpSplit1, tmpSplit2, feedObj;
-		console.error("configs returned: " + JSON.stringify(payload));
 		try {
 			if (!payload) {
 				// i dont know if this will ever happen, but hey, it might
@@ -80,7 +79,7 @@ enyo.singleton({
 				});
 				
 				//send out feeds as event.
-				console.error("Loading finished, feeds: " + JSON.stringify(this.feeds));
+				//console.log("Loading finished, feeds: " + JSON.stringify(this.feeds));
 				this.doLoadFeedsFinished({feeds: this.feeds, success: true});
 			} //end of no error-case
 		} catch (e) {

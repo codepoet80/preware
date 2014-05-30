@@ -21,21 +21,20 @@ enyo.singleton({
 	getDeviceProfile: function(callback, reload) {
 		this.callback = callback;
 		if (this.deviceProfile && !reload) {
-			console.error("already had device profile, return stored one.");
 			this.doDeviceProfileReady({deviceProfile: this.deviceProfile, success: true, message: ""});
 		} else {
 			this.deviceProfile = false;
 			this.deviceId = false;
-			
-			console.error("getting device profile from service.");
+
+			console.log("getting device profile from service.");
 			preware.IPKGService.impersonate(this._gotDeviceProfile.bind(this),
 							"com.palm.configurator",
 							"com.palm.deviceprofile",
 							"getDeviceProfile", {});
 		}
 	},
-	_gotDeviceProfile: function(payload) {	 
-		console.error("Got device profile from service, payload: " + JSON.stringify(payload));
+	_gotDeviceProfile: function(payload) {
+		console.log("Got device profile from service, payload: " + JSON.stringify(payload));
 		if (payload.returnValue === true) {
 			this.deviceProfile = payload.deviceInfo;
 			if (this.deviceProfile.deviceId === "") {

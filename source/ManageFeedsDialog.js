@@ -54,10 +54,10 @@ enyo.kind({
 	//handlers
 	onFeeds: function (inSender, inEvent) {
 		var i;
-		console.error("MANAGEFEEDS: Got " + inEvent.feeds.length + " feeds. :)");
+		console.log("MANAGEFEEDS: Got " + inEvent.feeds.length + " feeds. :)");
 		this.feeds = inEvent.feeds;
 		for (i = 0; i < this.feeds.length; i += 1) {
-			console.error("Feed " + i + ": " + JSON.stringify(this.feeds[i]));
+			console.log("Feed " + i + ": " + JSON.stringify(this.feeds[i]));
 		}
 	},
 	closePopup: function (inSender, inEvent) {

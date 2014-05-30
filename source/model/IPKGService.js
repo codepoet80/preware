@@ -227,5 +227,8 @@ enyo.singleton({
 			this.log += '</div>';
 			this.logNum += 1;
 		}
+	},
+	getIPKLog: function () {
+		return this.log;
 	}
 });
