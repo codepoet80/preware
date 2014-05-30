@@ -24,6 +24,13 @@ enyo.kind({
 	currentCategory: "",
 	availablePackages: [],
 	currentPackage: {},
+	showingTypeAndCategoriesPanels: false,
+
+	menuPanelsIndex: 0,
+	typePanelsIndex: 1,
+	categoryPanelsIndex: 2,
+	packagePanelsIndex: 3,
+	packageDisplayPanelsIndex: 4,
 
 	//used to propagate settings events, until we have some app menu.
 	events: {
@@ -33,6 +40,7 @@ enyo.kind({
 	components: [
 		{
 			kind: "Signals",
+			onbackbutton: "handleBackGesture",
 			onPackagesStatusUpdate: "processStatusUpdate",
 			onUpdateFeedsFinished: "doneLoading",
 			onBackendSimpleMessage: "processSimpleMessage",
@@ -359,6 +367,15 @@ enyo.kind({
 		}
 	},
 	reloadTapped: function (inSender, inEvent) {
+	handleBackGesture: function (inSender, inEvent) {
+		var index = this.getIndex();
+		if (!this.showingTypeAndCategoriesPanels && index === this.categoryPanelsIndex + 1) { //mind the gap.
+			this.setIndex(this.menuPanelsIndex);
+		} else {//all panels are showing, that's easy.
+			this.setIndex(Math.max(index - 1, 0));
+		}
+		inEvent.preventDefault();
+	},
 		UpdateFeeds.startUpdateFeeds(true);
 		this.$.ScrollerPanel.setIndex(0);
 	},
@@ -441,6 +458,7 @@ enyo.kind({
 		});
 	},
 	showTypeAndCategoriesPanels: function (show) {
+		this.showingTypeAndCategoriesPanels = show;
 		this.$.TypePanels.setShowing(show);
 		this.$.CategoryPanels.setShowing(show);
 		this.render();

@@ -30,7 +30,9 @@ enyo.kind({
 	],
 	//Handlers
 	handleBackGesture: function (inSender, inEvent) {
-		this.$.AppPanels.setIndex(0);
+		//hide possible open dialogs on back gesture?
+		this.$.SettingsDialog.hide();
+		this.$.ManageFeedsDialog.hide();
 		inEvent.preventDefault();
 	},
 	handleCoreNaviDragStart: function (inSender, inEvent) {
