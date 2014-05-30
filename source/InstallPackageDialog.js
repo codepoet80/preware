@@ -38,7 +38,7 @@ enyo.kind({
                                         {
                                             kind: "onyx.InputDecorator",
                                             components: [
-                                                {kind: "onyx.Input", placeHolder: $L("http:// or file:// or ftp://"), name: "ipkEdit", value: "http://ipkg.preware.org/feeds/webos-internals/all/de.hlavka.minstat_1.2.0_all.ipk", style: "width: 200px;"}
+                                                {kind: "onyx.Input", placeHolder: $L("http:// or file:// or ftp://"), name: "ipkEdit", style: "width: 200px;"}
                                             ]
                                         }
                                     ]
