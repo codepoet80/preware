@@ -14,15 +14,7 @@ enyo.kind({
 	// filtered category/package lists
 	currentType: "",
 	availableCategories: [],
-	packageFilters: {//filter for all = 0, available (i.e. not installed) = 1, only installed = 2, only updatable = 3
-		all: 0,
-		available: 1,
-		installed: 2,
-		updatable: 3
-	},
-	currentPackageFilter: -1,
 	currentCategory: "",
-	availablePackages: [],
 	currentPackage: {},
 	showingTypeAndCategoriesPanels: false,
 
@@ -92,24 +84,8 @@ enyo.kind({
 								}
 							]
 						},
-						{
-							kind: "Scroller",
-							horizontal: "hidden",
-							classes: "enyo-fill",
-							style: "background-image:url('assets/bg.png')",
-							touch: true,
-							fit: true,
-							components: [
-								{kind: "ListItem", content: "Package Updates", ontap: "showUpdatablePackages" },
-								{kind: "ListItem", content: "Available Packages", ontap: "showAvailableTypeList" },
-								{kind: "ListItem", content: "Installed Packages", ontap: "showInstalledPackages" },
-								{kind: "ListItem", content: "List of Everything", ontap: "showListOfEverything" },
-								{tag: "hr"},
-								{kind: "ListItem", content: "Settings", ontap: "doSettings" },
-								//{kind: "ListItem", content: "Manage Feeds", ontap: "doManageFeeds" },
-								{kind: "ListItem", content: "Reload Package List", ontap: "reloadTapped" }
-							]
-						}
+						//bubble doSettings and doManageFeeds events to parent.
+						{kind: "preware.PackagesMenu", name: "packagesMenu", onSelected: "packagesMenuSelected"}
 					]
 				},
 				{kind: "onyx.Toolbar"}
@@ -403,6 +379,20 @@ enyo.kind({
 		this.$.SimpleMessageContent.setContent(inMessage);
 		if (this.$.SimpleMessage.value !== this.$.SimpleMessage.min) {
 			this.$.SimpleMessage.animateToMin();
+	//react to package selection in packagesMenu.
+	packagesMenuSelected: function (inSender, inEvent) {
+		this.showTypeAndCategoriesPanels(inEvent.showTypeAndCategoriesPanels);
+		if (inEvent.name === "available") {
+			this.$.TypePanels.setIndex(1);
+			this.$.CategoryPanels.setIndex(0);
+			this.$.PackagePanels.setIndex(0);
+			this.setIndex(1);
+		} else {
+			if (inEvent.packagesLength >= 0) {
+				this.$.PackageRepeater.setCount(inEvent.packagesLength);
+				this.$.PackagePanels.setIndex(1);
+				this.setIndex(3);
+			}
 		}
 	},
 	hideSimpleMessage: function () {
@@ -438,96 +428,11 @@ enyo.kind({
 		console.error(text);
 		this.$.SpinnerText.setContent(text);
 	},
-	sortPackageList: function (field) {
-		if (!field) {
-			field = "title";
-		}
-		this.availablePackages.sort(function (a, b) {
-			var strA, strB;
-			if (a[field] && b[field]) {
-				if (typeof a[field] === 'string') {
-					strA = a[field].toLowerCase();
-					strB = b[field].toLowerCase();
-				} else {
-					strA = a[field];
-					strB = b[field];
-				}
-				return ((strA < strB) ? -1 : ((strA > strB) ? 1 : 0));
-			}
-			return -1;
-		});
-	},
 	showTypeAndCategoriesPanels: function (show) {
 		this.showingTypeAndCategoriesPanels = show;
 		this.$.TypePanels.setShowing(show);
 		this.$.CategoryPanels.setShowing(show);
 		this.render();
-	},
-	showListOfEverything: function () {
-		var i, pkg;
-		this.currentPackageFilter = this.packageFilters.all;
-		this.availablePackages = [];
-
-		for (i = 0; i < preware.PackagesModel.packages.length; i += 1) {
-			pkg = preware.PackagesModel.packages[i];
-			if (this.availablePackages.indexOf(pkg) === -1) {
-				this.availablePackages.push(pkg);
-			}
-		}
-		this.sortPackageList("date");
-
-		this.$.PackageRepeater.setCount(this.availablePackages.length);
-		this.$.PackagePanels.setIndex(1);
-		this.showTypeAndCategoriesPanels(false);
-		this.setIndex(3);
-	},
-	showUpdatablePackages: function () {
-		var i, pkg;
-		this.currentPackageFilter = this.packageFilters.updatable;
-		this.availablePackages = [];
-
-		for (i = 0; i < preware.PackagesModel.packages.length; i += 1) {
-			pkg = preware.PackagesModel.packages[i];
-			if (pkg.hasUpdate) {
-				if (this.availablePackages.indexOf(pkg) === -1) {
-					this.availablePackages.push(pkg);
-				}
-			}
-		}
-		this.sortPackageList();
-
-		this.$.PackageRepeater.setCount(this.availablePackages.length);
-		this.$.PackagePanels.setIndex(1);
-		this.showTypeAndCategoriesPanels(false);
-		this.setIndex(3);
-	},
-	showInstalledPackages: function () {
-		var i, pkg;
-		this.currentPackageFilter = this.packageFilters.installed;
-		this.availablePackages = [];
-
-		for (i = 0; i < preware.PackagesModel.packages.length; i += 1) {
-			pkg = preware.PackagesModel.packages[i];
-			if (pkg.isInstalled) {
-				if (this.availablePackages.indexOf(pkg) === -1) {
-					this.availablePackages.push(pkg);
-				}
-			}
-		}
-		this.sortPackageList();
-
-		this.$.PackageRepeater.setCount(this.availablePackages.length);
-		this.$.PackagePanels.setIndex(1);
-		this.showTypeAndCategoriesPanels(false);
-		this.setIndex(3);
-	},
-	showAvailableTypeList: function () {
-		this.currentPackageFilter = this.packageFilters.available;
-		this.$.TypePanels.setIndex(1);
-		this.$.CategoryPanels.setIndex(0);
-		this.$.PackagePanels.setIndex(0);
-		this.showTypeAndCategoriesPanels(true);
-		this.setIndex(1);
 	},
 	typeTapped: function (inSender) {
 		var i, pkg;
@@ -536,14 +441,11 @@ enyo.kind({
 
 		for (i = 0; i < preware.PackagesModel.packages.length; i += 1) {
 			pkg = preware.PackagesModel.packages[i];
-			if ((this.currentPackageFilter === this.packageFilters.available && pkg.isInstalled)
-					|| (this.currentPackageFilter === this.packageFilters.installed && !pkg.isInstalled)
-					|| (this.currentPackageFilter === this.packageFilters.updatable && !pkg.hasUpdate)) {
-				continue;
-			}
-			if (pkg.type === inSender.$.ItemTitle.content) {
-				if (this.availableCategories.indexOf(pkg.category) === -1) {
-					this.availableCategories.push(pkg.category);
+			if (this.$.packagesMenu.checkPackageStatus(pkg)) {
+				if (pkg.type === inSender.$.ItemTitle.content) {
+					if (this.availableCategories.indexOf(pkg.category) === -1) {
+						this.availableCategories.push(pkg.category);
+					}
 				}
 			}
 		}
@@ -556,28 +458,8 @@ enyo.kind({
 		this.setIndex(2);
 	},
 	categoryTapped: function (inSender) {
-		var i, pkg;
 		this.currentCategory = inSender.$.ItemTitle.content;
-		this.availablePackages = [];
-
-		for (i = 0; i < preware.PackagesModel.packages.length; i += 1) {
-			pkg = preware.PackagesModel.packages[i];
-			if ((this.currentPackageFilter === this.packageFilters.available && pkg.isInstalled)
-					|| (this.currentPackageFilter === this.packageFilters.installed && !pkg.isInstalled)
-					|| (this.currentPackageFilter === this.packageFilters.updatable && !pkg.hasUpdate)) {
-				continue;
-			}
-			if (pkg.type === this.currentType && pkg.category === this.currentCategory) {
-				if (this.availablePackages.indexOf(pkg) === -1) {
-					this.availablePackages.push(pkg);
-				}
-			}
-		}
-		this.sortPackageList();
-
-		this.$.PackageRepeater.setCount(this.availablePackages.length);
-		this.$.PackagePanels.setIndex(1);
-		this.setIndex(3);
+		this.$.packagesMenu.filterByCategoryAndType(this.currentCategory, this.currentType);
 	},
 	packageTapped: function (inSender) {
 		this.updateCurrentPackage(inSender.$.ItemTitle.content);
@@ -689,7 +571,7 @@ enyo.kind({
 		return true;
 	},
 	setupPackageItem: function (inSender, inEvent) {
-		var pkg = this.availablePackages[inEvent.index];
+		var pkg = this.$.packagesMenu.getPackage(inEvent.index);
 		if (pkg && pkg.title) {
 			inEvent.item.$.listItem.$.ItemTitle.setContent(pkg.title);
 			inEvent.item.$.listItem.$.ItemIcon.setSrc(pkg.icon);
