@@ -19,13 +19,14 @@ enyo.kind({
 		{kind: "CoreNavi", fingerTracking: true},
 		{name: "SettingsDialog", kind: "SettingsDialog"},
 		{name: "ManageFeedsDialog", kind: "ManageFeedsDialog"},
+		{name: "InstallPackageDialog", kind: "InstallPackageDialog"},
 		{
-			kind: "AppMenu", //onSelect: "appMenuItemSelected", 
+			kind: "AppMenu", //onSelect: "appMenuItemSelected",
 			components: [
-				//{ content:"Install Package", ontap: "showInstallDialog" },
-				{ content: $L("Preferences"), ontap: "showSettingsDialog" },
-				{ content: $L("Manage Feeds"), ontap: "showManageFeedsDialog" }
 				{ kind: "enyo.AppMenuItem", content: $L("Reload list"), ontap: "reloadPackageList"},
+				{ kind: "enyo.AppMenuItem", content: $L("Install Package"), ontap: "showInstallPackageDialog"},
+				{ kind: "enyo.AppMenuItem", content: $L("Preferences"), ontap: "showSettingsDialog" },
+				{ kind: "enyo.AppMenuItem", content: $L("Manage Feeds"), ontap: "showManageFeedsDialog" }
 			]
 		}
 	],
@@ -34,6 +35,7 @@ enyo.kind({
 		//hide possible open dialogs on back gesture?
 		this.$.SettingsDialog.hide();
 		this.$.ManageFeedsDialog.hide();
+		this.$.InstallPackageDialog.hide();
 		inEvent.preventDefault();
 	},
 	handleCoreNaviDragStart: function (inSender, inEvent) {
@@ -54,6 +56,9 @@ enyo.kind({
 	},
 	showManageFeedsDialog: function (inSender, inEvent) {
 		this.$.ManageFeedsDialog.show();
+	},
+	showInstallPackageDialog: function (inSender, inEvent) {
+		this.$.InstallPackageDialog.show();
 	},
 	//Utility Functions
 	reverseDrag: function (inEvent) {

@@ -4,15 +4,18 @@ enyo.depends(
 	//"Theme.less",	// uncomment this line, and follow the steps described in Theme.less
 	"$lib/webos-lib",
 	"$lib/webos-ports-lib",
+	"model",
 	"App.css",
 	"App.js",
 	"AppPanels.js",
 	"EmptyPanel.js",
 	"GrabberToolbar.js",
+	"InstallPackageDialog.js",
 	"ListItem.js",
 	"ManageFeedsDialog.js",
+	"PackageDisplay.js",
+	"PackagesMenu.js",
 	"SettingsDialog.js",
 	"Toast.js",
-	"UpdateFeeds.js",
-	"model"
+	"UpdateFeeds.js"
 );
