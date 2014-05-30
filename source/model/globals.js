@@ -3,12 +3,12 @@
 
 //TODO: move this somewhere more appropriate.
 String.prototype.include = function (pattern) {
-	return this.indexOf(pattern) > -1;
+    return this.indexOf(pattern) > -1;
 }
 
 enyo.singleton({
-	name: "preware.Globals",
-	published: {
-		appVersion: "0.2"
-	}
+    name: "preware.Globals",
+    published: {
+        appVersion: "0.2"
+    }
 });
