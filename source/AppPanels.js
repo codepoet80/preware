@@ -171,7 +171,6 @@ enyo.kind({
 							style: "background-image:url('assets/bg.png')",
 							touch: true,
 							fit: true,
-							ontap: "showPackage",
 							components: [
 								{name: "PackageRepeater", kind: "Repeater", onSetupItem: "setupPackageItem", count: 0, components: [
 									{kind: "ListItem", content: "Package", icon: true, ontap: "packageTapped"}
