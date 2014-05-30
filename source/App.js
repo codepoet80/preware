@@ -15,7 +15,7 @@ enyo.kind({
 			onCoreNaviDrag: "handleCoreNaviDrag",
 			onCoreNaviDragFinish: "handleCoreNaviDragFinish"
 		},
-		{name: "AppPanels", kind: "AppPanels", onSettings: "showSettingsDialog", onManageFeeds: "showManageFeedsDialog"},
+		{name: "AppPanels", kind: "AppPanels"},
 		{kind: "CoreNavi", fingerTracking: true},
 		{name: "SettingsDialog", kind: "SettingsDialog"},
 		{name: "ManageFeedsDialog", kind: "ManageFeedsDialog"},
@@ -25,6 +25,7 @@ enyo.kind({
 				//{ content:"Install Package", ontap: "showInstallDialog" },
 				{ content: $L("Preferences"), ontap: "showSettingsDialog" },
 				{ content: $L("Manage Feeds"), ontap: "showManageFeedsDialog" }
+				{ kind: "enyo.AppMenuItem", content: $L("Reload list"), ontap: "reloadPackageList"},
 			]
 		}
 	],
@@ -43,6 +44,9 @@ enyo.kind({
 	},
 	handleCoreNaviDragFinish: function (inSender, inEvent) {
 		this.$.AppPanels.dragfinishTransition(this.$.AppPanels.draggable === false ? this.reverseDrag(inEvent) : inEvent);
+	},
+	reloadPackageList: function (inSender, inEvent) {
+		this.$.AppPanels.doReloadList();
 	},
 	showSettingsDialog: function (inSender, inEvent) {
 		this.$.SettingsDialog.updateValues();

@@ -23,11 +23,6 @@ enyo.kind({
 	packagePanelsIndex: 3,
 	packageDisplayPanelsIndex: 4,
 
-	//used to propagate settings events, until we have some app menu.
-	events: {
-		onSettings: "",
-		onManageFeeds: ""
-	},
 	components: [
 		{
 			kind: "Signals",
@@ -217,7 +212,6 @@ enyo.kind({
 			UpdateFeeds.startUpdateFeeds();
 		}
 	},
-	reloadTapped: function (inSender, inEvent) {
 	handleBackGesture: function (inSender, inEvent) {
 		var index = this.getIndex();
 		if (!this.showingTypeAndCategoriesPanels && index === this.categoryPanelsIndex + 1) { //mind the gap.
@@ -227,6 +221,7 @@ enyo.kind({
 		}
 		inEvent.preventDefault();
 	},
+	doReloadList: function () {
 		UpdateFeeds.startUpdateFeeds(true);
 		this.$.ScrollerPanel.setIndex(0);
 	},
