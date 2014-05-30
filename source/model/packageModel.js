@@ -27,7 +27,7 @@ enyo.kind({
 
 
 	// initialize function which loads all the data from the info object
-	constructor: function (infoObj) {
+	constructor: function (info, infoObj) {
 		this.inherited(arguments);
 
 		try {
@@ -76,7 +76,7 @@ enyo.kind({
 			this.blacklisted =				false;
 
 			// load the info
-			this.infoLoad(infoObj);
+			this.infoLoad(info);
 
 			// check up on what we've loaded to make sure stuff thats needed isn't blank
 			if (!this.category || this.category === 'misc') {
