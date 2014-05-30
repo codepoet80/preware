@@ -264,6 +264,7 @@ enyo.singleton({
 		} catch (e) {
 			console.error('error in packagesModel#parsePackages: ' + e);
 		}
+		return curPkg;
 	},
 	
 	loadPackage: function (infoObj, url) {
