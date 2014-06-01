@@ -26,7 +26,7 @@
  */
 enyo.kind({
     name: "preware.FilePicker",
-    kind: "FittableRows",
+    classes: "enyo-fill",
     published: {
         num: 0,
         type: 'file',
@@ -36,6 +36,7 @@ enyo.kind({
         extensions: []
     },
     currentContent: [],
+    folderTree: [],
     events: {
         onListingDone: "", //inEvent will have results: [array of files], success: true / false, directory: string (orignal directory)
         onSelect: ""       //inEvent will have value: selected value, success: true / false
@@ -47,21 +48,42 @@ enyo.kind({
         extensionRegExp: new RegExp(/\.([^\.]+)$/)
     },
     components: [
-        {kind: "onyx.Toolbar", components: [
-            {style: "display: inline-block; position: absolute;", content: "Files"}
+        {kind: "onyx.Toolbar", style: "box-sizing: border-box;", components: [
+            {classes: "top-title", content: "Files"}
         ]},
         {
             kind: "Scroller",
             horizontal: "hidden",
             classes: "enyo-fill",
-            style: "background-image:url('assets/bg.png')",
+            style: "background-image:url('assets/bg.png');",
             touch: true,
-            fit: true,
             components: [
-                {name: "ContentRepeater", kind: "Repeater", onSetupItem: "setupContentItem", count: 0, components: [
+                {name: "ContentRepeater", kind: "enyo.Repeater", classes: "enyo-fill", onSetupItem: "setupContentItem", count: 0, components: [
                     {kind: "ListItem", content: "File", icon: true, ontap: "contentTapped"}
                 ]}
             ]
+        },
+        {
+            kind: "onyx.Toolbar",
+            classes: "bottom-toolbar",
+            style: "box-sizing: border-box;",
+            components: [
+                {name: "CancelButton", classes: "center", kind: "onyx.Button", content: "Cancel", ontap: "cancel"}
+            ]
+        },
+        {
+            kind: "onyx.Scrim",
+            name: "scrim",
+            classes: "onyx-scrim-translucent onyx-scrim enyo-fit",
+            style: "text-align: center;",
+            floating: true,
+            components: [
+                { kind: "onyx.Spinner", style: "margin: 20% auto;", name: "spinner" }
+            ]
+        },
+        {
+            kind: "Signals",
+            onbackbutton: "handleBackGesture"
         }
     ],
 
@@ -73,17 +95,28 @@ enyo.kind({
     },
 
     //handlers:
-    folderChanged: function () {
+    folderChanged: function (oldValue) {
+        if (this.folder.charAt(this.folder.length - 1) !== "/") {
+            this.folder += "/";
+        }
+
+        if (oldValue) {
+            this.folderTree.push(oldValue);
+        }
         this.getDirectory(this.folder);
     },
     contentTapped: function (inSender, inEvent) {
         var index = inEvent.index,
             item  = this.currentContent[index] || {};
-console.log("Tapped on: " + index + " = " + JSON.stringify(item));
         if (item.type === "directory") {
             this.setFolder(item.location);
+            if (item.name === "..") {
+                this.folderTree.pop(); //pop newly added child
+                this.folderTree.pop(); //pop now active parent
+            }
         } else {
-            this.doSelect({value: item.location, success: true});
+            item.success = true;
+            this.doSelect(item);
         }
     },
     setupContentItem: function (inSender, inEvent) {
@@ -97,14 +130,31 @@ console.log("Tapped on: " + index + " = " + JSON.stringify(item));
         }
         return true;
     },
+    handleBackGesture: function (inSender, inEvent) {
+        if (this.showing) { //don't process back handler if not showing
+            if (this.folderTree.length > 0) {
+                this.setFolder(this.folderTree.pop()); //pop parent
+                this.folderTree.pop(); //pop newly added child.
+            } else {
+                this.cancel();
+            }
+            return true;
+        }
+    },
 
     //auxillary functions:
     getDirectory: function (dir) {
+        if (this.hasNode()) {
+            this.$.scrim.showAtZIndex(130);
+            this.$.spinner.start();
+        }
         preware.IPKGService.getDirListing(this.parseDirectory.bind(this, dir), dir);
     },
     parseDirectory: function (dir, payload) {
-console.log("Got dir listing: " + dir + " = " + JSON.stringify(payload));
         var returnArray = [], c;
+        if (this.folderTree.length > 0) {
+            returnArray.push({name: "..", location: this.folderTree[this.folderTree.length - 1], type: "directory"});
+        }
         if (payload.contents.length > 0) {
             for (c = 0; c < payload.contents.length; c += 1) {
                 if (!payload.contents[c].name.match(preware.FilePicker.folderRegExp)
@@ -122,6 +172,12 @@ console.log("Got dir listing: " + dir + " = " + JSON.stringify(payload));
         if (returnArray.length > 0) {
             returnArray.sort(function (a, b) {
                 var strA, strB;
+                if (a.type === "directory" && b.type !== "directory") {
+                    return -1;
+                }
+                if (b.type === "directory" && a.type !== "directory") {
+                    return 1;
+                }
                 if (a.name && b.name) {
                     strA = a.name.toLowerCase();
                     strB = b.name.toLowerCase();
@@ -132,7 +188,9 @@ console.log("Got dir listing: " + dir + " = " + JSON.stringify(payload));
         }
 
         this.currentContent = returnArray;
-        this.$.ContentRepeater.setCount(returnArray.length);
+        this.$.ContentRepeater.setCount(this.currentContent.length);
+        this.$.scrim.hideAtZIndex(130);
+        this.$.spinner.stop();
 
         this.doListingDone({results: returnArray, directory: dir, success: true});
     },
@@ -171,19 +229,22 @@ console.log("Got dir listing: " + dir + " = " + JSON.stringify(payload));
 
         this.doListingDone({results: returnArray, directory: dir, success: true});
     },
-    ok: function (value) {
-        this.doSelect({value: value, success: true});
+    ok: function (item) {
+        item.success = true;
+        this.doSelect(item);
     },
     cancel: function () {
-        this.doSelect({value: false, success: false});
+        this.doSelect({success: false});
     },
     validExtension: function (name) {
-        var match;
+        var match, i;
         if (this.extensions.length > 0) {
             match = preware.FilePicker.extensionRegExp.exec(name);
             if (match && match.length > 1) {
-                if (this.extensions.include(match[1].toLowerCase())) {
-                    return true;
+                for (i = 0; i < this.extensions.length; i += 1) {
+                    if (this.extensions[i] === match[1].toLowerCase()) {
+                        return true;
+                    }
                 }
             }
             //no extension did match or no extension at all => false

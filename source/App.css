@@ -27,3 +27,35 @@
 .list-item.onyx-selected {
     background-color: MidnightBlue;
 }
+
+.center {
+    text-align: center;
+    margin: 0px auto;
+}
+
+.horizontal-buttons {
+    display: block;
+    margin: 1% auto;
+    min-width: 130px;
+    min-height: 30px;
+    border-radius: 5px;
+}
+
+.horizontal-groups {
+    width: 90%;
+    margin: 1% auto;
+    border-radius: 5px;
+    padding: 1%
+}
+
+.bottom-toolbar {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+
+.top-title {
+    display: inline-block;
+    text-align: center;
+    width: 100%;
+}

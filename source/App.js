@@ -35,7 +35,6 @@ enyo.kind({
         //hide possible open dialogs on back gesture?
         this.$.SettingsDialog.hide();
         this.$.ManageFeedsDialog.hide();
-        this.$.InstallPackageDialog.hide();
         inEvent.preventDefault();
     },
     handleCoreNaviDragStart: function (inSender, inEvent) {

@@ -7,8 +7,7 @@ enyo.kind({
     // Lags on old webkit
     //realtimeFit: true,
     arrangerKind: "CollapsingArranger",
-    classes: "app-panels",
-    style: "width: 100%; height: 100%;",
+    classes: "app-panels enyo-fill",
     // required ipkgservice
     ipkgServiceVersion: 14,
     // filtered category/package lists

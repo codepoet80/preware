@@ -14,79 +14,125 @@ enyo.kind({
     autoDismiss: false,
     scrim: true,
     scrimWhenModal: false,
+    ipkOperation: false,
     components: [
         {
-            kind: "enyo.Scroller",
+            kind: "enyo.Panels",
+            name: "Panels",
             realtimeFit: true,
-            classes: "enyo-fill",
+            classes: "enyo-fit enyo-fill",
+            draggable: false,
+            arrangerKind: "CardArranger",
             components: [
-                {
-                    kind: "enyo.Panels",
-                    name: "Panels",
-                    realtimeFit: true,
-                    classes: "enyo-fit",
-                    draggable: false,
-                    arrangerKind: "CardArranger",
+                {  //panel to select the IPK.
+                    name: "selectPanel",
+                    kind: "FittableRows",
+                    classes: "enyo-fill enyo-fit",
+                    style: "background-image:url('assets/bg.png'); border-radius: 8px;",
                     components: [
-                        {  //panel to select the IPK.
-                            name: "selectPanel",
+                        {kind: "onyx.Toolbar", components: [
+                            {classes: "top-title", content: "Fileselection"}
+                        ]},
+                        {
+                            kind: "onyx.Groupbox",
+                            classes: "horizontal-groups",
                             components: [
                                 {
-                                    kind: "onyx.Groupbox",
+                                    kind: "onyx.InputDecorator",
                                     components: [
-                                        {kind: "onyx.GroupboxHeader", content: $L("File selection")},
-                                        {
-                                            kind: "onyx.InputDecorator",
-                                            components: [
-                                                {kind: "onyx.Input", placeHolder: $L("http:// or file:// or ftp://"), name: "ipkEdit", style: "width: 200px;"}
-                                            ]
-                                        }
+                                        {kind: "onyx.Input", classes: "enyo-fill", style: "text-align: left;", placeholder: $L("http:// or file:// or ftp://"), name: "ipkEdit"}
                                     ]
-                                },
-                                { kind: "onyx.Button", style: "margin:5px;font-size:24px;", content: $L("Browse"), ontap: "browseFiles" },
-                                { kind: "onyx.Button", style: "margin:5px;font-size:24px;", content: $L("Get Info"), ontap: "getInfo" },
-                                { kind: "onyx.Button", style: "margin:5px;font-size:24px;", content: $L("Install"), ontap: "install" }
+                                }
                             ]
-                        }, //end of selectPanel.
+                        },
                         {
-                            name: "spinnerPanel",
+                            kind: "onyx.Groupbox",
+                            classes: "horizontal-groups",
                             components: [
-                                { kind: "onyx.Spinner"},
-                                { name: "message", style: "display: block; font-size: 14pt; height: 132px; margin-top: 8px;",
-                                    allowHtml: true, content: "Placeholder." }
+                                { kind: "onyx.Button", classes: "horizontal-buttons", content: $L("Browse"), ontap: "browseFiles" },
+                                { kind: "onyx.Button", classes: "horizontal-buttons", content: $L("Get Info"), ontap: "getInfo" },
+                                { kind: "onyx.Button", classes: "horizontal-buttons", content: $L("Install"), ontap: "install" }
                             ]
-                        }, //end pf spinnerPanel
-                        { //infoPanel shows package info
-                            name: "infoPanel",
+                        },
+                        {
+                            kind: "onyx.Toolbar",
+                            classes: "bottom-toolbar",
+                            components: [
+                                { kind: "onyx.Button", content: $L("Close"), ontap: "closePopup"}
+                            ]
+                        }
+                    ]
+                }, //end of selectPanel.
+                {
+                    name: "spinnerPanel",
+                    kind: "enyo.FittableRows",
+                    classes: "enyo-fill",
+                    style: "background-image:url('assets/bg.png'); border-radius: 8px;border-radius: 8px;",
+                    components: [
+                        { kind: "onyx.Spinner", style: "display: block; margin: 10% auto;" },
+                        {
+                            kind: "enyo.Scroller",
+                            classes: "enyo-fill center",
+                            components: [
+                                { name: "message", classes: "enyo-fill center", style: "display: block; font-size: 14pt; margin-top: 8px;",
+                                        allowHtml: true, content: "Placeholder." }
+                            ]
+                        },
+                        {
+                            kind: "onyx.Toolbar",
+                            classes: "bottom-toolbar",
+                            components: [
+                                { kind: "onyx.Button", name: "spinnerBackBtn", showing: "false", content: $L("Back"), ontap: "backFromSpinner"}
+                            ]
+                        }
+                    ]
+                }, //end pf spinnerPanel
+                { //infoPanel shows package info
+                    name: "infoPanel",
+                    kind: "FittableRows",
+                    style: "background-image:url('assets/bg.png'); border-radius: 8px;",
+                    components: [
+                        {
+                            kind: "enyo.Scroller",
+                            classes: "enyo-fill enyo-fit",
                             components: [
                                 {kind: "preware.PackageDisplay", name: "packageDisplay"}
                             ]
                         },
                         {
-                            name: "filePickerPanel",
-                            components: [
-                                {
-                                    kind: "preware.FilePicker",
-                                    name: "filePicker",
-                                    //fp options
-                                    type: "file",
-                                    root: preware.PrefCookie.get().browseFromRoot,
-                                    folder: "/media/internal",
-                                    extensions: ["ipk"],
-                                    onSelect: "handleSelect",
-                                    pop: false
-                                }
+                            kind: "onyx.Toolbar",
+                            comonents: [
+                                { kind: "onyx.Button", content: $L("Close"), ontap: "closePopup"}
                             ]
+                        }
+                    ]
+                },
+                {
+                    name: "filePickerPanel",
+                    classes: "enyo-fill enyo-fi",
+                    style: "border-radius: 8px;",
+                    components: [
+                        {
+                            kind: "preware.FilePicker",
+                            name: "filePicker",
+                            showing: false,
+                            //fp options
+                            type: "file",
+                            root: preware.PrefCookie.get().browseFromRoot,
+                            folder: "/media/internal",
+                            extensions: ["ipk"],
+                            onSelect: "handleSelect",
+                            pop: false
                         }
                     ]
                 }
             ]
-        },
-        { kind: "onyx.Button", style: "margin:5px;font-size:24px;", content: $L("Close"), ontap: "closePopup"},
+        }, //end of panels
 
         //non ui stuff:
         {
             kind: "Signals",
+            onbackbutton: "handleBackGesture",
             onBackendSimpleMessage: "installDone",
             onPackageProgressMessage: "statusMessage"
         }
@@ -100,17 +146,45 @@ enyo.kind({
     selectPanelIndex: 0,
     spinnerPanelIndex: 1,
     infoPanelIndex: 2,
-    filePickerPanel: 3,
+    filePickerPanelIndex: 3,
 
     create: function (inSender, inEvent) {
         this.inherited(arguments);
     },
     //handlers
+    handleBackGesture: function (inSender, inEvent) {
+        if (!this.getShowing() || this.$.filePickerPanel.getShowing()) {
+            return; //don't process back gesture if not visible.
+        }
+
+        var index = this.$.Panels.getIndex();
+        if (index === this.infoPanelIndex) {
+            this.$.Panels.setIndex(this.selectPanelIndex);
+        }
+        if (!this.ipkOperation && index === this.spinnerPanelIndex) {
+            this.$.Panels.setIndex(this.selectPanelIndex);
+        }
+
+        if (!this.ipkOperation && index === this.selectPanelIndex) {
+            this.hide();
+        }
+
+        inEvent.preventDefault();
+    },
+    backFromSpinner: function (inSender, inEvent) {
+        if (!this.ipkOperation) {
+            this.$.Panels.setIndex(this.selectPanelIndex);
+        }
+    },
     closePopup: function (inSender, inEvent) {
-        this.hide();
+        if (!this.ipkOperation) {
+            this.hide();
+        }
     },
     browseFiles: function (inSender, inEvent) {
-        this.$.Panels.setIndex("filePickerPanel");
+        this.$.Panels.setIndex(this.filePickerPanelIndex);
+        this.$.filePicker.show();
+        this.$.filePicker.folderChanged(); //reload directory.
     },
     getInfo: function (inSender, inEvent) {
         this.uri = this.$.ipkEdit.getValue();
@@ -120,6 +194,8 @@ enyo.kind({
         this.$.Panels.setIndex(this.spinnerPanelIndex);
         this.$.message.setContent("Getting infor for " + this.filename);
         this.originalMessage = "Getting infor for " + this.filename;
+        this.ipkOperation = true;
+        this.$.spinnerBackBtn.hide();
     },
     install: function (inSender, inEvent) {
         this.uri = this.$.ipkEdit.getValue();
@@ -132,7 +208,17 @@ enyo.kind({
         this.$.message.setContent("Installing " + packageId);
         this.originalMessage = "Installing " + packageId;
         packageModel.doInstall();
-
+        this.ipkOperation = true;
+        this.$.spinnerBackBtn.hide();
+    },
+    handleSelect: function (inSender, inEvent) {
+        if (!this.ipkOperation) {
+            this.$.filePicker.hide();
+            if (inEvent.success) {
+                this.$.ipkEdit.setValue("file://" + inEvent.location);
+            }
+            this.$.Panels.setIndex(this.selectPanelIndex);
+        }
     },
 
     //results:
@@ -164,7 +250,8 @@ enyo.kind({
     },
     installDone: function (inSender, inEvent) {
         this.$.message.setContent(this.originalMessage + "<br /><bold>Done:</bold> " + inEvent.message);
-        setTimeout(function () { this.$.Panels.setIndex(this.selectPanelIndex);  }.bind(this), 5000);
+        this.$.ipkOperation = false;
+        this.$.spinnerBackBtn.show();
     },
     statusMessage: function (inSender, inEvent) {
         this.$.message.setContent(this.originalMessage + "<br />" + inEvent.message);
