@@ -12,8 +12,6 @@ enyo.kind({
     ipkgServiceVersion: 14,
     // filtered category/package lists
     currentType: "",
-    availableCategories: [],
-    currentCategory: "",
     showingTypeAndCategoriesPanels: false,
 
     menuPanelsIndex: 0,
@@ -242,17 +240,32 @@ enyo.kind({
     //react to package selection in packagesMenu.
     packagesMenuSelected: function (inSender, inEvent) {
         this.showTypeAndCategoriesPanels(inEvent.showTypeAndCategoriesPanels);
-        if (inEvent.name === "available") {
+
+        if (inEvent.typesLength >= 0) {
+            this.$.TypeRepeater.setCount(0);
+            this.$.CategoryRepeater.setCount(0);
+            this.$.PackageRepeater.setCount(0);
+            this.$.TypeRepeater.setCount(inEvent.typesLength);
             this.$.TypePanels.setIndex(1);
             this.$.CategoryPanels.setIndex(0);
             this.$.PackagePanels.setIndex(0);
             this.setIndex(1);
-        } else {
-            if (inEvent.packagesLength >= 0) {
-                this.$.PackageRepeater.setCount(inEvent.packagesLength);
-                this.$.PackagePanels.setIndex(1);
-                this.setIndex(3);
-            }
+        }
+
+        if (inEvent.categoriesLength >= 0) {
+            this.$.PackageRepeater.setCount(0);
+            this.$.CategoryRepeater.setCount(0);
+            this.$.CategoryRepeater.setCount(inEvent.categoriesLength);
+            this.$.CategoryPanels.setIndex(1);
+            this.$.PackagePanels.setIndex(0);
+            this.setIndex(2);
+        }
+
+        if (inEvent.packagesLength >= 0) {
+            this.$.PackageRepeater.setCount(0);
+            this.$.PackageRepeater.setCount(inEvent.packagesLength);
+            this.$.PackagePanels.setIndex(1);
+            this.setIndex(3);
         }
     },
 
@@ -268,35 +281,15 @@ enyo.kind({
         this.$.CategoryPanels.setShowing(show);
         this.render();
     },
-    typeTapped: function (inSender) {
-        var i, pkg;
-        this.currentType = inSender.$.ItemTitle.content;
-        this.availableCategories = [];
-
-        for (i = 0; i < preware.PackagesModel.packages.length; i += 1) {
-            pkg = preware.PackagesModel.packages[i];
-            if (this.$.packagesMenu.checkPackageStatus(pkg)) {
-                if (pkg.type === inSender.$.ItemTitle.content) {
-                    if (this.availableCategories.indexOf(pkg.category) === -1) {
-                        this.availableCategories.push(pkg.category);
-                    }
-                }
-            }
-        }
-        this.availableCategories.sort();
-
-        this.$.CategoryRepeater.setCount(this.availableCategories.length);
-        this.$.CategoryPanels.setIndex(1);
-        this.$.PackagePanels.setIndex(0);
-        this.showTypeAndCategoriesPanels(true);
-        this.setIndex(2);
+    typeTapped: function (inSender, inEvent) {
+        this.currentType = this.$.packagesMenu.availableTypes[inEvent.index];
+        this.$.packagesMenu.filterCategories(this.currentType);
     },
-    categoryTapped: function (inSender) {
-        this.currentCategory = inSender.$.ItemTitle.content;
-        this.$.packagesMenu.filterByCategoryAndType(this.currentCategory, this.currentType);
+    categoryTapped: function (inSender, inEvent) {
+        this.$.packagesMenu.filterByCategoryAndType(this.$.packagesMenu.availableCategories[inEvent.index], this.currentType);
     },
-    packageTapped: function (inSender) {
-        this.$.packageDisplay.selectPackage(inSender.$.ItemTitle.content);
+    packageTapped: function (inSender, inEvent) {
+        this.$.packageDisplay.selectPackage(this.$.packagesMenu.getPackage(inEvent.index));
 
         this.$.PackageDisplayPanels.setIndex(1);
         this.setIndex(4);
@@ -337,17 +330,13 @@ enyo.kind({
         setTimeout(function () {
             storedThis.$.ScrollerPanel.setIndex(1);
         }, 500);
-
-        this.$.TypeRepeater.setCount(preware.PackagesModel.types.length);
-        this.$.CategoryRepeater.setCount(preware.PackagesModel.categories.length);
-        this.$.PackageRepeater.setCount(preware.PackagesModel.packages.length);
     },
     setupTypeItem: function (inSender, inEvent) {
-        inEvent.item.$.listItem.$.ItemTitle.setContent(preware.PackagesModel.types[inEvent.index]);
+        inEvent.item.$.listItem.$.ItemTitle.setContent(this.$.packagesMenu.availableTypes[inEvent.index]);
         return true;
     },
     setupCategoryItem: function (inSender, inEvent) {
-        inEvent.item.$.listItem.$.ItemTitle.setContent(this.availableCategories[inEvent.index]);
+        inEvent.item.$.listItem.$.ItemTitle.setContent(this.$.packagesMenu.availableCategories[inEvent.index]);
         return true;
     },
     setupPackageItem: function (inSender, inEvent) {
@@ -356,7 +345,6 @@ enyo.kind({
             inEvent.item.$.listItem.$.ItemTitle.setContent(pkg.title);
             inEvent.item.$.listItem.$.ItemIcon.setSrc(pkg.icon);
         }
-
         return true;
     }
 });

@@ -1,6 +1,10 @@
 /*global enyo, preware */
 /*jslint sloppy: true */
 
+//TODO: extract the package filtering logic into a "PackageFilter" singleton.
+// => best would be to use bindings to fill the repeaters
+// => connect this to the cookie-pref about installed <=> available apps, too.
+
 enyo.kind({
     name: "preware.PackagesMenu",
     kind: "Scroller",
@@ -23,7 +27,9 @@ enyo.kind({
 
     //public components
     published: {
-        availablePackages: []
+        availablePackages: [],
+        availableTypes: [],
+        availableCategories: []
     },
 
 
@@ -42,7 +48,7 @@ enyo.kind({
 
         for (i = 0; i < preware.PackagesModel.packages.length; i += 1) {
             pkg = preware.PackagesModel.packages[i];
-            if (pkg.hasUpdate) {
+            if (this.checkPackageStatus(pkg)) {
                 if (this.availablePackages.indexOf(pkg) === -1) {
                     this.availablePackages.push(pkg);
                 }
@@ -54,8 +60,20 @@ enyo.kind({
     },
     showAvailableTypeList: function () {
         this.currentPackageFilter = this.packageFilters.available;
+        this.availableTypes = [];
 
-        this.doSelected({name: "available", showTypeAndCategoriesPanels: true});
+        var i, pkg;
+        for (i = 0; i < preware.PackagesModel.packages.length; i += 1) {
+            pkg = preware.PackagesModel.packages[i];
+            if (this.checkPackageStatus(pkg)) {
+                if (this.availableTypes.indexOf(pkg.type) === -1) {
+                    this.availableTypes.push(pkg.type);
+                }
+            }
+        }
+        this.availableTypes.sort();
+
+        this.doSelected({name: "available", showTypeAndCategoriesPanels: true, typesLength: this.availableTypes.length});
     },
     showInstalledPackages: function () {
         var i, pkg;
@@ -64,7 +82,7 @@ enyo.kind({
 
         for (i = 0; i < preware.PackagesModel.packages.length; i += 1) {
             pkg = preware.PackagesModel.packages[i];
-            if (pkg.isInstalled) {
+            if (this.checkPackageStatus(pkg)) {
                 if (this.availablePackages.indexOf(pkg) === -1) {
                     this.availablePackages.push(pkg);
                 }
@@ -113,15 +131,41 @@ enyo.kind({
 
         this.doSelected({name: "filtered", showTypeAndCategoriesPanels: true, packagesLength: this.availablePackages.length});
     },
+    filterCategories: function (type) {
+        this.availableCategories = [];
+
+        var i, pkg;
+        for (i = 0; i < preware.PackagesModel.packages.length; i += 1) {
+            pkg = preware.PackagesModel.packages[i];
+            if (this.checkPackageStatus(pkg) && pkg.type === type) {
+                if (this.availableCategories.indexOf(pkg.category) === -1) {
+                    this.availableCategories.push(pkg.category);
+                }
+            }
+        }
+        this.availableCategories.sort();
+
+        this.doSelected({name: "filtered", showTypeAndCategoriesPanels: true, categoriesLength: this.availableCategories.length});
+    },
     checkPackageStatus: function (pkg) {
         if (!pkg) {
             return false;
         }
-        if ((this.currentPackageFilter === this.packageFilters.available && pkg.isInstalled)
-                    || (this.currentPackageFilter === this.packageFilters.installed && !pkg.isInstalled)
-                    || (this.currentPackageFilter === this.packageFilters.updatable && !pkg.hasUpdate)) {
-            return false; //package does not fit into filter.
+        if (this.currentPackageFilter === this.packageFilters.updatable) {
+            return pkg.hasUpdate;
         }
+        if (this.currentPackageFilter === this.packageFilters.installed) {
+            return pkg.isInstalled;
+        }
+
+        if (this.currentPackageFilter === this.packageFilters.available) {
+            if (preware.PrefCookie.get().listInstalled) { //include installed packages.
+                return true;
+            } else {
+                return !pkg.isInstalled; //return only not installed packages.
+            }
+        }
+
         return true; //everything is fine.
     },
     getPackage: function (index) {
