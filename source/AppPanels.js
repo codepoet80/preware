@@ -289,7 +289,7 @@ enyo.kind({
         this.$.packagesMenu.filterByCategoryAndType(this.$.packagesMenu.availableCategories[inEvent.index], this.currentType);
     },
     packageTapped: function (inSender, inEvent) {
-        this.$.packageDisplay.selectPackage(this.$.packagesMenu.getPackage(inEvent.index));
+        this.$.packageDisplay.setCurrentPackage(this.$.packagesMenu.getPackage(inEvent.index));
 
         this.$.PackageDisplayPanels.setIndex(1);
         this.setIndex(4);
