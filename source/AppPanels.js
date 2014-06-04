@@ -4,8 +4,6 @@
 enyo.kind({
     name: "AppPanels",
     kind: "Panels",
-    // Lags on old webkit
-    //realtimeFit: true,
     arrangerKind: "CollapsingArranger",
     classes: "app-panels enyo-fill",
     // required ipkgservice
@@ -249,7 +247,7 @@ enyo.kind({
             this.$.TypePanels.setIndex(1);
             this.$.CategoryPanels.setIndex(0);
             this.$.PackagePanels.setIndex(0);
-            this.setIndex(1);
+            this.setIndex(this.typePanelsIndex);
         }
 
         if (inEvent.categoriesLength >= 0) {
@@ -258,14 +256,14 @@ enyo.kind({
             this.$.CategoryRepeater.setCount(inEvent.categoriesLength);
             this.$.CategoryPanels.setIndex(1);
             this.$.PackagePanels.setIndex(0);
-            this.setIndex(2);
+            this.setIndex(this.categoryPanelsIndex);
         }
 
         if (inEvent.packagesLength >= 0) {
             this.$.PackageRepeater.setCount(0);
             this.$.PackageRepeater.setCount(inEvent.packagesLength);
             this.$.PackagePanels.setIndex(1);
-            this.setIndex(3);
+            this.setIndex(this.packagePanelsIndex);
         }
     },
 
@@ -292,7 +290,7 @@ enyo.kind({
         this.$.packageDisplay.setCurrentPackage(this.$.packagesMenu.getPackage(inEvent.index));
 
         this.$.PackageDisplayPanels.setIndex(1);
-        this.setIndex(4);
+        this.setIndex(this.packageDisplayPanelsIndex);
     },
     processStatusUpdate: function (inSender, inEvent) {
         this.log(inEvent.message);

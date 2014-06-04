@@ -6,7 +6,6 @@
 
 enyo.kind({
     name: "App",
-    //layoutKind: "FittableRowsLayout",
     components: [
         {
             kind: "Signals",
