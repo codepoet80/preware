@@ -371,8 +371,8 @@ enyo.kind({
             if (this.category === 'Unsorted') {
                 this.category =    pkg.category;
             }
-            if (!this.maintainer || this.maintainer.length === 0
-                        || (this.maintainer.length === 1 && this.maintainer[0].name === 'N/A')) {
+            if (!this.maintainer || this.maintainer.length === 0 ||
+                (this.maintainer.length === 1 && this.maintainer[0].name === 'N/A')) {
                 this.maintainer = pkg.maintainer;
             }
             this.date = this.date || isNumeric(pkg.date) ? pkg.date : undefined;
@@ -568,9 +568,9 @@ enyo.kind({
                         this.icon = '../' + this.pkg + '/icon.png';
                     }
                 }
-                if ((!this.maintainer || this.maintainer.length === 0
-                                    || (this.maintainer.length === 1 && this.maintainer[0].name === 'N/A'))
-                             && appInfo.vendor) {
+                if ((!this.maintainer || this.maintainer.length === 0 ||
+                     (this.maintainer.length === 1 && this.maintainer[0].name === 'N/A')) &&
+                    appInfo.vendor) {
                     this.maintainer = [{name: appInfo.vendor, url: false}];
                 }
             }
@@ -812,11 +812,11 @@ enyo.kind({
         }
 
         // push packages that meet the listing
-        if ((item.pkgList === 'all')
-                         || (item.pkgList === 'other'
-                                     && this.type !== 'Application'
-                                     && this.type !== 'Theme'
-                                     && this.type !== 'Patch')) {
+        if ((item.pkgList === 'all') ||
+                (item.pkgList === 'other' &&
+                 this.type !== 'Application' &&
+                 this.type !== 'Theme' &&
+                 this.type !== 'Patch')) {
             matchIt = true;
             // if is installed and installed is not to be shown, dont push it
             if (this.isInstalled && !preware.PrefCookie.get().listInstalled) {
@@ -834,8 +834,8 @@ enyo.kind({
             matchIt = true;
         } else if (item.pkgList === 'installed' && this.isInstalled) {
             matchIt = true;
-        } else if (item.pkgList === 'saved' && this.isInSavedList
-                                     && (!this.appCatalog || preware.PrefCookie.get().useTuckerbox)) {
+        } else if (item.pkgList === 'saved' && this.isInSavedList &&
+                   (!this.appCatalog || preware.PrefCookie.get().useTuckerbox)) {
             matchIt = true;
         }
 
