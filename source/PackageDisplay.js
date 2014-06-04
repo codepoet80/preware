@@ -25,15 +25,15 @@ enyo.kind({
         },
         {
             kind: "Scroller",
-            style: "position: absolute; top: 54px; bottom: 54px;",
             classes: "enyo-fill",
             horizontal: "hidden",
             touch: true,
+            fit: true,
             ontap: "showPackage",
             components: [
                 {
                     style: "padding: 15px;",
-                    classes: "width: 80%; margin: 0 auto",
+                    classes: "height: 100%; width: 80%; margin: 0 auto",
                     components: [
                         {
                             kind: "onyx.Groupbox",
