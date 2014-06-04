@@ -26,12 +26,14 @@ enyo.kind({
         {
             kind: "Scroller",
             style: "position: absolute; top: 54px; bottom: 54px;",
+            classes: "enyo-fill",
             horizontal: "hidden",
             touch: true,
             ontap: "showPackage",
             components: [
                 {
                     style: "padding: 15px;",
+                    classes: "width: 80%; margin: 0 auto",
                     components: [
                         {
                             kind: "onyx.Groupbox",
@@ -217,6 +219,9 @@ enyo.kind({
     },
     hideActionMessage: function () {
         this.$.ActionMessage.animateToMax();
+    },
+    currentPackageChanged: function () {
+        this.refreshPackageDisplay();
     },
 
     //public functions:
