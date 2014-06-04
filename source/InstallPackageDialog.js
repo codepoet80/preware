@@ -201,7 +201,7 @@ enyo.kind({
         this.uri = this.$.ipkEdit.getValue();
         this.filename = this.$.filePicker.getFileName(this.uri);
         var packageId = this.filename.split("_", 1)[0],
-            packageModel = new preware.PackageModel({type: 'Package', pkg: packageId, title: packageId, filename: this.filename, location: this.uri});
+            packageModel = new preware.PackageModel("", {type: 'Package', pkg: packageId, title: packageId, filename: this.filename, location: this.uri});
         console.log("PackageId: " + packageId);
 
         this.$.Panels.setIndex(this.spinnerPanelIndex);
@@ -250,7 +250,7 @@ enyo.kind({
     },
     installDone: function (inSender, inEvent) {
         this.$.message.setContent(this.originalMessage + "<br /><bold>Done:</bold> " + inEvent.message);
-        this.$.ipkOperation = false;
+        this.ipkOperation = false;
         this.$.spinnerBackBtn.show();
     },
     statusMessage: function (inSender, inEvent) {
