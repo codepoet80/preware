@@ -26,7 +26,7 @@
  */
 enyo.kind({
     name: "preware.FilePicker",
-    classes: "enyo-fill",
+    classes: "enyo-fill enyo-fit",
     published: {
         num: 0,
         type: 'file',
@@ -58,15 +58,14 @@ enyo.kind({
             style: "background-image:url('assets/bg.png');",
             touch: true,
             components: [
-                {name: "ContentRepeater", kind: "enyo.Repeater", classes: "enyo-fill", onSetupItem: "setupContentItem", count: 0, components: [
+                {name: "ContentRepeater", kind: "enyo.Repeater", style: "width: 100%; height: 100%", onSetupItem: "setupContentItem", count: 0, components: [
                     {kind: "ListItem", content: "File", icon: true, ontap: "contentTapped"}
                 ]}
             ]
         },
         {
             kind: "onyx.Toolbar",
-            classes: "bottom-toolbar",
-            style: "box-sizing: border-box;",
+            style: "box-sizing: border-box; width: 100%;",
             components: [
                 {name: "CancelButton", classes: "center", kind: "onyx.Button", content: "Cancel", ontap: "cancel"}
             ]

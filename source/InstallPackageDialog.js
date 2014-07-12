@@ -109,8 +109,7 @@ enyo.kind({
                 },
                 {
                     name: "filePickerPanel",
-                    classes: "enyo-fill enyo-fi",
-                    style: "border-radius: 8px;",
+                    style: "border-radius: 8px; height: 85% !important; width: 100%;",
                     components: [
                         {
                             kind: "preware.FilePicker",

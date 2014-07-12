@@ -26,14 +26,14 @@ enyo.kind({
         {
             kind: "Scroller",
             classes: "enyo-fill",
+            style: "padding: 10px;",
             horizontal: "hidden",
             touch: true,
             fit: true,
-            ontap: "showPackage",
             components: [
                 {
-                    style: "padding: 15px;",
-                    classes: "height: 100%; width: 80%; margin: 0 auto",
+                    style: "padding: 0px 0px 70px 0px; height: 100%; width: 80%; margin: 0px auto; display: block;",
+                    fit: true,
                     components: [
                         {
                             kind: "onyx.Groupbox",
@@ -145,7 +145,8 @@ enyo.kind({
         },
         {
             kind: "GrabberToolbar",
-            style: "position: absolute; bottom: 0; width: 100%;",
+            //style: "position: absolute; bottom: 0; width: 100%;",
+            style: "position: relative;",
             components: [
                 {name: "InstallButton", kind: "onyx.Button", content: "Install", ontap: "installTapped"},
                 {name: "UpdateButton", kind: "onyx.Button", content: "Update", ontap: "updateTapped"},
