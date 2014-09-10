@@ -21,6 +21,7 @@ enyo.kind({
         {name: "InstallPackageDialog", kind: "InstallPackageDialog"},
         {
             kind: "AppMenu", //onSelect: "appMenuItemSelected",
+            style: "overflow: hidden;",
             components: [
                 { kind: "enyo.AppMenuItem", content: $L("Reload list"), ontap: "reloadPackageList"},
                 { kind: "enyo.AppMenuItem", content: $L("Install Package"), ontap: "showInstallPackageDialog"},

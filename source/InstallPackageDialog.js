@@ -1,12 +1,11 @@
 /*jslint sloppy: true */
-/*global enyo, preware, $L, console */
+/*global enyo, preware, $L, console, setTimeout */
 //shows a dialog that allows the user to select an IPK for install.
 
 enyo.kind({
     name: "InstallPackageDialog",
-    classes: "enyo-popup",
-    //TODO: someone with more design skills than me should optimize that... :(
-    style: "padding: 30px; width: 90%; height: 90%;",
+    classes: "enyo-popup enyo-fill",
+    style: "padding: 0",
     kind: "onyx.Popup",
     centered: true,
     modal: true,
@@ -66,7 +65,7 @@ enyo.kind({
                 {
                     name: "spinnerPanel",
                     kind: "enyo.FittableRows",
-                    classes: "enyo-fill",
+                    classes: "enyo-fill enyo-fit",
                     style: "background-image:url('assets/bg.png'); border-radius: 8px;border-radius: 8px;",
                     components: [
                         { kind: "onyx.Spinner", style: "display: block; margin: 10% auto;" },
@@ -74,7 +73,7 @@ enyo.kind({
                             kind: "enyo.Scroller",
                             classes: "enyo-fill center",
                             components: [
-                                { name: "message", classes: "enyo-fill center", style: "display: block; font-size: 14pt; margin-top: 8px;",
+                                { name: "message", classes: "enyo-fill center", style: "display: block; font-size: 14pt; margin-top: 8px; width: 80%; max-width: 500px;",
                                         allowHtml: true, content: "Placeholder." }
                             ]
                         },
@@ -109,7 +108,8 @@ enyo.kind({
                 },
                 {
                     name: "filePickerPanel",
-                    style: "border-radius: 8px; height: 85% !important; width: 100%;",
+                    //style: "border-radius: 8px; height: 85% !important; width: 100%;",
+                    classes: "enyo-fill",
                     components: [
                         {
                             kind: "preware.FilePicker",
@@ -232,6 +232,7 @@ enyo.kind({
                 infoObj.filename = this.filename;
                 infoObj.location = this.uri;
                 pkgModel = new preware.PackageModel(infoObj);
+                this.ipkOperation = false;
                 if (pkgModel) {
                     this.$.packageDisplay.setCurrentPackage(pkgModel);
                     //this.$.packageDisplay.refreshPackageDisplay();
@@ -243,6 +244,7 @@ enyo.kind({
                 this.$.message.setContent(this.originalMessage + "<br />" + payload.status);
             } else if (payload.stage === "failed") {
                 this.$.message.setContent("Error: " + payload.errorText);
+                this.ipkOperation = false;
                 setTimeout(function () { this.$.Panels.setIndex(this.selectPanelIndex);  }.bind(this), 2000);
             }
         }

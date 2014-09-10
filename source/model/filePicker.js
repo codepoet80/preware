@@ -27,6 +27,8 @@
 enyo.kind({
     name: "preware.FilePicker",
     classes: "enyo-fill enyo-fit",
+    kind: "FittableRows",
+    fit: true,
     published: {
         num: 0,
         type: 'file',
@@ -54,11 +56,12 @@ enyo.kind({
         {
             kind: "Scroller",
             horizontal: "hidden",
-            classes: "enyo-fill",
-            style: "background-image:url('assets/bg.png');",
+            classes: "enyo-fill enyo-fit",
+            style: "background-image:url('assets/bg.png'); position: relative;",
             touch: true,
+            fit: true,
             components: [
-                {name: "ContentRepeater", kind: "enyo.Repeater", style: "width: 100%; height: 100%", onSetupItem: "setupContentItem", count: 0, components: [
+                {name: "ContentRepeater", kind: "enyo.Repeater", classes: "enyo-fill enyo-fit", fit: true, onSetupItem: "setupContentItem", count: 0, components: [
                     {kind: "ListItem", content: "File", icon: true, ontap: "contentTapped"}
                 ]}
             ]
