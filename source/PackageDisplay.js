@@ -260,9 +260,25 @@ enyo.kind({
         this.$.PackageCategory.setContent(this.currentPackage.category);
         this.$.PackageFeed.setContent(this.currentPackage.feedString);
 
-        this.$.InstallButton.setDisabled(this.currentPackage.isInstalled);
-        this.$.UpdateButton.setDisabled(!this.currentPackage.isInstalled || !this.currentPackage.hasUpdate);
-        this.$.RemoveButton.setDisabled(!this.currentPackage.isInstalled);
-        this.$.LaunchButton.setDisabled(!this.currentPackage.isInstalled);
+		this.buttonManger();
+       // this.$.InstallButton.setDisabled(this.currentPackage.isInstalled);
+       // this.$.UpdateButton.setDisabled(!this.currentPackage.isInstalled || !this.currentPackage.hasUpdate);
+       // this.$.RemoveButton.setDisabled(!this.currentPackage.isInstalled);
+       // this.$.LaunchButton.setDisabled(!this.currentPackage.isInstalled);
+    },
+    
+    buttonManger: function(is) {
+    	if ( this.currentPackage.isInstalled === true){
+    		//this.$.InstallButton.setDisabled(this.currentPackage.isInstalled);
+       		this.$.UpdateButton.setDisabled(!this.currentPackage.isInstalled || !this.currentPackage.hasUpdate);
+       		this.$.RemoveButton.show();
+			this.$.LaunchButton.show();
+    	}else{
+    		this.$.InstallButton.show();
+    		this.$.UpdateButton.setDisabled(!this.currentPackage.isInstalled || !this.currentPackage.hasUpdate);
+    		this.$.RemoveButton.hide();
+			this.$.LaunchButton.hide();
+    	}
+    	return;
     }
 });
