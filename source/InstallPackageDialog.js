@@ -232,6 +232,7 @@ enyo.kind({
                 infoObj.filename = this.filename;
                 infoObj.location = this.uri;
                 pkgModel = new preware.PackageModel(infoObj);
+                this.ipkOperation = false;
                 if (pkgModel) {
                     this.$.packageDisplay.setCurrentPackage(pkgModel);
                     //this.$.packageDisplay.refreshPackageDisplay();
@@ -243,6 +244,7 @@ enyo.kind({
                 this.$.message.setContent(this.originalMessage + "<br />" + payload.status);
             } else if (payload.stage === "failed") {
                 this.$.message.setContent("Error: " + payload.errorText);
+                this.ipkOperation = false;
                 setTimeout(function () { this.$.Panels.setIndex(this.selectPanelIndex);  }.bind(this), 2000);
             }
         }
