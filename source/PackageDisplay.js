@@ -261,10 +261,6 @@ enyo.kind({
         this.$.PackageFeed.setContent(this.currentPackage.feedString);
 
 		this.buttonManger();
-     //   this.$.InstallButton.setDisabled(this.currentPackage.isInstalled);
-    //   this.$.UpdateButton.setDisabled(!this.currentPackage.isInstalled || !this.currentPackage.hasUpdate);
-     //   this.$.RemoveButton.setDisabled(!this.currentPackage.isInstalled);
-     //   this.$.LaunchButton.setDisabled(!this.currentPackage.isInstalled);
     },
     
     buttonManger: function() {
@@ -283,6 +279,5 @@ enyo.kind({
     	if(this.currentPackage.hasUpdate){
     		this.$.UpdateButton.show();
     	}
-    
     }
 });
