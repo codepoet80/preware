@@ -148,10 +148,10 @@ enyo.kind({
             //style: "position: absolute; bottom: 0; width: 100%;",
             style: "position: relative;",
             components: [
-                {name: "InstallButton", kind: "onyx.Button", content: "Install", ontap: "installTapped"},
-                {name: "UpdateButton", kind: "onyx.Button", content: "Update", ontap: "updateTapped"},
-                {name: "RemoveButton", kind: "onyx.Button", content: "Remove", ontap: "removeTapped"},
-                {name: "LaunchButton", kind: "onyx.Button", content: "Launch", ontap: "launchTapped"}
+                {name: "InstallButton", kind: "onyx.Button", showing: false, content: "Install", ontap: "installTapped"},
+                {name: "UpdateButton", kind: "onyx.Button", showing: false, content: "Update", ontap: "updateTapped"},
+                {name: "RemoveButton", kind: "onyx.Button", showing: false, content: "Remove", ontap: "removeTapped"},
+                {name: "LaunchButton", kind: "onyx.Button", showing: false, content: "Launch", ontap: "launchTapped"}
             ]
         }
     ],
@@ -261,24 +261,28 @@ enyo.kind({
         this.$.PackageFeed.setContent(this.currentPackage.feedString);
 
 		this.buttonManger();
-       // this.$.InstallButton.setDisabled(this.currentPackage.isInstalled);
-       // this.$.UpdateButton.setDisabled(!this.currentPackage.isInstalled || !this.currentPackage.hasUpdate);
-       // this.$.RemoveButton.setDisabled(!this.currentPackage.isInstalled);
-       // this.$.LaunchButton.setDisabled(!this.currentPackage.isInstalled);
+     //   this.$.InstallButton.setDisabled(this.currentPackage.isInstalled);
+    //   this.$.UpdateButton.setDisabled(!this.currentPackage.isInstalled || !this.currentPackage.hasUpdate);
+     //   this.$.RemoveButton.setDisabled(!this.currentPackage.isInstalled);
+     //   this.$.LaunchButton.setDisabled(!this.currentPackage.isInstalled);
     },
     
-    buttonManger: function(is) {
+    buttonManger: function() {
     	if ( this.currentPackage.isInstalled === true){
-    		//this.$.InstallButton.setDisabled(this.currentPackage.isInstalled);
-       		this.$.UpdateButton.setDisabled(!this.currentPackage.isInstalled || !this.currentPackage.hasUpdate);
+    		this.$.InstallButton.hide();
+    		this.$.UpdateButton.hide();
        		this.$.RemoveButton.show();
 			this.$.LaunchButton.show();
     	}else{
     		this.$.InstallButton.show();
-    		this.$.UpdateButton.setDisabled(!this.currentPackage.isInstalled || !this.currentPackage.hasUpdate);
+    		this.$.UpdateButton.hide();
     		this.$.RemoveButton.hide();
 			this.$.LaunchButton.hide();
     	}
-    	return;
+    	
+    	if(this.currentPackage.hasUpdate){
+    		this.$.UpdateButton.show();
+    	}
+    
     }
 });
