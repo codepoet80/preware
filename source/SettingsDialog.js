@@ -8,7 +8,7 @@ enyo.kind({
     name: "SettingsDialog",
     classes: "enyo-popup",
     //TODO: someone with more design skills than me should optimize that... :(
-    style: "padding: 30px; width: 90%; height: 90%;",
+    style: "padding: 15px; width: 90%; height: 90%;",
     kind: "onyx.Popup",
     //kind: "enyo.Control",
     centered: true,
@@ -19,42 +19,46 @@ enyo.kind({
     scrimWhenModal: false,
     components: [
         {kind: "enyo.Scroller", components: [
-            {kind: "onyx.Groupbox", components: [
-                {kind: "onyx.GroupboxHeader", content: $L("Startup")},
-                {kind: "enyo.FittableColumns", components: [
-                    {tag: "div", content: $L("Update Feeds"), fit: true},
-                    {kind: "onyx.PickerDecorator", onSelect: "updatePolicySelected", components: [
-                        {},
-                        {kind: "onyx.Picker", name: "updatePolicyPicker", style: "width: 200px;", components: [
-                            {content: $L("Every Launch"), value: "launch", active: true},
-                            {content: $L("Once Daily"), value: "daily"},
-                            {content: $L("Manually Only"), value: "manual"},
-                            {content: $L("Ask At Launch"), value: "ask"}
-                        ]}
-                    ]}
-                ]},
-                {kind: "enyo.FittableColumns", components: [
-                    {tag: "div", content: $L("Last Update"), fit: true},
-                    {king: "enyo.Control", tag: "div", name: "lastUpdateField", content: $L("Never") }
-                ]},
-                {kind: "enyo.FittableColumns", components: [
-                    {tag: "div", content: $L("Scan unknown packages"), fit: true},
-                    {kind: "onyx.ToggleButton", name: "scanUnknownToggle", onChange: "scanUnknownChanged"}
-                ]},
-                {kind: "enyo.FittableColumns", components: [
-                    {tag: "div", content: $L("Check .ipk association"), fit: true},
-                    {kind: "onyx.ToggleButton", name: "checkIPKAssociationToggle", onChange: "checkIPKAssociationChanged"}
+            {tag: "div", classes: "webosstyle-groupbox", components: [
+                {tag: "div", classes: "webosstyle-groupbox-header", content: $L("Startup")},
+                {tag: "div", classes: "webosstyle-groupbox-body", style: "width: 100%", components:[
+					{kind: "enyo.FittableColumns", noStretch: true, classes: "settings-item", components: [
+						{tag: "span", classes: "settings-title-picker", content: $L("Update Feeds"), fit: true},
+						{kind: "onyx.PickerDecorator", onSelect: "updatePolicySelected", components: [
+							{},
+							{kind: "onyx.Picker", name: "updatePolicyPicker", style: "width: 200px;", components: [
+								{content: $L("Every Launch"), value: "launch", active: true},
+								{content: $L("Once Daily"), value: "daily"},
+								{content: $L("Manually Only"), value: "manual"},
+								{content: $L("Ask At Launch"), value: "ask"}
+							]}
+						]}
+					]},
+					{kind: "enyo.FittableColumns", noStretch: true, classes: "settings-item", components: [
+						{tag: "span", content: $L("Last Update"), fit: true},
+						{kind: "enyo.Control", tag: "div", name: "lastUpdateField", content: $L("Never") }
+					]},
+					{kind: "enyo.FittableColumns", noStretch: true, classes: "settings-item", components: [
+						{tag: "span", classes: "settings-title-toggle", content: $L("Scan unknown packages"), fit: true},
+						{kind: "onyx.ToggleButton", name: "scanUnknownToggle", onChange: "scanUnknownChanged"}
+					]},
+					{kind: "enyo.FittableColumns", noStretch: true, classes: "settings-item", components: [
+						{tag: "span", classes: "settings-title-toggle", content: $L("Check .ipk association"), fit: true},
+						{kind: "onyx.ToggleButton", name: "checkIPKAssociationToggle", onChange: "checkIPKAssociationChanged"}
+					]}
                 ]}
             ]}, //end of startup group
-            {kind: "onyx.Groupbox", components: [
-                {kind: "onyx.GroupboxHeader", content: $L("Actions")},
-                {kind: "enyo.FittableColumns", components: [
-                    {tag: "div", content: $L("Use App Tuckerbox"), fit: true},
-                    {kind: "onyx.ToggleButton", name: "useTuckerboxToggle", onChange: "useTuckerboxChanged"}
-                ]},
-                {kind: "enyo.FittableColumns", components: [
-                    {tag: "div", content: $L("Ignore device compat."), fit: true},
-                    {kind: "onyx.ToggleButton", name: "ignoreDeviceCompatToggle", onChange: "ignoreDeviceCompatChanged"}
+            {tag: "div", classes: "webosstyle-groupbox", components: [
+                {tag: "div", classes: "webosstyle-groupbox-header", content: $L("Actions")},
+                {tag: "div", classes: "webosstyle-groupbox-body", style: "width: 100%", components:[
+					{kind: "enyo.FittableColumns", noStretch: true, classes: "settings-item", components: [
+						{tag: "span", classes: "settings-title-toggle", content: $L("Use App Tuckerbox"), fit: true},
+						{kind: "onyx.ToggleButton", name: "useTuckerboxToggle", onChange: "useTuckerboxChanged"}
+					]},
+					{kind: "enyo.FittableColumns", noStretch: true, classes: "settings-item", components: [
+						{tag: "span", classes: "settings-title-toggle", content: $L("Ignore device compat."), fit: true},
+						{kind: "onyx.ToggleButton", name: "ignoreDeviceCompatToggle", onChange: "ignoreDeviceCompatChanged"}
+					]}
                 ]}
             ]}, //end of action group
             // we don't really do that on the 'main scene'. Maybe we will never.
@@ -65,31 +69,35 @@ enyo.kind({
                     // {kind:"onyx.togglebutton", onchange: "showavailabletypeschanged"}
                 // ]}
             // ]}, //end of main scene group
-            {kind: "onyx.Groupbox", components: [
-                {kind: "onyx.GroupboxHeader", content: $L("Package display")}, //formerly list scene
-                {kind: "enyo.FittableColumns", components: [
-                    {tag: "div", content: $L("Search Descriptions"), fit: true},
-                    {kind: "onyx.ToggleButton", name: "searchDescriptionsToggle", onChange: "searchDescriptionsChanged"}
-                ]},
-                {kind: "enyo.FittableColumns", components: [
-                    {tag: "div", content: $L("Default sort"), fit: true},
-                    {kind: "onyx.PickerDecorator", onSelect: "sortPolicySelected", components: [
-                        {},
-                        {kind: "onyx.Picker", name: "sortPolicyPicker", style: "width: 200px;", components: [
-                            {content: $L("Category Default"), value: 'default', active: true},
-                            {content: $L("Alphabetically"), value: 'alpha'},
-                            {content: $L("Last Updated"), value: 'date'},
-                            {content: $L("Price"), value: 'price'}
-                        ]}
-                    ]}
-                ]},
-                //we don't have a second row, right? Omitted that config.
-                {kind: "enyo.FittableColumns", components: [
-                    {tag: "div", content: $L("Installed is available"), fit: true},
-                    {kind: "onyx.ToggleButton", name: "installedIsAvailableToggle", onChange: "installIsAvailableChanged"}
+            {tag: "div", classes: "webosstyle-groupbox", components: [
+                {tag: "div", classes: "webosstyle-groupbox-header", content: $L("Package display")}, //formerly list scene
+                {tag: "div", classes: "webosstyle-groupbox-body", style: "width: 100%", components:[
+					{kind: "enyo.FittableColumns", noStretch: true, classes: "settings-item", components: [
+						{tag: "span", classes: "settings-title-toggle", content: $L("Search Descriptions"), fit: true},
+						{kind: "onyx.ToggleButton", name: "searchDescriptionsToggle", onChange: "searchDescriptionsChanged"}
+					]},
+					{kind: "enyo.FittableColumns", noStretch: true, classes: "settings-item", components: [
+						{tag: "span", classes: "settings-title-picker", content: $L("Default sort"), fit: true},
+						{kind: "onyx.PickerDecorator", onSelect: "sortPolicySelected", components: [
+							{},
+							{kind: "onyx.Picker", name: "sortPolicyPicker", style: "width: 200px;", components: [
+								{content: $L("Category Default"), value: 'default', active: true},
+								{content: $L("Alphabetically"), value: 'alpha'},
+								{content: $L("Last Updated"), value: 'date'},
+								{content: $L("Price"), value: 'price'}
+							]}
+						]}
+					]},
+					//we don't have a second row, right? Omitted that config.
+					{kind: "enyo.FittableColumns", noStretch: true, classes: "settings-item", components: [
+						{tag: "span", classes: "settings-title-toggle", content: $L("Installed is available"), fit: true},
+						{kind: "onyx.ToggleButton", name: "installedIsAvailableToggle", onChange: "installIsAvailableChanged"}
+					]}
                 ]}
             ]}, //end of list scene group
-            {kind: "onyx.Button", style: "margin:5px;font-size:24px;float:center;", content: $L("Close"), ontap: "closePopup"}
+            {tag: "div", style:"width: 100%; text-align: center", components: [
+            	{kind: "onyx.Button", classes: "onyx-affirmative", style: "margin:5px; width: 18%; min-width: 100px; font-size: 18px;", content: $L("Close"), ontap: "closePopup"}
+            ]}
         ]}
     ],
     create: function (inSender, inEvent) {
