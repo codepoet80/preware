@@ -193,6 +193,7 @@ enyo.kind({
         this.$.ContentRepeater.setCount(this.currentContent.length);
         this.$.scrim.hideAtZIndex(130);
         this.$.spinner.stop();
+        this.reflow();
 
         this.doListingDone({results: returnArray, directory: dir, success: true});
     },
