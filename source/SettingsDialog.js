@@ -18,7 +18,7 @@ enyo.kind({
     scrim: true,
     scrimWhenModal: false,
     components: [
-        {name: "SettingsScroller", kind: "enyo.Scroller", components: [
+        {name: "SettingsScroller", kind: "enyo.Scroller", style: "width: 100%;", components: [
             {tag: "div", classes: "webosstyle-groupbox", components: [
                 {tag: "div", classes: "webosstyle-groupbox-header", content: $L("Startup")},
                 {tag: "div", classes: "webosstyle-groupbox-body", style: "width: 100%", components:[
@@ -104,7 +104,7 @@ enyo.kind({
         this.inherited(arguments);
         this.updateValues();
     },
-    show: function(sharingOptions){	
+    resizeHandler: function(){	
     	//Calculate scroller height - if we don't explicitly set the scroller height, it will overflow the dialog
 		var windowHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);   	
     	var dialogHeightPC = this.domStyles.height.replace('%', '') / 100;
@@ -112,7 +112,7 @@ enyo.kind({
 		
 		var scrollerHeight = Math.round(windowHeight * dialogHeightPC) - (dialogPadding * 2);
 		
-    	this.$.SettingsScroller.setStyle("width: 100%; height: " + scrollerHeight + "px");
+    	this.$.SettingsScroller.applyStyle("height", scrollerHeight + "px");
 
 		this.inherited(arguments);
 	},
