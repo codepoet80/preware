@@ -18,7 +18,7 @@ enyo.kind({
     scrim: true,
     scrimWhenModal: false,
     components: [
-        {kind: "enyo.Scroller", components: [
+        {name: "SettingsScroller", kind: "enyo.Scroller", style: "width: 100%;", components: [
             {tag: "div", classes: "webosstyle-groupbox", components: [
                 {tag: "div", classes: "webosstyle-groupbox-header", content: $L("Startup")},
                 {tag: "div", classes: "webosstyle-groupbox-body", style: "width: 100%", components:[
@@ -94,16 +94,28 @@ enyo.kind({
 						{kind: "onyx.ToggleButton", name: "installedIsAvailableToggle", onChange: "installIsAvailableChanged"}
 					]}
                 ]}
-            ]}, //end of list scene group
-            {tag: "div", style:"width: 100%; text-align: center", components: [
-            	{kind: "onyx.Button", classes: "onyx-affirmative", style: "margin:5px; width: 18%; min-width: 100px; font-size: 18px;", content: $L("Close"), ontap: "closePopup"}
-            ]}
+            ]} //end of list scene group
+        ]},
+        {tag: "div", style:"width: 100%; text-align: center", components: [
+        	{kind: "onyx.Button", classes: "onyx-affirmative", style: "margin:5px; width: 18%; min-width: 100px; font-size: 18px;", content: $L("Close"), ontap: "closePopup"}
         ]}
     ],
     create: function (inSender, inEvent) {
         this.inherited(arguments);
         this.updateValues();
     },
+    resizeHandler: function(){	
+    	//Calculate scroller height - if we don't explicitly set the scroller height, it will overflow the dialog
+		var windowHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);   	
+    	var dialogHeightPC = this.domStyles.height.replace('%', '') / 100;
+    	var dialogPadding = this.domStyles.padding.replace('px', '');
+		
+		var scrollerHeight = Math.round(windowHeight * dialogHeightPC) - (dialogPadding * 2);
+		
+    	this.$.SettingsScroller.applyStyle("height", scrollerHeight + "px");
+
+		this.inherited(arguments);
+	},
     updateValues: function () {
         var i, items, cookie = preware.PrefCookie.get();
 
