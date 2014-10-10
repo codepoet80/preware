@@ -7,7 +7,6 @@
 enyo.kind({
     name: "SettingsDialog",
     classes: "enyo-popup",
-    //TODO: someone with more design skills than me should optimize that... :(
     style: "padding: 15px; width: 90%; height: 90%;",
     kind: "onyx.Popup",
     //kind: "enyo.Control",
@@ -18,7 +17,7 @@ enyo.kind({
     scrim: true,
     scrimWhenModal: false,
     components: [
-        {name: "SettingsScroller", kind: "enyo.Scroller", style: "width: 100%;", components: [
+        {name: "SettingsScroller", touch: true, kind: "enyo.Scroller", style: "width: 100%;", components: [
             {tag: "div", classes: "webosstyle-groupbox", components: [
                 {tag: "div", classes: "webosstyle-groupbox-header", content: $L("Startup")},
                 {tag: "div", classes: "webosstyle-groupbox-body", style: "width: 100%", components:[
@@ -104,14 +103,14 @@ enyo.kind({
         this.inherited(arguments);
         this.updateValues();
     },
-    resizeHandler: function(){	
+    resizeHandler: function(){
     	//Calculate scroller height - if we don't explicitly set the scroller height, it will overflow the dialog
-		var windowHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);   	
+		var windowHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
     	var dialogHeightPC = this.domStyles.height.replace('%', '') / 100;
     	var dialogPadding = this.domStyles.padding.replace('px', '');
-		
+
 		var scrollerHeight = Math.round(windowHeight * dialogHeightPC) - (dialogPadding * 2);
-		
+
     	this.$.SettingsScroller.applyStyle("height", scrollerHeight + "px");
 
 		this.inherited(arguments);
