@@ -182,13 +182,20 @@ enyo.kind({
     },
     
     addNewFeed: function (inSender, inEvent) {
-        var feed = {
-            config: this.$.newFeedName.getValue() + ".conf",
-            name: this.$.newFeedName.getValue(),
-            url: this.$.newFeedURL.getValue(),
-            gzipped: this.$.newFeedCompressedToggle.getValue()
-        };
-        //TODO: what to do with new feed? urgs..
+        preware.IPKGService.addConfig(this.addNewFeedResponse.bind(this), this.$.newFeedName.getValue() + ".conf", this.$.newFeedName.getValue(), this.$.newFeedURL.getValue(), this.$.newFeedCompressedToggle.getValue());
+    },
+    
+	addNewFeedResponse: function (payload) {
+		if (payload.stage == 'completed')
+		{
+			// tell packages the feeds are "dirty"
+			preware.PackagesModel.dirtyFeeds = true;
+		
+			this.clearNewFeed();
+
+			// init feed loading
+			preware.IPKGService.list_configs(preware.FeedsModel.onConfigs.bind(preware.FeedsModel));
+		}
     },
 
 	clearNewFeed: function() {
