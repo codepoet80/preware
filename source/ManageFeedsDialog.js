@@ -70,19 +70,6 @@ enyo.kind({
     bindings: [
 		{from: ".collection", to: ".$.repeater.collection"}
 	],
-	data: [
-		{ classes: "repeater-item class1", name: "Alejandra", url: "Walsh" },
-		{ classes: "repeater-item class2", name: "Marquez", url: "James" },
-		{ classes: "repeater-item class3", name: "Barr", url: "Lott" },
-		{ classes: "repeater-item class4", name: "Everett", url: "Maddox" },
-		{ classes: "repeater-item class5", name: "Crane", url: "Bryant" },
-		{ classes: "repeater-item class1", name: "Raymond", url: "Faulkner" },
-		{ classes: "repeater-item class2", name: "Petersen", url: "Murray" },
-		{ classes: "repeater-item class3", name: "Kristina", url: "Porter" },
-	],
-    /*create: function (inSender, inEvent) {
-        this.inherited(arguments);
-    },*/
     create: enyo.inherit(function (sup) {
 		return function () {
 			this.collection = new enyo.Collection();
