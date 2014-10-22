@@ -10,6 +10,8 @@ enyo.depends(
     "AppPanels.js",
     "EmptyPanel.js",
     "GrabberToolbar.js",
+    "AlertDialog.js",
+    "ChoiceDialog.js",
     "InstallPackageDialog.js",
     "ListItem.js",
     "ManageFeedsDialog.js",

@@ -58,24 +58,53 @@ enyo.kind({
 						{kind: "onyx.ToggleButton", name: "newFeedCompressedToggle", onContent: $L("Yes"), offContent: $L("No") }
 					]},
 					{kind: "enyo.FittableColumns", noStretch: true, classes: "settings-item", style:"text-align: center", components: [
-						{name: "addNewFeedButton", kind: "onyx.Button", classes: "onyx-affirmative", content: $L("Add Feed"), ontap: "addNewFeed"}
+						{name: "addNewFeedButton", kind: "onyx.Button", classes: "onyx-affirmative", content: $L("Add Feed"), ontap: "testNewFeed"}
 					]}
                 ]}
             ]},
         ]},
         {tag: "div", style:"width: 100%; text-align: center", components: [
         	{kind: "onyx.Button", classes: "onyx-affirmative", style: "margin:5px; width: 18%; min-width: 100px; font-size: 18px;", content: $L("Close"), ontap: "closePopup"}
-        ]}
+        ]},
+        {name: "alertDialog", kind: Preware.AlertDialog, onDismiss: "closeDialog"},
+        {name: "warningDialog", kind: Preware.ChoiceDialog, onAction: "okWarning", onDismiss: "closeDialog"},
     ],
+
     bindings: [
 		{from: ".collection", to: ".$.repeater.collection"}
 	],
+
     create: enyo.inherit(function (sup) {
 		return function () {
 			this.collection = new enyo.Collection();
+			this.warningOkd = false;
 			sup.apply(this, arguments);
 		};
 	}),
+	
+	show: function() {
+		//This is required to reset the shim so that it displays correctly when we are displaying a dialog on top of a dialog.
+		this.$.alertDialog.show();
+		this.$.alertDialog.hide();
+		
+		this.$.warningDialog.show();
+		this.$.warningDialog.hide();
+		
+		this.inherited(arguments);
+	},
+
+    //handlers
+    onFeeds: function (inSender, inEvent) {
+        var i;
+        console.log("MANAGEFEEDS: Got " + inEvent.feeds.length + " feeds. :)");
+        this.feeds = inEvent.feeds;
+        this.collection.destroyAll();
+        for (i = 0; i < this.feeds.length; i += 1) {
+            console.log("Feed " + i + ": " + JSON.stringify(this.feeds[i]));
+            this.collection.add(this.feeds[i]);
+        }
+    },
+
     resizeHandler: function(){
     	//Calculate scroller height - if we don't explicitly set the scroller height, it will overflow the dialog
 		var windowHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
@@ -97,21 +126,61 @@ enyo.kind({
 		
 		this.inherited(arguments);
 	},
-    //handlers
-    onFeeds: function (inSender, inEvent) {
-        var i;
-        console.log("MANAGEFEEDS: Got " + inEvent.feeds.length + " feeds. :)");
-        this.feeds = inEvent.feeds;
-        this.collection.destroyAll();
-        for (i = 0; i < this.feeds.length; i += 1) {
-            console.log("Feed " + i + ": " + JSON.stringify(this.feeds[i]));
-            this.collection.add(this.feeds[i]);
-        }
-    },
+
     closePopup: function (inSender, inEvent) {
     	//TODO: write back changes to service, refresh feeds if user has changed anything.
+		this.clearNewFeed();
         this.hide();
     },
+
+    closeDialog: function (inSender, inEvent) {
+        this.$.warningDialog.hide();
+        this.$.alertDialog.hide();
+    },
+
+    testNewFeed: function (inSender, inEvent) {
+    	var newUrl = this.$.newFeedURL.getValue();
+		if (newUrl.indexOf("http://ipkg.preware.org/alpha") == 0 || newUrl.indexOf("http://ipkg.preware.net/alpha") == 0)
+		{
+			this.$.alertDialog.show($L("Custom Feed"), $L("You may not add alpha testing feeds here. See http://testing.preware.net/"));
+		}
+		else if (newUrl.indexOf("http://ipkg.preware.org/beta") == 0 || newUrl.indexOf("http://ipkg.preware.net/beta") == 0)
+		{
+			this.$.alertDialog.show($L("Custom Feed"), $L("You may not add beta testing feeds here. See http://testing.preware.net/"));
+		}
+		else if (((newUrl.indexOf("http://ipkg.preware.org/feeds") == 0) || (newUrl.indexOf("http://ipkg.preware.net/feeds") == 0)) &&
+				 (newUrl.indexOf("/testing/") > 0))
+		{
+			this.$.alertDialog.show($L("Custom Feed"), $L("The instructions you are following are obsolete. See http://testing.preware.net/"));
+		}
+		else if (newUrl.indexOf("http://preware.is.awesome.com") == 0)
+		{
+			this.$.alertDialog.show($L("Custom Feed"), $L("The instructions you are following are obsolete. See http://testing.preware.net/"));
+		}
+		else if (this.$.newFeedName.getValue() != '' &&
+				 newUrl != '' && newUrl != 'http://')
+		{
+			if (!this.warningOkd)
+			{
+				this.$.warningDialog.show($L("Custom Feed"),$L("By adding a custom feed, you take full responsibility for any and all potential outcomes that may occur as a result of doing so, including (but not limited to): loss of warranty, loss of all data, loss of all privacy, security vulnerabilities and device damage."));
+			}
+			else
+			{
+				this.addNewFeed();
+			}
+		}
+		else
+		{
+			this.$.alertDialog.show($L("Custom Feed"), $L("You need to fill in all fields for a new feed."));
+		}
+    },
+    
+    okWarning: function (inSender, inEvent) {
+    	this.$.warningDialog.hide();
+    	this.warningOkd = true;
+    	this.addNewFeed();
+    },
+    
     addNewFeed: function (inSender, inEvent) {
         var feed = {
             config: this.$.newFeedName.getValue() + ".conf",
@@ -121,9 +190,17 @@ enyo.kind({
         };
         //TODO: what to do with new feed? urgs..
     },
+
+	clearNewFeed: function() {
+		this.$.newFeedName.setValue("");
+        this.$.newFeedURL.setValue("http://");
+        this.$.newFeedCompressedToggle.setValue(false);
+	},
+	
     checkFocus: function(source, event) {
 		source.applyStyle("color", "black");
 	},
+
 	checkBlur: function(source, event) {
 		source.applyStyle("color", "white");
 	}
