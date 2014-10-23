@@ -16,7 +16,6 @@ enyo.kind({
     scrim: true,
     scrimWhenModal: false,
     components: [
-        {kind: "Signals", onLoadFeedsFinished: "onFeeds" },
         {name: "ManageFeedsScroller", touch: true, kind: "enyo.Scroller", style: "width: 100%;", components: [
             {tag: "div", classes: "webosstyle-groupbox", components: [
                 {tag: "div", classes: "webosstyle-groupbox-header", content: $L("Installed")},
@@ -28,12 +27,12 @@ enyo.kind({
 									{name: "feedName"},
 									{name: "feedURL", style: "font-size: 10px; color: LightGray"},
 								]},
-								//TODO: find out where this value is stored
-								{name: "feedCompressedToggle", kind: "onyx.ToggleButton", value: true}
+								{name: "feedEnabledToggle", kind: "onyx.ToggleButton"}
 							]}
 						], bindings: [
 							{from: ".model.name", to: ".$.feedName.content"},
 							{from: ".model.url", to: ".$.feedURL.content"},
+							{from: ".model.enabled", to: ".$.feedEnabledToggle.value", oneWay: false},
 						]}
 					]},
 				]},
@@ -76,7 +75,7 @@ enyo.kind({
 
     create: enyo.inherit(function (sup) {
 		return function () {
-			this.collection = new enyo.Collection();
+			this.collection = new enyo.Collection({recordChanged: this.feedEnabledToggled});
 			this.warningOkd = false;
 			sup.apply(this, arguments);
 		};
@@ -89,21 +88,115 @@ enyo.kind({
 		
 		this.$.warningDialog.show();
 		this.$.warningDialog.hide();
+
+		this.feeds = [];
+		preware.IPKGService.list_configs(this.onFeeds.bind(this));
 		
 		this.inherited(arguments);
 	},
 
     //handlers
-    onFeeds: function (inSender, inEvent) {
-        var i;
-        console.log("MANAGEFEEDS: Got " + inEvent.feeds.length + " feeds. :)");
-        this.feeds = inEvent.feeds;
-        this.collection.destroyAll();
-        for (i = 0; i < this.feeds.length; i += 1) {
-            console.log("Feed " + i + ": " + JSON.stringify(this.feeds[i]));
-            this.collection.add(this.feeds[i]);
-        }
-    },
+    onFeeds: function(payload)
+	{
+		try 
+		{
+			if (!payload) 
+			{
+				// i dont know if this will ever happen, but hey, it might
+				this.$.alertDialog.show('Preware', $L("Cannot access the service. First try restarting Preware, or reboot your device and try again."));
+				this.doneLoading();
+			}
+			else if (payload.errorCode != undefined) 
+			{
+				// we probably dont need to check this stuff here,
+				// it would have already been checked and errored out of this process
+				if (payload.errorText == "org.webosinternals.ipkgservice is not running.")
+				{
+					this.$.alertDialog.show('Preware', $L("The service is not running. First try restarting Preware, or reboot your device and try again."));
+					this.doneLoading();
+				}
+				else
+				{
+					this.$.alertDialog.show('Preware', payload.errorText);
+					this.doneLoading();
+				}
+			}
+			else 
+			{
+				// clear feeds array
+				this.feeds = [];
+			
+				// load feeds
+				for (var x = 0; x < payload.configs.length; x++)
+				{
+					var feedObj = {
+						config: payload.configs[x].config,
+						name: payload.configs[x].config.replace(/.conf/, ''),
+						url: "",
+						data: [],
+						enabled: payload.configs[x].enabled
+					};
+				
+					if (payload.configs[x].contents) {
+						var tmpSplit1 = payload.configs[x].contents.split('<br>');
+						for (var c = 0; c < tmpSplit1.length; c++)
+						{
+							if (tmpSplit1[c]) 
+							{
+								var tmpSplit2 = tmpSplit1[c].split(' ');
+								feedObj.url = tmpSplit2[2];
+								feedObj.data.push(tmpSplit2)
+							}
+						}
+					}
+
+					this.feeds.push(feedObj);
+				}
+			
+				// sort them
+				this.feeds.sort(function(a, b)
+				{
+					if (a.name && b.name)
+					{
+						return ((a.name < b.name) ? -1 : ((a.name > b.name) ? 1 : 0));
+					}
+					else
+					{
+						return -1;
+					}
+				});
+			
+				this.doneLoading();
+			}
+		}
+		catch (e)
+		{
+			console.log(e, 'configs#onFeeds');
+			this.$.alertDialog.show('onFeeds Error', e);
+		}
+	},
+	
+	doneLoading: function()
+	{
+		try 
+		{
+			if (this.feeds.length > 0) 
+			{
+				var i;
+				
+		        this.collection.destroyAll();
+        		for (i = 0; i < this.feeds.length; i += 1) {
+            		//console.log("Feed " + i + ": " + JSON.stringify(this.feeds[i]));
+            		this.collection.add(this.feeds[i]);
+        		}
+			}
+		}
+		catch (e)
+		{
+			console.log(e, 'configs#doneLoading');
+			this.$.alertDialog.show('doneLoading Error', e);
+		}
+	},
 
     resizeHandler: function(){
     	//Calculate scroller height - if we don't explicitly set the scroller height, it will overflow the dialog
@@ -125,6 +218,11 @@ enyo.kind({
 		this.$.addNewFeedButton.applyStyle("width", groupboxWidth + "px");
 		
 		this.inherited(arguments);
+	},
+
+	feedEnabledToggled: function (inSender, inEvent)
+	{
+		preware.IPKGService.setConfigState(function(){preware.PackagesModel.dirtyFeeds = true;}, inSender.attributes.config, inSender.attributes.enabled);
 	},
 
     closePopup: function (inSender, inEvent) {
@@ -194,7 +292,7 @@ enyo.kind({
 			this.clearNewFeed();
 
 			// init feed loading
-			preware.IPKGService.list_configs(preware.FeedsModel.onConfigs.bind(preware.FeedsModel));
+			preware.IPKGService.list_configs(this.onFeeds.bind(this));
 		}
     },
 
