@@ -64,15 +64,8 @@ enyo.kind({
         ]},*/
         {name: "ManageFeedsList", kind: "AroundList", fit: true, count: 0, style:"width: 100%;", enableSwipe: true, percentageDraggedThreshold: 0.01, persistSwipeableItem: true, onSetupItem: "setupItem", onSetupSwipeItem: "setupSwipeItem", aboveComponents: [
 		], components: [
-			{classes: "settings-item-repeater", components: [
-				{kind: "enyo.FittableColumns", noStretch: true, components: [
-					{kind: "enyo.FittableRows", fit: true, components: [
-						{name: "feedName"},
-						{name: "feedURL", style: "font-size: 10px; color: LightGray"},
-					]},
-					{name: "feedEnabledToggle", kind: "onyx.ToggleButton", style: "float: right", onTap: "feedEnabledToggled" }
-				]}
-			]}
+			//TODO: Continue Tweaking
+			{name: "feed", kind: "preware.FeedItem", classes: "list-sample-contacts-item", onRemove: "feedEnabledToggled"}
 		],
 		swipeableComponents: [
 			{style: "height: 100%; background-color: darkgrey; text-align:center", components: [
@@ -210,9 +203,8 @@ enyo.kind({
 		var i = inEvent.index;
 		var item = this.feeds[i];
 		
-		this.$.feedName.setContent(item.name);
-		this.$.feedURL.setContent(item.url);
-		this.$.feedEnabledToggle.setValue(item.enabled);
+		//this.$.item.setContact(item);
+		this.$.feed.setFeed(item);
 				
 		return true;
 	},
@@ -264,6 +256,7 @@ enyo.kind({
 
 	feedEnabledToggled: function (inSender, inEvent)
 	{
+		console.log("Ping!")
 		//preware.IPKGService.setConfigState(function(){preware.PackagesModel.dirtyFeeds = true;}, inSender.attributes.config, inSender.attributes.enabled);
 	},
 
@@ -352,3 +345,80 @@ enyo.kind({
 		source.applyStyle("color", "white");
 	}
 });
+
+// It's convenient to create a kind for the item we'll render in the contacts list.
+enyo.kind({
+	name: "preware.FeedItem",
+	events: {
+		onRemove: ""
+	},
+	published: {
+		importance: 0
+	},
+	components: [
+		{kind: "enyo.FittableRows", fit: true, components: [
+		  {name: "feedName"},
+		  {name: "feedURL", style: "font-size: 10px; color: LightGray"},
+		]},
+		{name: "remove", kind: "onyx.IconButton", classes: "list-sample-contacts-remove-button", src: "assets/folder.png", ontap: "removeTap"}
+	],
+	setFeed: function(inFeed) {
+		this.$.feedName.setContent(inFeed.name);
+		this.$.feedURL.setContent(inFeed.url);
+		/*if(inFeed.enabled)
+		{
+			this.$.feedEnabledToggle.setContent($L("On"));
+		}
+		else
+		{
+			this.$.feedEnabledToggle.setContent($L("Off"));
+		}*/
+//		this.$.feedEnabledToggle.setValue(inFeed.enabled);
+	},
+	removeTap: function(inSender, inEvent) {
+		this.doRemove(inEvent);
+		return true;
+	}
+});
+
+// It's convenient to create a kind for the item we'll render in the contacts list.
+/*enyo.kind({
+	name: "preware.FeedItem",
+	events: {
+		onRemove: ""
+	},
+	published: {
+		importance: 0
+	},
+	components: [
+		{classes: "settings-item-repeater", components: [
+			{kind: "enyo.FittableRows", fit: true, components: [
+				{name: "feedName"},
+				{name: "feedURL", style: "font-size: 10px; color: LightGray"},
+			]},
+			{name: "feedEnabledToggle", kind: "onyx.Button", style: "float: right", onTap: "feedEnabledToggled" }
+		]}
+	],
+	setFeed: function(inFeed) {
+		this.$.feedName.setContent(inFeed.name);
+		this.$.feedURL.setContent(inFeed.url);
+		if(inFeed.enabled)
+		{
+			this.$.feedEnabledToggle.setContent($L("On"));
+		}
+		else
+		{
+			this.$.feedEnabledToggle.setContent($L("Off"));
+		}
+//		this.$.feedEnabledToggle.setValue(inFeed.enabled);
+	},
+	feedEnabledToggled: function (inSender, inEvent)
+	{
+		console.log("Ping!")
+		//preware.IPKGService.setConfigState(function(){preware.PackagesModel.dirtyFeeds = true;}, inSender.attributes.config, inSender.attributes.enabled);
+	},
+	removeTap: function(inSender, inEvent) {
+		this.doRemove(inEvent);
+		return true;
+	}
+});*/

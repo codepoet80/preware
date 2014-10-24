@@ -147,3 +147,26 @@
 	color: white;
 }
 /* End Settings Items */
+
+/*Testing*/
+.list-sample-contacts {
+	color: white;
+}
+.list-sample-contacts-list {
+	background: url(assets/bg.png);
+}
+/* item */
+.list-sample-contacts-item {
+/*	height: 100px;
+	border-top: 1px solid silver;
+	padding: 12px 16px;
+	background-color: #333333;*/
+}
+.list-sample-contacts-item > * {
+	display: inline-block;
+	vertical-align: middle;
+}
+.list-sample-contacts-remove-button {
+	float: right;
+	/*display: none;*/
+}
