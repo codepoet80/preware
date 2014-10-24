@@ -16,7 +16,7 @@ enyo.kind({
     scrim: true,
     scrimWhenModal: false,
     components: [
-        {name: "ManageFeedsScroller", touch: true, kind: "enyo.Scroller", style: "width: 100%;", components: [
+        /*{name: "ManageFeedsScroller", touch: true, kind: "enyo.Scroller", style: "width: 100%;", components: [
             {tag: "div", classes: "webosstyle-groupbox", components: [
                 {tag: "div", classes: "webosstyle-groupbox-header", content: $L("Installed")},
 				{tag: "div", classes: "webosstyle-groupbox-body-repeater", style: "width: 100%", components:[
@@ -61,7 +61,25 @@ enyo.kind({
 					]}
                 ]}
             ]},
-        ]},
+        ]},*/
+        {name: "ManageFeedsList", kind: "AroundList", fit: true, count: 0, style:"width: 100%;", enableSwipe: true, percentageDraggedThreshold: 0.01, persistSwipeableItem: true, onSetupItem: "setupItem", onSetupSwipeItem: "setupSwipeItem", aboveComponents: [
+		], components: [
+			{classes: "settings-item-repeater", components: [
+				{kind: "enyo.FittableColumns", noStretch: true, components: [
+					{kind: "enyo.FittableRows", fit: true, components: [
+						{name: "feedName"},
+						{name: "feedURL", style: "font-size: 10px; color: LightGray"},
+					]},
+					{name: "feedEnabledToggle", kind: "onyx.ToggleButton", style: "float: right", onTap: "feedEnabledToggled" }
+				]}
+			]}
+		],
+		swipeableComponents: [
+			{style: "height: 100%; background-color: darkgrey; text-align:center", components: [
+				{name: "swipeableDeleteButton", kind: "onyx.Button", style: "margin-top: 10px; margin-right: 10px;", classes:"onyx-negative", ontap: "deleteButtonTapped", content: $L("Delete")},
+				{name: "swipeableCancelButton", kind: "onyx.Button", style: "margin-left: 10px;", ontap: "cancelButtonTapped", content: $L("Cancel")}
+			]}
+		]},
         {tag: "div", style:"width: 100%; text-align: center", components: [
         	{kind: "onyx.Button", classes: "onyx-affirmative", style: "margin:5px; width: 18%; min-width: 100px; font-size: 18px;", content: $L("Close"), ontap: "closePopup"}
         ]},
@@ -69,13 +87,8 @@ enyo.kind({
         {name: "warningDialog", kind: Preware.ChoiceDialog, onAction: "okWarning", onDismiss: "closeDialog"},
     ],
 
-    bindings: [
-		{from: ".collection", to: ".$.repeater.collection"}
-	],
-
     create: enyo.inherit(function (sup) {
 		return function () {
-			this.collection = new enyo.Collection({recordChanged: this.feedEnabledToggled});
 			this.warningOkd = false;
 			sup.apply(this, arguments);
 		};
@@ -182,13 +195,8 @@ enyo.kind({
 		{
 			if (this.feeds.length > 0) 
 			{
-				var i;
-				
-		        this.collection.destroyAll();
-        		for (i = 0; i < this.feeds.length; i += 1) {
-            		//console.log("Feed " + i + ": " + JSON.stringify(this.feeds[i]));
-            		this.collection.add(this.feeds[i]);
-        		}
+				this.$.ManageFeedsList.setCount(this.feeds.length);
+				this.$.ManageFeedsList.refresh();
 			}
 		}
 		catch (e)
@@ -198,6 +206,40 @@ enyo.kind({
 		}
 	},
 
+	setupItem: function(inSender, inEvent) {
+		var i = inEvent.index;
+		var item = this.feeds[i];
+		
+		this.$.feedName.setContent(item.name);
+		this.$.feedURL.setContent(item.url);
+		this.$.feedEnabledToggle.setValue(item.enabled);
+				
+		return true;
+	},
+
+	setupSwipeItem: function(inSender, inEvent) {
+        // because setting it on the list itself fails:
+        this.$.ManageFeedsList.setPersistSwipeableItem(true);
+        this.activeItem = inEvent.index;
+        this.swiping = true;
+    },
+
+	completeSwipeItem: function() {
+        this.$.ManageFeedsList.completeSwipe();
+        this.swiping = false;
+    },
+
+    deleteButtonTapped: function(inSender, inEvent) {
+        this.$.ManageFeedsList.setPersistSwipeableItem(false);
+        //this.sourceDeleted(this.activeItem); 
+		this.completeSwipeItem();
+    },
+
+    cancelButtonTapped: function(inSender, inEvent) {
+        this.$.ManageFeedsList.setPersistSwipeableItem(false);
+		this.completeSwipeItem();
+    },
+
     resizeHandler: function(){
     	//Calculate scroller height - if we don't explicitly set the scroller height, it will overflow the dialog
 		var windowHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
@@ -206,23 +248,23 @@ enyo.kind({
 
 		var scrollerHeight = Math.round(windowHeight * dialogHeightPC) - (dialogPadding * 2);
 
-    	this.$.ManageFeedsScroller.applyStyle("height", scrollerHeight + "px");
+    	this.$.ManageFeedsList.applyStyle("height", scrollerHeight + "px");
 
 		//Calculate Window Width
 		var windowWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
     	var dialogWidthPC = this.domStyles.width.replace('%', '') / 100;
     	
     	var groupboxWidth = Math.round(windowWidth * dialogWidthPC) - (dialogPadding * 2);
-		this.$.newFeedName.applyStyle("width", (groupboxWidth - 90) + "px");
-		this.$.newFeedURL.applyStyle("width", (groupboxWidth - 90) + "px");
-		this.$.addNewFeedButton.applyStyle("width", groupboxWidth + "px");
+		//this.$.newFeedName.applyStyle("width", (groupboxWidth - 90) + "px");
+		//this.$.newFeedURL.applyStyle("width", (groupboxWidth - 90) + "px");
+		//this.$.addNewFeedButton.applyStyle("width", groupboxWidth + "px");
 		
 		this.inherited(arguments);
 	},
 
 	feedEnabledToggled: function (inSender, inEvent)
 	{
-		preware.IPKGService.setConfigState(function(){preware.PackagesModel.dirtyFeeds = true;}, inSender.attributes.config, inSender.attributes.enabled);
+		//preware.IPKGService.setConfigState(function(){preware.PackagesModel.dirtyFeeds = true;}, inSender.attributes.config, inSender.attributes.enabled);
 	},
 
     closePopup: function (inSender, inEvent) {
