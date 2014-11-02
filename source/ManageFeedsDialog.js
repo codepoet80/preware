@@ -6,7 +6,7 @@ enyo.kind({
     name: "ManageFeedsDialog",
     classes: "enyo-popup",
     //TODO: someone with more design skills than me should optimize that... :(
-    style: "padding: 30px; width: 90%; height: 90%;",
+    style: "padding: 15px; width: 90%; height: 90%;",
     kind: "onyx.Popup",
     //kind: "enyo.Control",
     centered: true,
@@ -16,58 +16,297 @@ enyo.kind({
     scrim: true,
     scrimWhenModal: false,
     components: [
-        {kind: "Signals", onLoadFeedsFinished: "onFeeds" },
-        {
-            kind: "enyo.Scroller",
-            horizontal: "hidden",
-            classes: "enyo-fill",
-            style: "background-image:url('assets/bg.png')",
-            touch: true,
-            fit: true,
-            components: [
-                {name: "CategoryRepeater", kind: "Repeater", onSetupItem: "setupCategoryItem", count: 0, components: [
-                    {kind: "ListItem", content: "Category", ontap: "categoryTapped"}
-                ]},
-                {kind: "onyx.Groupbox", components: [
-                    {kind: "onyx.GroupboxHeader", content: $L("New Feed")},
-                    {kind: "onyx.InputDecorator", components: [
-                        {kind: "onyx.TextArea", name: "newFeedName", hint: $L("Name") }
-                    ]},
-                    {kind: "onyx.InputDecorator", components: [
-                        {kind: "onyx.TextArea", name: "newFeedURL", hint: $L("URL"), content: "http://" }
-                    ]},
-                    {kind: "enyo.FittableColumns", components: [
-                        {tag: "div", content: $L("Compressed"), fit: true},
-                        {kind: "onyx.ToggleButton", name: "newFeedCompressedToggle"}
-                    ]},
-                    {kind: "onyx.Button", style: "margin:5px;font-size:24px;float:center;", content: $L("Add Feed"), ontap: "addNewFeed"}
-                ]}, //end of action group
-                {kind: "onyx.Button", style: "margin:5px;font-size:24px;float:center;", content: $L("Close"), ontap: "closePopup"}
-            ]
-        }
+        {name: "ManageFeedsScroller", touch: true, kind: "enyo.Scroller", style: "width: 100%;", components: [
+            {tag: "div", classes: "webosstyle-groupbox", components: [
+                {tag: "div", classes: "webosstyle-groupbox-header", content: $L("Installed")},
+				{tag: "div", classes: "webosstyle-groupbox-body-repeater", style: "width: 100%", components:[
+					{name: "repeater", kind: "enyo.DataRepeater", components: [
+						{classes: "settings-item-repeater", components: [
+							{kind: "enyo.FittableColumns", noStretch: true, components: [
+								{kind: "enyo.FittableRows", fit: true, components: [
+									{name: "feedName"},
+									{name: "feedURL", style: "font-size: 10px; color: LightGray"},
+								]},
+								{name: "feedEnabledToggle", kind: "onyx.ToggleButton"}
+							]}
+						], bindings: [
+							{from: ".model.name", to: ".$.feedName.content"},
+							{from: ".model.url", to: ".$.feedURL.content"},
+							{from: ".model.enabled", to: ".$.feedEnabledToggle.value", oneWay: false},
+						]}
+					]},
+				]},
+			]},
+            {tag: "div", classes: "webosstyle-groupbox", components: [
+                {tag: "div", classes: "webosstyle-groupbox-header", content: $L("New Feed")},
+                {tag: "div", classes: "webosstyle-groupbox-body", style: "width: 100%", components:[
+					{kind: "enyo.FittableColumns", noStretch: true, classes: "settings-item", components: [
+						{kind: "onyx.InputDecorator", style: "width: 100%;", components: [
+							{name: "newFeedName", kind: "onyx.Input", style: "color: white", onfocus: "checkFocus", onblur: "checkBlur" },
+							{name: "newFeedNameLabel", content: $L("Name"), style: "width: 65px; color: SkyBlue;"}
+						]},
+					]},
+					{kind: "enyo.FittableColumns", noStretch: true, classes: "settings-item", components: [
+						{kind: "onyx.InputDecorator", style: "width: 100%;", components: [
+							{name: "newFeedURL", kind: "onyx.Input", style: "width: 100%;  color: white", value: "http://", onfocus: "checkFocus", onblur: "checkBlur" },
+							{name: "newFeedURLLabel", content: $L("URL"), style: "width: 65px; color: SkyBlue;"}
+						]},
+					]},
+					{kind: "enyo.FittableColumns", noStretch: true, classes: "settings-item", components: [
+						{tag: "span", classes: "settings-title-toggle", content: $L("Compressed"), fit: true},
+						{kind: "onyx.ToggleButton", name: "newFeedCompressedToggle", onContent: $L("Yes"), offContent: $L("No") }
+					]},
+					{kind: "enyo.FittableColumns", noStretch: true, classes: "settings-item", style:"text-align: center", components: [
+						{name: "addNewFeedButton", kind: "onyx.Button", classes: "onyx-affirmative", content: $L("Add Feed"), ontap: "testNewFeed"}
+					]}
+                ]}
+            ]},
+        ]},
+        {tag: "div", style:"width: 100%; text-align: center", components: [
+        	{kind: "onyx.Button", classes: "onyx-affirmative", style: "margin:5px; width: 18%; min-width: 100px; font-size: 18px;", content: $L("Close"), ontap: "closePopup"}
+        ]},
+        {name: "alertDialog", kind: Preware.AlertDialog, onDismiss: "closeDialog"},
+        {name: "warningDialog", kind: Preware.ChoiceDialog, onAction: "okWarning", onDismiss: "closeDialog"},
     ],
-    create: function (inSender, inEvent) {
-        this.inherited(arguments);
-    },
+
+    bindings: [
+		{from: ".collection", to: ".$.repeater.collection"}
+	],
+
+    create: enyo.inherit(function (sup) {
+		return function () {
+			this.collection = new enyo.Collection({recordChanged: this.feedEnabledToggled});
+			this.warningOkd = false;
+			sup.apply(this, arguments);
+		};
+	}),
+	
+	show: function() {
+		//This is required to reset the shim so that it displays correctly when we are displaying a dialog on top of a dialog.
+		this.$.alertDialog.show();
+		this.$.alertDialog.hide();
+		
+		this.$.warningDialog.show();
+		this.$.warningDialog.hide();
+
+		this.feeds = [];
+		preware.IPKGService.list_configs(this.onFeeds.bind(this));
+		
+		this.inherited(arguments);
+	},
+
     //handlers
-    onFeeds: function (inSender, inEvent) {
-        var i;
-        console.log("MANAGEFEEDS: Got " + inEvent.feeds.length + " feeds. :)");
-        this.feeds = inEvent.feeds;
-        for (i = 0; i < this.feeds.length; i += 1) {
-            console.log("Feed " + i + ": " + JSON.stringify(this.feeds[i]));
-        }
-    },
+    onFeeds: function(payload)
+	{
+		try 
+		{
+			if (!payload) 
+			{
+				// i dont know if this will ever happen, but hey, it might
+				this.$.alertDialog.show('Preware', $L("Cannot access the service. First try restarting Preware, or reboot your device and try again."));
+				this.doneLoading();
+			}
+			else if (payload.errorCode != undefined) 
+			{
+				// we probably dont need to check this stuff here,
+				// it would have already been checked and errored out of this process
+				if (payload.errorText == "org.webosinternals.ipkgservice is not running.")
+				{
+					this.$.alertDialog.show('Preware', $L("The service is not running. First try restarting Preware, or reboot your device and try again."));
+					this.doneLoading();
+				}
+				else
+				{
+					this.$.alertDialog.show('Preware', payload.errorText);
+					this.doneLoading();
+				}
+			}
+			else 
+			{
+				// clear feeds array
+				this.feeds = [];
+			
+				// load feeds
+				for (var x = 0; x < payload.configs.length; x++)
+				{
+					var feedObj = {
+						config: payload.configs[x].config,
+						name: payload.configs[x].config.replace(/.conf/, ''),
+						url: "",
+						data: [],
+						enabled: payload.configs[x].enabled
+					};
+				
+					if (payload.configs[x].contents) {
+						var tmpSplit1 = payload.configs[x].contents.split('<br>');
+						for (var c = 0; c < tmpSplit1.length; c++)
+						{
+							if (tmpSplit1[c]) 
+							{
+								var tmpSplit2 = tmpSplit1[c].split(' ');
+								feedObj.url = tmpSplit2[2];
+								feedObj.data.push(tmpSplit2)
+							}
+						}
+					}
+
+					this.feeds.push(feedObj);
+				}
+			
+				// sort them
+				this.feeds.sort(function(a, b)
+				{
+					if (a.name && b.name)
+					{
+						return ((a.name < b.name) ? -1 : ((a.name > b.name) ? 1 : 0));
+					}
+					else
+					{
+						return -1;
+					}
+				});
+			
+				this.doneLoading();
+			}
+		}
+		catch (e)
+		{
+			console.log(e, 'configs#onFeeds');
+			this.$.alertDialog.show('onFeeds Error', e);
+		}
+	},
+	
+	doneLoading: function()
+	{
+		try 
+		{
+			if (this.feeds.length > 0) 
+			{
+				var i;
+				
+		        this.collection.destroyAll();
+        		for (i = 0; i < this.feeds.length; i += 1) {
+            		//console.log("Feed " + i + ": " + JSON.stringify(this.feeds[i]));
+            		this.collection.add(this.feeds[i]);
+        		}
+			}
+		}
+		catch (e)
+		{
+			console.log(e, 'configs#doneLoading');
+			this.$.alertDialog.show('doneLoading Error', e);
+		}
+	},
+
+    resizeHandler: function(){
+    	//Calculate scroller height - if we don't explicitly set the scroller height, it will overflow the dialog
+		var windowHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+    	var dialogHeightPC = this.domStyles.height.replace('%', '') / 100;
+    	var dialogPadding = this.domStyles.padding.replace('px', '');
+
+		var scrollerHeight = Math.round(windowHeight * dialogHeightPC) - (dialogPadding * 2);
+
+    	this.$.ManageFeedsScroller.applyStyle("height", scrollerHeight + "px");
+
+		//Calculate Window Width
+		var windowWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+    	var dialogWidthPC = this.domStyles.width.replace('%', '') / 100;
+    	
+    	var groupboxWidth = Math.round(windowWidth * dialogWidthPC) - (dialogPadding * 2);
+		this.$.newFeedName.applyStyle("width", (groupboxWidth - 90) + "px");
+		this.$.newFeedURL.applyStyle("width", (groupboxWidth - 90) + "px");
+		this.$.addNewFeedButton.applyStyle("width", groupboxWidth + "px");
+		
+		this.inherited(arguments);
+	},
+
+	feedEnabledToggled: function (inSender, inEvent)
+	{
+		preware.IPKGService.setConfigState(function(){preware.PackagesModel.dirtyFeeds = true;}, inSender.attributes.config, inSender.attributes.enabled);
+	},
+
     closePopup: function (inSender, inEvent) {
+    	//TODO: write back changes to service, refresh feeds if user has changed anything.
+		this.clearNewFeed();
         this.hide();
     },
+
+    closeDialog: function (inSender, inEvent) {
+        this.$.warningDialog.hide();
+        this.$.alertDialog.hide();
+    },
+
+    testNewFeed: function (inSender, inEvent) {
+    	var newUrl = this.$.newFeedURL.getValue();
+		if (newUrl.indexOf("http://ipkg.preware.org/alpha") == 0 || newUrl.indexOf("http://ipkg.preware.net/alpha") == 0)
+		{
+			this.$.alertDialog.show($L("Custom Feed"), $L("You may not add alpha testing feeds here. See http://testing.preware.net/"));
+		}
+		else if (newUrl.indexOf("http://ipkg.preware.org/beta") == 0 || newUrl.indexOf("http://ipkg.preware.net/beta") == 0)
+		{
+			this.$.alertDialog.show($L("Custom Feed"), $L("You may not add beta testing feeds here. See http://testing.preware.net/"));
+		}
+		else if (((newUrl.indexOf("http://ipkg.preware.org/feeds") == 0) || (newUrl.indexOf("http://ipkg.preware.net/feeds") == 0)) &&
+				 (newUrl.indexOf("/testing/") > 0))
+		{
+			this.$.alertDialog.show($L("Custom Feed"), $L("The instructions you are following are obsolete. See http://testing.preware.net/"));
+		}
+		else if (newUrl.indexOf("http://preware.is.awesome.com") == 0)
+		{
+			this.$.alertDialog.show($L("Custom Feed"), $L("The instructions you are following are obsolete. See http://testing.preware.net/"));
+		}
+		else if (this.$.newFeedName.getValue() != '' &&
+				 newUrl != '' && newUrl != 'http://')
+		{
+			if (!this.warningOkd)
+			{
+				this.$.warningDialog.show($L("Custom Feed"),$L("By adding a custom feed, you take full responsibility for any and all potential outcomes that may occur as a result of doing so, including (but not limited to): loss of warranty, loss of all data, loss of all privacy, security vulnerabilities and device damage."));
+			}
+			else
+			{
+				this.addNewFeed();
+			}
+		}
+		else
+		{
+			this.$.alertDialog.show($L("Custom Feed"), $L("You need to fill in all fields for a new feed."));
+		}
+    },
+    
+    okWarning: function (inSender, inEvent) {
+    	this.$.warningDialog.hide();
+    	this.warningOkd = true;
+    	this.addNewFeed();
+    },
+    
     addNewFeed: function (inSender, inEvent) {
-        var feed = {
-            config: this.$.newFeedName.getValue() + ".conf",
-            name: this.$.newFeedName.getValue(),
-            url: this.$.newFeedURL.getValue(),
-            gzipped: this.$.newFeedCompressedToggle.getValue()
-        };
-        //TODO: what to do with new feed? urgs..
-    }
+        preware.IPKGService.addConfig(this.addNewFeedResponse.bind(this), this.$.newFeedName.getValue() + ".conf", this.$.newFeedName.getValue(), this.$.newFeedURL.getValue(), this.$.newFeedCompressedToggle.getValue());
+    },
+    
+	addNewFeedResponse: function (payload) {
+		if (payload.stage == 'completed')
+		{
+			// tell packages the feeds are "dirty"
+			preware.PackagesModel.dirtyFeeds = true;
+		
+			this.clearNewFeed();
+
+			// init feed loading
+			preware.IPKGService.list_configs(this.onFeeds.bind(this));
+		}
+    },
+
+	clearNewFeed: function() {
+		this.$.newFeedName.setValue("");
+        this.$.newFeedURL.setValue("http://");
+        this.$.newFeedCompressedToggle.setValue(false);
+	},
+	
+    checkFocus: function(source, event) {
+		source.applyStyle("color", "black");
+	},
+
+	checkBlur: function(source, event) {
+		source.applyStyle("color", "white");
+	}
 });
