@@ -5,39 +5,30 @@
 enyo.kind({
     name: "ManageFeedsDialog",
     classes: "enyo-popup",
-    //TODO: someone with more design skills than me should optimize that... :(
     style: "padding: 15px; width: 90%; height: 90%;",
     kind: "onyx.Popup",
-    //kind: "enyo.Control",
     centered: true,
     modal: true,
     floating: true,
     autoDismiss: false,
     scrim: true,
     scrimWhenModal: false,
+    
     components: [
-        /*{name: "ManageFeedsScroller", touch: true, kind: "enyo.Scroller", style: "width: 100%;", components: [
-            {tag: "div", classes: "webosstyle-groupbox", components: [
-                {tag: "div", classes: "webosstyle-groupbox-header", content: $L("Installed")},
-				{tag: "div", classes: "webosstyle-groupbox-body-repeater", style: "width: 100%", components:[
-					{name: "repeater", kind: "enyo.DataRepeater", components: [
-						{classes: "settings-item-repeater", components: [
-							{kind: "enyo.FittableColumns", noStretch: true, components: [
-								{kind: "enyo.FittableRows", fit: true, components: [
-									{name: "feedName"},
-									{name: "feedURL", style: "font-size: 10px; color: LightGray"},
-								]},
-								{name: "feedEnabledToggle", kind: "onyx.ToggleButton"}
-							]}
-						], bindings: [
-							{from: ".model.name", to: ".$.feedName.content"},
-							{from: ".model.url", to: ".$.feedURL.content"},
-							{from: ".model.enabled", to: ".$.feedEnabledToggle.value", oneWay: false},
-						]}
-					]},
-				]},
-			]},
-            {tag: "div", classes: "webosstyle-groupbox", components: [
+        {name: "ManageFeedsList", kind: "AroundList", fit: true, count: 0, style:"width: 100%;", enableSwipe: true, percentageDraggedThreshold: 0.01, persistSwipeableItem: true, onSetupItem: "setupItem", onSetupSwipeItem: "setupSwipeItem", aboveComponents: [
+		], components: [
+			{name: "feedWrapper", tag: "div", classes: "webosstyle-list-groupbox-item", components: [
+				{name: "feed", kind: "preware.FeedItem", classes: "managefeedslist-feed-item webosstyle-list-groupbox-item-content", onToggle: "feedEnabledToggled"}
+			]}
+		],
+		swipeableComponents: [
+			{style: "height: 100%; margin-left: 5px; margin-right: 5px; background-color: darkgrey; text-align:center", components: [
+				{name: "swipeableDeleteButton", kind: "onyx.Button", style: "margin-top: 10px; margin-right: 10px;", classes:"onyx-negative", ontap: "deleteButtonTapped", content: $L("Delete")},
+				{name: "swipeableCancelButton", kind: "onyx.Button", style: "margin-left: 10px;", ontap: "cancelButtonTapped", content: $L("Cancel")}
+			]}
+		],
+		aboveComponents: [
+			{tag: "div", classes: "webosstyle-groupbox", components: [
                 {tag: "div", classes: "webosstyle-groupbox-header", content: $L("New Feed")},
                 {tag: "div", classes: "webosstyle-groupbox-body", style: "width: 100%", components:[
 					{kind: "enyo.FittableColumns", noStretch: true, classes: "settings-item", components: [
@@ -61,17 +52,9 @@ enyo.kind({
 					]}
                 ]}
             ]},
-        ]},*/
-        {name: "ManageFeedsList", kind: "AroundList", fit: true, count: 0, style:"width: 100%;", enableSwipe: true, percentageDraggedThreshold: 0.01, persistSwipeableItem: true, onSetupItem: "setupItem", onSetupSwipeItem: "setupSwipeItem", aboveComponents: [
-		], components: [
-			//TODO: Continue Tweaking
-			{name: "feed", kind: "preware.FeedItem", classes: "list-sample-contacts-item", onRemove: "feedEnabledToggled"}
-		],
-		swipeableComponents: [
-			{style: "height: 100%; background-color: darkgrey; text-align:center", components: [
-				{name: "swipeableDeleteButton", kind: "onyx.Button", style: "margin-top: 10px; margin-right: 10px;", classes:"onyx-negative", ontap: "deleteButtonTapped", content: $L("Delete")},
-				{name: "swipeableCancelButton", kind: "onyx.Button", style: "margin-left: 10px;", ontap: "cancelButtonTapped", content: $L("Cancel")}
-			]}
+            {tag: "div", classes: "webosstyle-list-groupbox-top", components: [
+            	{tag: "div", classes: "webosstyle-list-groupbox-header", content: $L("Installed")},
+            ]},
 		]},
         {tag: "div", style:"width: 100%; text-align: center", components: [
         	{kind: "onyx.Button", classes: "onyx-affirmative", style: "margin:5px; width: 18%; min-width: 100px; font-size: 18px;", content: $L("Close"), ontap: "closePopup"}
@@ -203,8 +186,11 @@ enyo.kind({
 		var i = inEvent.index;
 		var item = this.feeds[i];
 		
-		//this.$.item.setContact(item);
 		this.$.feed.setFeed(item);
+		
+		this.$.feedWrapper.addRemoveClass("webosstyle-list-groupbox-item-last", i == (this.feeds.length - 1));
+		this.$.feed.addRemoveClass("webosstyle-list-groupbox-item-content-first", i == 0);
+		this.$.feed.addRemoveClass("webosstyle-list-groupbox-item-content-last", i == (this.feeds.length - 1));
 				
 		return true;
 	},
@@ -222,9 +208,21 @@ enyo.kind({
     },
 
     deleteButtonTapped: function(inSender, inEvent) {
+    //TODO: FIgure out why this is failing
         this.$.ManageFeedsList.setPersistSwipeableItem(false);
-        //this.sourceDeleted(this.activeItem); 
+    	preware.IPKGService.deleteConfig(this.deleteFeedResponse.bind(this), this.activeItem.config, this.activeItem.name);
 		this.completeSwipeItem();
+    },
+
+	deleteFeedResponse: function (payload) {
+		if (payload.stage == 'completed')
+		{
+			// tell packages the feeds are "dirty"
+			preware.PackagesModel.dirtyFeeds = true;
+
+			// init feed loading
+			preware.IPKGService.list_configs(this.onFeeds.bind(this));
+		}
     },
 
     cancelButtonTapped: function(inSender, inEvent) {
@@ -256,13 +254,22 @@ enyo.kind({
 
 	feedEnabledToggled: function (inSender, inEvent)
 	{
-		console.log("Ping!")
-		//preware.IPKGService.setConfigState(function(){preware.PackagesModel.dirtyFeeds = true;}, inSender.attributes.config, inSender.attributes.enabled);
+		if (this.swiping)
+		{
+			return true;
+		}
+		var i = inEvent.index;
+		var item = this.feeds[i];
+		
+		item.enabled = !item.enabled;
+		
+		this.$.ManageFeedsList.renderRow(i);
+		preware.IPKGService.setConfigState(function(){preware.PackagesModel.dirtyFeeds = true;}, item.config, item.enabled);
 	},
 
     closePopup: function (inSender, inEvent) {
-    	//TODO: write back changes to service, refresh feeds if user has changed anything.
 		this.clearNewFeed();
+		this.$.ManageFeedsList.setCount(0);
         this.hide();
     },
 
@@ -346,59 +353,21 @@ enyo.kind({
 	}
 });
 
-// It's convenient to create a kind for the item we'll render in the contacts list.
 enyo.kind({
 	name: "preware.FeedItem",
+	
 	events: {
-		onRemove: ""
+		onToggle: ""
 	},
-	published: {
-		importance: 0
-	},
+	
 	components: [
 		{kind: "enyo.FittableRows", fit: true, components: [
 		  {name: "feedName"},
 		  {name: "feedURL", style: "font-size: 10px; color: LightGray"},
 		]},
-		{name: "remove", kind: "onyx.IconButton", classes: "list-sample-contacts-remove-button", src: "assets/folder.png", ontap: "removeTap"}
+		{name: "feedEnabledToggle", kind: "onyx.ToggleButton", classes: "managefeedslist-feed-item-enable-toggle", ontap: "toggleTap"}
 	],
-	setFeed: function(inFeed) {
-		this.$.feedName.setContent(inFeed.name);
-		this.$.feedURL.setContent(inFeed.url);
-		/*if(inFeed.enabled)
-		{
-			this.$.feedEnabledToggle.setContent($L("On"));
-		}
-		else
-		{
-			this.$.feedEnabledToggle.setContent($L("Off"));
-		}*/
-//		this.$.feedEnabledToggle.setValue(inFeed.enabled);
-	},
-	removeTap: function(inSender, inEvent) {
-		this.doRemove(inEvent);
-		return true;
-	}
-});
-
-// It's convenient to create a kind for the item we'll render in the contacts list.
-/*enyo.kind({
-	name: "preware.FeedItem",
-	events: {
-		onRemove: ""
-	},
-	published: {
-		importance: 0
-	},
-	components: [
-		{classes: "settings-item-repeater", components: [
-			{kind: "enyo.FittableRows", fit: true, components: [
-				{name: "feedName"},
-				{name: "feedURL", style: "font-size: 10px; color: LightGray"},
-			]},
-			{name: "feedEnabledToggle", kind: "onyx.Button", style: "float: right", onTap: "feedEnabledToggled" }
-		]}
-	],
+	
 	setFeed: function(inFeed) {
 		this.$.feedName.setContent(inFeed.name);
 		this.$.feedURL.setContent(inFeed.url);
@@ -410,15 +379,13 @@ enyo.kind({
 		{
 			this.$.feedEnabledToggle.setContent($L("Off"));
 		}
-//		this.$.feedEnabledToggle.setValue(inFeed.enabled);
+		//This behaviour is necessary to get the togglebutton to render properly
+		this.$.feedEnabledToggle.setValue(!inFeed.enabled);
+		this.$.feedEnabledToggle.setValue(inFeed.enabled);
 	},
-	feedEnabledToggled: function (inSender, inEvent)
-	{
-		console.log("Ping!")
-		//preware.IPKGService.setConfigState(function(){preware.PackagesModel.dirtyFeeds = true;}, inSender.attributes.config, inSender.attributes.enabled);
-	},
-	removeTap: function(inSender, inEvent) {
-		this.doRemove(inEvent);
+	
+	toggleTap: function(inSender, inEvent) {
+		this.doToggle(inEvent);
 		return true;
 	}
-});*/
+});
