@@ -120,6 +120,11 @@
 	border-color: #303030;
 }
 
+.webosstyle-list-groupbox-top-collapsed {
+	border-bottom-left-radius: 8px; 
+	border-bottom-right-radius: 8px; 
+}
+
 .webosstyle-list-groupbox-header {
 	color: #ffffff; 
 	padding-left: 10px; 

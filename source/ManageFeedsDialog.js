@@ -52,7 +52,7 @@ enyo.kind({
 					]}
                 ]}
             ]},
-            {tag: "div", classes: "webosstyle-list-groupbox-top", components: [
+            {name: "installedFeedsGroupboxHeader", tag: "div", classes: "webosstyle-list-groupbox-top webosstyle-list-groupbox-top-collapsed", components: [
             	{tag: "div", classes: "webosstyle-list-groupbox-header", content: $L("Installed")},
             ]},
 		]},
@@ -171,9 +171,15 @@ enyo.kind({
 		{
 			if (this.feeds.length > 0) 
 			{
-				this.$.ManageFeedsList.setCount(this.feeds.length);
-				this.$.ManageFeedsList.refresh();
+				this.$.installedFeedsGroupboxHeader.removeClass("webosstyle-list-groupbox-top-collapsed");
 			}
+			else
+			{
+				this.$.installedFeedsGroupboxHeader.addClass("webosstyle-list-groupbox-top-collapsed");
+			}
+			
+			this.$.ManageFeedsList.setCount(this.feeds.length);
+			this.$.ManageFeedsList.refresh();
 		}
 		catch (e)
 		{
@@ -208,9 +214,9 @@ enyo.kind({
     },
 
     deleteButtonTapped: function(inSender, inEvent) {
-    //TODO: FIgure out why this is failing
+    	var item = this.feeds[this.activeItem];
         this.$.ManageFeedsList.setPersistSwipeableItem(false);
-    	preware.IPKGService.deleteConfig(this.deleteFeedResponse.bind(this), this.activeItem.config, this.activeItem.name);
+    	preware.IPKGService.deleteConfig(this.deleteFeedResponse.bind(this), item.config, item.name);
 		this.completeSwipeItem();
     },
 
@@ -270,6 +276,7 @@ enyo.kind({
     closePopup: function (inSender, inEvent) {
 		this.clearNewFeed();
 		this.$.ManageFeedsList.setCount(0);
+		this.$.installedFeedsGroupboxHeader.addClass("webosstyle-list-groupbox-top-collapsed");
         this.hide();
     },
 
