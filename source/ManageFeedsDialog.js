@@ -251,9 +251,9 @@ enyo.kind({
     	var dialogWidthPC = this.domStyles.width.replace('%', '') / 100;
     	
     	var groupboxWidth = Math.round(windowWidth * dialogWidthPC) - (dialogPadding * 2);
-		//this.$.newFeedName.applyStyle("width", (groupboxWidth - 90) + "px");
-		//this.$.newFeedURL.applyStyle("width", (groupboxWidth - 90) + "px");
-		//this.$.addNewFeedButton.applyStyle("width", groupboxWidth + "px");
+		this.$.newFeedName.applyStyle("width", (groupboxWidth - 90) + "px");
+		this.$.newFeedURL.applyStyle("width", (groupboxWidth - 90) + "px");
+		this.$.addNewFeedButton.applyStyle("width", groupboxWidth + "px");
 		
 		this.inherited(arguments);
 	},
