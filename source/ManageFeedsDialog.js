@@ -63,6 +63,7 @@ enyo.kind({
         {name: "warningDialog", kind: Preware.ChoiceDialog, onAction: "okWarning", onDismiss: "closeDialog"},
     ],
 
+	//setup
     create: enyo.inherit(function (sup) {
 		return function () {
 			this.warningOkd = false;
@@ -83,6 +84,26 @@ enyo.kind({
 		
 		this.inherited(arguments);
 	},
+	
+	setupItem: function(inSender, inEvent) {
+		var i = inEvent.index;
+		var item = this.feeds[i];
+		
+		this.$.feed.setFeed(item);
+		
+		this.$.feedWrapper.addRemoveClass("webosstyle-list-groupbox-item-last", i == (this.feeds.length - 1));
+		this.$.feed.addRemoveClass("webosstyle-list-groupbox-item-content-first", i == 0);
+		this.$.feed.addRemoveClass("webosstyle-list-groupbox-item-content-last", i == (this.feeds.length - 1));
+				
+		return true;
+	},
+
+	setupSwipeItem: function(inSender, inEvent) {
+        // because setting it on the list itself fails:
+        this.$.ManageFeedsList.setPersistSwipeableItem(true);
+        this.activeItem = inEvent.index;
+        this.swiping = true;
+    },
 
     //handlers
     onFeeds: function(payload)
@@ -188,54 +209,6 @@ enyo.kind({
 		}
 	},
 
-	setupItem: function(inSender, inEvent) {
-		var i = inEvent.index;
-		var item = this.feeds[i];
-		
-		this.$.feed.setFeed(item);
-		
-		this.$.feedWrapper.addRemoveClass("webosstyle-list-groupbox-item-last", i == (this.feeds.length - 1));
-		this.$.feed.addRemoveClass("webosstyle-list-groupbox-item-content-first", i == 0);
-		this.$.feed.addRemoveClass("webosstyle-list-groupbox-item-content-last", i == (this.feeds.length - 1));
-				
-		return true;
-	},
-
-	setupSwipeItem: function(inSender, inEvent) {
-        // because setting it on the list itself fails:
-        this.$.ManageFeedsList.setPersistSwipeableItem(true);
-        this.activeItem = inEvent.index;
-        this.swiping = true;
-    },
-
-	completeSwipeItem: function() {
-        this.$.ManageFeedsList.completeSwipe();
-        this.swiping = false;
-    },
-
-    deleteButtonTapped: function(inSender, inEvent) {
-    	var item = this.feeds[this.activeItem];
-        this.$.ManageFeedsList.setPersistSwipeableItem(false);
-    	preware.IPKGService.deleteConfig(this.deleteFeedResponse.bind(this), item.config, item.name);
-		this.completeSwipeItem();
-    },
-
-	deleteFeedResponse: function (payload) {
-		if (payload.stage == 'completed')
-		{
-			// tell packages the feeds are "dirty"
-			preware.PackagesModel.dirtyFeeds = true;
-
-			// init feed loading
-			preware.IPKGService.list_configs(this.onFeeds.bind(this));
-		}
-    },
-
-    cancelButtonTapped: function(inSender, inEvent) {
-        this.$.ManageFeedsList.setPersistSwipeableItem(false);
-		this.completeSwipeItem();
-    },
-
     resizeHandler: function(){
     	//Calculate scroller height - if we don't explicitly set the scroller height, it will overflow the dialog
 		var windowHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
@@ -285,6 +258,7 @@ enyo.kind({
         this.$.alertDialog.hide();
     },
 
+	//add feeds
     testNewFeed: function (inSender, inEvent) {
     	var newUrl = this.$.newFeedURL.getValue();
 		if (newUrl.indexOf("http://ipkg.preware.org/alpha") == 0 || newUrl.indexOf("http://ipkg.preware.net/alpha") == 0)
@@ -350,7 +324,38 @@ enyo.kind({
         this.$.newFeedURL.setValue("http://");
         this.$.newFeedCompressedToggle.setValue(false);
 	},
+
+	//delete feeds
+	completeSwipeItem: function() {
+        this.$.ManageFeedsList.completeSwipe();
+        this.swiping = false;
+    },
+
+    deleteButtonTapped: function(inSender, inEvent) {
+    	var item = this.feeds[this.activeItem];
+        this.$.ManageFeedsList.setPersistSwipeableItem(false);
+    	preware.IPKGService.deleteConfig(this.deleteFeedResponse.bind(this), item.config, item.name);
+		this.completeSwipeItem();
+    },
+
+	deleteFeedResponse: function (payload) {
+		if (payload.stage == 'completed')
+		{
+			// tell packages the feeds are "dirty"
+			preware.PackagesModel.dirtyFeeds = true;
+
+			// init feed loading
+			preware.IPKGService.list_configs(this.onFeeds.bind(this));
+		}
+    },
+
+    cancelButtonTapped: function(inSender, inEvent) {
+        this.$.ManageFeedsList.setPersistSwipeableItem(false);
+		this.completeSwipeItem();
+    },
 	
+		
+	//utility
     checkFocus: function(source, event) {
 		source.applyStyle("color", "black");
 	},
