@@ -22,7 +22,7 @@ enyo.kind({
 			]}
 		],
 		swipeableComponents: [
-			{style: "height: 100%; margin-left: 5px; margin-right: 5px; background-color: darkgrey; text-align:center", components: [
+			{name: "swipableFeed", style: "height: 100%; margin-left: 5px; margin-right: 5px; background-color: darkgrey; text-align:center", components: [
 				{name: "swipeableDeleteButton", kind: "onyx.Button", style: "margin-top: 10px; margin-right: 10px;", classes:"onyx-negative", ontap: "deleteButtonTapped", content: $L("Delete")},
 				{name: "swipeableCancelButton", kind: "onyx.Button", style: "margin-left: 10px;", ontap: "cancelButtonTapped", content: $L("Cancel")}
 			]}
@@ -102,6 +102,22 @@ enyo.kind({
         // because setting it on the list itself fails:
         this.$.ManageFeedsList.setPersistSwipeableItem(true);
         this.activeItem = inEvent.index;
+        
+   		this.$.swipableFeed.addRemoveClass("webosstyle-list-swipable-groupbox-item-first", inEvent.index == 0);
+		this.$.swipableFeed.addRemoveClass("webosstyle-list-swipable-groupbox-item-last", inEvent.index == (this.feeds.length - 1));
+		
+		//This chunk is required because the height is applied to the row as a style, so we have to override the style
+		//Can't just use a class.
+		if (inEvent.index == (this.feeds.length - 1))
+		{ 
+			if (!this.rowHeight)
+			{
+				var currentRowHeight = this.$.swipableFeed.getComputedStyleValue("height");
+				this.rowHeight = currentRowHeight.substring(0, currentRowHeight.length - 2);
+			}
+			this.$.swipableFeed.applyStyle("height", (this.rowHeight - 5) + "px");
+		}
+		
         this.swiping = true;
     },
 

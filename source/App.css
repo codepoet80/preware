@@ -146,6 +146,14 @@
 	border-radius: 0 0 8px 8px;
 }
 
+.webosstyle-list-swipable-groupbox-item-first {
+	border-radius: 8px 8px 0 0;
+}
+
+.webosstyle-list-swipable-groupbox-item-last {
+	border-radius: 0 0 8px 8px;
+}
+
 .webosstyle-list-groupbox-item-content {
 	border-color: #aaaaaa;
 	border-style: solid; 
