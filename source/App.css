@@ -80,7 +80,7 @@
 	text-transform:uppercase;
 }
 
-.webosstyle-groupbox-body, .webosstyle-groupbox-body-single, .webosstyle-groupbox-body-repeater {
+.webosstyle-groupbox-body, .webosstyle-groupbox-body-single {
 	box-shadow: 0px 0px 1px rgba(255,255,255,0.5); 
 	border-radius: 8px;
 	background-color: #444;
@@ -108,26 +108,73 @@
 	padding: 10px;
 	border-radius: 8px;
 }
+/* End Groupboxes */
 
-.webosstyle-groupbox-body-repeater > * {
+/* Style a list like a groupbox. Needs to be done with an aroundlist */
+.webosstyle-list-groupbox-top {
+	padding: 5px; 
+	border-top-left-radius: 8px; 
+	border-top-right-radius: 8px; 
+	border-width: 1px;
+	background-color: #383838;
+	border-color: #303030;
+}
+
+.webosstyle-list-groupbox-top-collapsed {
+	border-bottom-left-radius: 8px; 
+	border-bottom-right-radius: 8px; 
+}
+
+.webosstyle-list-groupbox-header {
+	color: #ffffff; 
+	padding-left: 10px; 
+	font-weight:bold; 
+	font-size: 14px;
+	text-transform:uppercase;
+}
+
+.webosstyle-list-groupbox-item { 
+	padding-left: 5px; 
+	padding-right: 5px; 
+	border-width: 1px;
+	background-color: #383838;
+	border-color: #303030;
+}
+
+.webosstyle-list-groupbox-item-last {
+	padding-bottom: 5px; 
+	border-radius: 0 0 8px 8px;
+}
+
+.webosstyle-list-swipable-groupbox-item-first {
+	border-radius: 8px 8px 0 0;
+}
+
+.webosstyle-list-swipable-groupbox-item-last {
+	border-radius: 0 0 8px 8px;
+}
+
+.webosstyle-list-groupbox-item-content {
 	border-color: #aaaaaa;
 	border-style: solid; 
-	border-width: 0 1px 1px 1px;
-	border-radius: 8px; 
+	border-width: 0 1px 1px 1px;  
+	padding: 10px;
+	background-color: #444;
 }
-/* End Groupboxes */
+
+.webosstyle-list-groupbox-item-content-first {
+	border-radius: 8px 8px 0 0;
+}
+
+.webosstyle-list-groupbox-item-content-last {
+	border-radius: 0 0 8px 8px;
+}
+/* End List Groupboxes */
 
 /* Style for settings items */
 .settings-item {
 	padding-top: 10px; 
 	padding-right: 10px;
-}
-
-.settings-item-repeater {
-	border-color: #aaaaaa;
-	border-style: solid; 
-	border-width: 0 0 1px 0; 
-	padding: 10px;
 }
 
 .settings-title-picker {
@@ -147,3 +194,13 @@
 	color: white;
 }
 /* End Settings Items */
+
+/* Style for Manage Feeds Dialog */
+.managefeedslist-feed-item > * {
+	display: inline-block;
+	vertical-align: middle;
+}
+.managefeedslist-feed-item-enable-toggle {
+	float: right;
+}
+/* End Manage Feeds Dialog */
