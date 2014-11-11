@@ -4,8 +4,8 @@
 
 enyo.kind({
     name: "InstallPackageDialog",
-    classes: "enyo-popup enyo-fill",
-    style: "padding: 0",
+    classes: "enyo-popup",
+    style: "padding: 15px; width: 90%; height: 90%;",
     kind: "onyx.Popup",
     centered: true,
     modal: true,
@@ -26,40 +26,29 @@ enyo.kind({
                 {  //panel to select the IPK.
                     name: "selectPanel",
                     kind: "FittableRows",
-                    classes: "enyo-fill enyo-fit",
-                    style: "background-image:url('assets/bg.png'); border-radius: 8px;",
+                    style: "padding: 15px;",
                     components: [
-                        {kind: "onyx.Toolbar", components: [
-                            {classes: "top-title", content: "Fileselection"}
+                        {tag: "div", classes: "webosstyle-groupbox", components: [
+                        	{tag: "div", classes: "webosstyle-groupbox-header", content: $L("Package Location")},
+                			{tag: "div", classes: "webosstyle-groupbox-body-single", style: "width: 100%", components:[
+								{kind: "enyo.FittableColumns", noStretch: true, classes: "settings-item", components: [
+									{kind: "onyx.InputDecorator", style: "width: 100%;", components: [
+										{name: "ipkEdit", kind: "onyx.Input", classes: "enyo-fill", style: "text-align: left;color: white;", oninput: "validatePackageLocation", onfocus: "checkFocus", onblur: "checkBlur", placeholder: $L("http:// or file:// or ftp://")}
+									]},
+								]},                			
+                			]},
+                		]},
+                		{ kind: "onyx.Button", content: $L("Browse"), style:"width: 100%;", classes: "onyx-dark", ontap: "browseFiles" },
+                        {name: "getInfoButton", kind: "onyx.Button", content: $L("Get Info"), style:"width: 100%; margin-top: 5px;", classes: "onyx-dark", ontap: "getInfo", disabled: true },
+                        {name: "installButton", kind: "onyx.Button", content: $L("Install"), style:"width: 100%; margin-top: 5px;", classes: "onyx-dark", ontap: "install", disabled: true },
+                        {tag: "div", style:"margin-top: 10px; color: white; background-color: #444; border-color: #aaaaaa; border-style: solid; border-width: 1px 1px 1px 1px; padding: 10px; border-radius: 8px;", components:[
+                        	{tag: "div", style:"font-weight: bold;", content:$L("Note:")},
+                        	{tag: "div", content:$L("If this package needs a luna restart or device restart after installation, you will need to manually perform it when the installation is complete.")},
                         ]},
-                        {
-                            kind: "onyx.Groupbox",
-                            classes: "horizontal-groups",
-                            components: [
-                                {
-                                    kind: "onyx.InputDecorator",
-                                    components: [
-                                        {kind: "onyx.Input", classes: "enyo-fill", style: "text-align: left;", placeholder: $L("http:// or file:// or ftp://"), name: "ipkEdit"}
-                                    ]
-                                }
-                            ]
-                        },
-                        {
-                            kind: "onyx.Groupbox",
-                            classes: "horizontal-groups",
-                            components: [
-                                { kind: "onyx.Button", classes: "horizontal-buttons", content: $L("Browse"), ontap: "browseFiles" },
-                                { kind: "onyx.Button", classes: "horizontal-buttons", content: $L("Get Info"), ontap: "getInfo" },
-                                { kind: "onyx.Button", classes: "horizontal-buttons", content: $L("Install"), ontap: "install" }
-                            ]
-                        },
-                        {
-                            kind: "onyx.Toolbar",
-                            classes: "bottom-toolbar",
-                            components: [
-                                { kind: "onyx.Button", content: $L("Close"), ontap: "closePopup"}
-                            ]
-                        }
+                        {tag: "div", fit: true},
+                        {tag: "div", style:"width: 100%; text-align: center", components: [
+        					{kind: "onyx.Button", classes: "onyx-affirmative", style: "margin:5px; width: 18%; min-width: 100px; font-size: 18px;", content: $L("Close"), ontap: "closePopup"}
+        				]},
                     ]
                 }, //end of selectPanel.
                 {
@@ -165,7 +154,7 @@ enyo.kind({
         }
 
         if (!this.ipkOperation && index === this.selectPanelIndex) {
-            this.hide();
+            this.closePopup();
         }
 
         inEvent.preventDefault();
@@ -177,6 +166,9 @@ enyo.kind({
     },
     closePopup: function (inSender, inEvent) {
         if (!this.ipkOperation) {
+			this.$.ipkEdit.setValue("");
+			this.$.getInfoButton.setDisabled(true);
+			this.$.installButton.setDisabled(true);
             this.hide();
         }
     },
@@ -191,8 +183,8 @@ enyo.kind({
                                                                  //ipk gets downloaded to /media/internal/.developer/$filename
         preware.IPKGService.extractControl(this.gotInfo.bind(this), this.filename, this.uri);
         this.$.Panels.setIndex(this.spinnerPanelIndex);
-        this.$.message.setContent("Getting infor for " + this.filename);
-        this.originalMessage = "Getting infor for " + this.filename;
+        this.$.message.setContent("Getting info for " + this.filename);
+        this.originalMessage = "Getting info for " + this.filename;
         this.ipkOperation = true;
         this.$.spinnerBackBtn.hide();
     },
@@ -215,11 +207,24 @@ enyo.kind({
             this.$.filePicker.hide();
             if (inEvent.success) {
                 this.$.ipkEdit.setValue("file://" + inEvent.location);
+                this.validatePackageLocation();
             }
             this.$.Panels.setIndex(this.selectPanelIndex);
         }
     },
-
+	validatePackageLocation: function (inSender, inEvent) {
+		if (this.$.ipkEdit.getValue() != "")
+		{
+			this.$.getInfoButton.setDisabled(false);
+			this.$.installButton.setDisabled(false);
+		}
+		else
+		{
+			this.$.getInfoButton.setDisabled(true);
+			this.$.installButton.setDisabled(true);
+		}
+	},
+	
     //results:
     gotInfo: function (payload) {
         console.log("control extracted: " + JSON.stringify(payload));
@@ -256,5 +261,14 @@ enyo.kind({
     },
     statusMessage: function (inSender, inEvent) {
         this.$.message.setContent(this.originalMessage + "<br />" + inEvent.message);
-    }
+    },
+    
+    //utility
+    checkFocus: function(source, event) {
+		source.applyStyle("color", "black");
+	},
+
+	checkBlur: function(source, event) {
+		source.applyStyle("color", "white");
+	}
 });
