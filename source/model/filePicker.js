@@ -50,14 +50,14 @@ enyo.kind({
         extensionRegExp: new RegExp(/\.([^\.]+)$/)
     },
     components: [
-        {kind: "onyx.Toolbar", style: "box-sizing: border-box;", components: [
+        {kind: "onyx.Toolbar", style: "box-sizing: border-box; border-top-left-radius: 8px; border-top-right-radius: 8px;", components: [
             {classes: "top-title", content: "Files"}
         ]},
         {
             kind: "Scroller",
             horizontal: "hidden",
             classes: "enyo-fill enyo-fit",
-            style: "background-image:url('assets/bg.png'); position: relative;",
+            style: "background-color: #444; position: relative;",
             touch: true,
             fit: true,
             components: [
@@ -68,7 +68,7 @@ enyo.kind({
         },
         {
             kind: "onyx.Toolbar",
-            style: "box-sizing: border-box; width: 100%;",
+            style: "box-sizing: border-box; width: 100%; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;",
             components: [
                 {name: "CancelButton", classes: "center", kind: "onyx.Button", content: "Cancel", ontap: "cancel"}
             ]
