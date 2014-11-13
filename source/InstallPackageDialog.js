@@ -55,24 +55,22 @@ enyo.kind({
                     name: "spinnerPanel",
                     kind: "enyo.FittableRows",
                     classes: "enyo-fill enyo-fit",
-                    style: "background-image:url('assets/bg.png'); border-radius: 8px;border-radius: 8px;",
+                    style: "border-radius: 8px;",
                     components: [
-                        { kind: "onyx.Spinner", style: "display: block; margin: 10% auto;" },
-                        {
-                            kind: "enyo.Scroller",
-                            classes: "enyo-fill center",
-                            components: [
-                                { name: "message", classes: "enyo-fill center", style: "display: block; font-size: 14pt; margin-top: 8px; width: 80%; max-width: 500px;",
-                                        allowHtml: true, content: "Placeholder." }
-                            ]
-                        },
-                        {
-                            kind: "onyx.Toolbar",
-                            classes: "bottom-toolbar",
-                            components: [
-                                { kind: "onyx.Button", name: "spinnerBackBtn", showing: "false", content: $L("Back"), ontap: "backFromSpinner"}
-                            ]
-                        }
+                        {tag: "div", classes: "center", style:"width: 40%; margin-top: 20%; min-width: 300px; color: white; background-color: #383838; border-color: #aaaaaa; border-style: solid; border-width: 1px; padding: 10px; border-radius: 8px;", components:[
+							{ kind: "onyx.Spinner", style: "display: block; margin: 10% auto;" },
+							{
+								kind: "enyo.Scroller",
+								classes: "enyo-fill center",
+								components: [
+									{ name: "message", classes: "enyo-fill center", style: "display: block; font-size: 14pt; margin-top: 8px; margin-bottom: 10px; width: 80%; max-width: 500px; max-height: 200px;",
+											allowHtml: true, content: "Placeholder." }
+								]
+							},
+                        ]},
+                        {tag: "div", style:"width: 100%; text-align: center", components: [
+        					{name: "spinnerBackBtn", kind: "onyx.Button", classes: "onyx-dark", style: "margin:5px; width: 18%; min-width: 100px; font-size: 18px;", showing: "false", content: $L("Back"), ontap: "backFromSpinner"}
+        				]}
                     ]
                 }, //end pf spinnerPanel
                 { //infoPanel shows package info
