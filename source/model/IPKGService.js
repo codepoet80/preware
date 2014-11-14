@@ -70,7 +70,8 @@ enyo.singleton({
     extractControl: function (callback, filename, url) {
         var params = {
             filename: filename,
-            url: url
+            url: url,
+            subscribe: true
         };
         return this.doServiceCall(callback, "extractControl", params);
     },
