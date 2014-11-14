@@ -23,7 +23,7 @@ enyo.kind({
             draggable: false,
             arrangerKind: "CardArranger",
             components: [
-                {  //panel to select the IPK.
+                /*{  //panel to select the IPK.
                     name: "selectPanel",
                     kind: "FittableRows",
                     style: "padding: 15px;",
@@ -72,25 +72,36 @@ enyo.kind({
         					{name: "spinnerBackBtn", kind: "onyx.Button", classes: "onyx-dark", style: "margin:5px; width: 18%; min-width: 100px; font-size: 18px;", showing: "false", content: $L("Back"), ontap: "backFromSpinner"}
         				]}
                     ]
-                }, //end pf spinnerPanel
+                },*/ //end pf spinnerPanel
                 { //infoPanel shows package info
                     name: "infoPanel",
-                    kind: "FittableRows",
-                    style: "background-image:url('assets/bg.png'); border-radius: 8px;",
+                    kind: "enyo.FittableRows",
+                    classes: "enyo-fill enyo-fit",
+                    style: "border-radius: 8px;",
                     components: [
+                        //TODO: Continue from here
+                        {kind: "enyo.FittableColumns", style: "width: 100%; background-color: #383838; border-radius: 8px 8px 0 0; padding: 5px;", components: [
+                        	{tag: "img", style: "width: 48px; height: 48px;", src: "icon.png"},
+                        	{tag: "span", style: "border: 1px white solid; position: relative; top: -20; color: #ffffff; padding-left: 10px; padding-bottom: 5px; font-size: 28px;", content: "Hello World"},
+                        ]},
                         {
                             kind: "enyo.Scroller",
                             classes: "enyo-fill enyo-fit",
+                            fit: true,
                             components: [
-                                {kind: "preware.PackageDisplay", name: "packageDisplay"}
+                                //{kind: "preware.PackageDisplay", name: "packageDisplay"}
                             ]
                         },
-                        {
+                        {tag: "div", style:"width: 100%; text-align: center", components: [
+        					{name: "infoBackButton", kind: "onyx.Button", classes: "onyx-dark", style: "margin:5px; width: 18%; min-width: 100px; font-size: 18px;", content: $L("Back"), ontap: "backFromSpinner"},
+        					{name: "infoInstallButton", kind: "onyx.Button", classes: "onyx-dark", style: "margin:5px; width: 18%; min-width: 100px; font-size: 18px;", content: $L("Install"), ontap: "install"}
+        				]}
+                        /*{
                             kind: "onyx.Toolbar",
                             comonents: [
                                 { kind: "onyx.Button", content: $L("Close"), ontap: "closePopup"}
                             ]
-                        }
+                        }*/
                     ]
                 },
                 {
@@ -235,7 +246,7 @@ enyo.kind({
                 pkgModel = new preware.PackageModel(infoObj);
                 this.ipkOperation = false;
                 if (pkgModel) {
-                    this.$.packageDisplay.setCurrentPackage(pkgModel);
+                    //this.$.packageDisplay.setCurrentPackage(pkgModel);
                     //this.$.packageDisplay.refreshPackageDisplay();
 
                     this.$.Panels.setIndex(this.infoPanelIndex);
