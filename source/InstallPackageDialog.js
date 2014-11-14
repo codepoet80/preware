@@ -228,9 +228,7 @@ enyo.kind({
         console.log("control extracted: " + JSON.stringify(payload));
         if (payload.stage) {
             if (payload.stage === "completed") {
-
-                var infoObj = preware.PackagesModel.parsePackage(payload.info),
-                    pkgModel;
+                var infoObj = this.parsePackage(payload.info);
                 infoObj.type = "Package";
                 infoObj.filename = this.filename;
                 infoObj.location = this.uri;
@@ -259,6 +257,54 @@ enyo.kind({
     },
     statusMessage: function (inSender, inEvent) {
         this.$.message.setContent(this.originalMessage + "<br />" + inEvent.message);
+    },
+    
+    //processing
+    parsePackage: function (rawData, url) {
+        var test, lineRegExp, curPkg, x, match;
+        try {
+            if (rawData) {
+              	test = rawData;
+                lineRegExp = new RegExp(/[\s]*([^:]*):[\s]*(.*)[\s]*$/);
+                curPkg = false;
+
+                for (x = 0; x < test.length; x += 1) {
+                    match = lineRegExp.exec(test[x]);
+                    if (match) {
+                        if (match[1] === 'Package' && !curPkg) {
+                            curPkg = {
+                                Size: 0,
+                                Status: '',
+                                Architecture: '',
+                                Section: '',
+                                Package: '',
+                                Filename: '',
+                                Depends: '',
+                                Maintainer: '',
+                                Version: '',
+                                Description: '',
+                                MD5Sum: '',
+                                'Installed-Time': 0,
+                                'Installed-Size': 0,
+                                Source: ''
+                            };
+                        }
+                        if (match[1] && match[2]) {
+                            curPkg[match[1]] = match[2];
+                        }
+                    } else {
+						throw $L("Failed to Parse Package");
+                    }
+                }
+            }
+        } catch (e) {
+            console.error('error in packagesModel#parsePackages: ' + e);
+            this.$.message.setContent("Error: " + e.errorText);
+            this.ipkOperation = false;
+            setTimeout(function () { this.$.Panels.setIndex(this.selectPanelIndex);  }.bind(this), 2000);
+        }
+
+        return curPkg;
     },
     
     //utility
