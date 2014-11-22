@@ -23,7 +23,7 @@ enyo.kind({
             draggable: false,
             arrangerKind: "CardArranger",
             components: [
-                /*{  //panel to select the IPK.
+                {  //panel to select the IPK.
                     name: "selectPanel",
                     kind: "FittableRows",
                     style: "padding: 15px;",
@@ -72,41 +72,87 @@ enyo.kind({
         					{name: "spinnerBackBtn", kind: "onyx.Button", classes: "onyx-dark", style: "margin:5px; width: 18%; min-width: 100px; font-size: 18px;", showing: "false", content: $L("Back"), ontap: "backFromSpinner"}
         				]}
                     ]
-                },*/ //end pf spinnerPanel
+                }, //end pf spinnerPanel
                 { //infoPanel shows package info
                     name: "infoPanel",
                     kind: "enyo.FittableRows",
                     classes: "enyo-fill enyo-fit",
                     style: "border-radius: 8px;",
                     components: [
-                        //TODO: Continue from here
                         {kind: "enyo.FittableColumns", style: "width: 100%; background-color: #383838; border-radius: 8px 8px 0 0; padding: 5px;", components: [
-                        	{tag: "img", style: "width: 48px; height: 48px;", src: "icon.png"},
-                        	{tag: "span", style: "border: 1px white solid; position: relative; top: -20; color: #ffffff; padding-left: 10px; padding-bottom: 5px; font-size: 28px;", content: "Hello World"},
+                        	{name: "pkgInfoIcon", tag: "img", style: "width: 48px; height: 48px;"},
+                        	{name: "pkgInfoTitle", tag: "span", style: "position: relative; top: -10; color: #ffffff; padding-left: 10px; font-size: 28px;", content: "Hello World"},
                         ]},
                         {
                             kind: "enyo.Scroller",
-                            classes: "enyo-fill enyo-fit",
                             fit: true,
                             components: [
-                                //{kind: "preware.PackageDisplay", name: "packageDisplay"}
+                            	{name: "pkgInfoDescriptionContainer", tag: "div", classes:"package-info-container", components: [
+                            		{tag: "div", classes:"package-info-title", content: $L("Description")},
+                            		{name: "pkgInfoDescription", tag: "div", classes:"package-info-content"},
+                            	]},
+                            	{name: "pkgInfoHomepageContainer", tag: "div", classes:"package-info-container", components: [
+                            		{tag: "div", classes:"package-info-title", content: $L("Homepage")},
+                            		{name: "pkgInfoHomepage", tag: "div", classes:"package-info-content"},
+                            	]},
+                            	{name: "pkgInfoMaintainerContainer", tag: "div", classes:"package-info-container", components: [
+                            		{tag: "div", classes:"package-info-title", content: $L("Maintainer")},
+                            		{name: "pkgInfoMaintainer", tag: "div", classes:"package-info-content"},
+                            	]},
+                            	{name: "pkgInfoVersionContainer", tag: "div", classes:"package-info-container", components: [
+                            		{tag: "div", classes:"package-info-title", content: $L("Version")},
+                            		{name: "pkgInfoVersion", tag: "div", classes:"package-info-content"},
+                            	]},
+                            	{name: "pkgInfoLastUpdatedContainer", tag: "div", classes:"package-info-container", components: [
+                            		{tag: "div", classes:"package-info-title", content: $L("Last Updated")},
+                            		{name: "pkgInfoLastUpdated", tag: "div", classes:"package-info-content"},
+                            	]},
+                            	{name: "pkgInfoDownloadSizeContainer", tag: "div", classes:"package-info-container", components: [
+                            		{tag: "div", classes:"package-info-title", content: $L("Download Size")},
+                            		{name: "pkgInfoDownloadSize", tag: "div", classes:"package-info-content"},
+                            	]},
+                            	{name: "pkgInfoInstalledVersionContainer", tag: "div", classes:"package-info-container", components: [
+                            		{tag: "div", classes:"package-info-title", content: $L("Installed Version")},
+                            		{name: "pkgInfoInstalledVersion", tag: "div", classes:"package-info-content"},
+                            	]},
+                            	{name: "pkgInfoInstalledDateContainer", tag: "div", classes:"package-info-container", components: [
+                            		{tag: "div", classes:"package-info-title", content: $L("Installed")},
+                            		{name: "pkgInfoInstalledDate", tag: "div", classes:"package-info-content"},
+                            	]},
+                            	{name: "pkgInfoInstalledSizeContainer", tag: "div", classes:"package-info-container", components: [
+                            		{tag: "div", classes:"package-info-title", content: $L("Installed Size (KB)")},
+                            		{name: "pkgInfoInstalledSize", tag: "div", classes:"package-info-content"},
+                            	]},
+                            	{name: "pkgInfoIDContainer", tag: "div", classes:"package-info-container", components: [
+                            		{tag: "div", classes:"package-info-title", content: $L("ID")},
+                            		{name: "pkgInfoID", tag: "div", classes:"package-info-content"},
+                            	]},
+                            	{name: "pkgInfoLicenseContainer", tag: "div", classes:"package-info-container", components: [
+                            		{tag: "div", classes:"package-info-title", content: $L("License")},
+                            		{name: "pkgInfoLicense", tag: "div", classes:"package-info-content"},
+                            	]},
+                            	{name: "pkgInfoTypeContainer", tag: "div", classes:"package-info-container", components: [
+                            		{tag: "div", classes:"package-info-title", content: $L("Type")},
+                            		{name: "pkgInfoType", tag: "div", classes:"package-info-content"},
+                            	]},
+                            	{name: "pkgInfoCategoryContainer", tag: "div", classes:"package-info-container", components: [
+                            		{tag: "div", classes:"package-info-title", content: $L("Category")},
+                            		{name: "pkgInfoCategory", tag: "div", classes:"package-info-content"},
+                            	]},
+                            	{name: "pkgInfoFeedContainer", tag: "div", classes:"package-info-container", style: "border-bottom: none", components: [
+                            		{tag: "div", classes:"package-info-title", content: $L("Feed")},
+                            		{name: "pkgInfoFeed", tag: "div", classes:"package-info-content"},
+                            	]},
                             ]
                         },
                         {tag: "div", style:"width: 100%; text-align: center", components: [
         					{name: "infoBackButton", kind: "onyx.Button", classes: "onyx-dark", style: "margin:5px; width: 18%; min-width: 100px; font-size: 18px;", content: $L("Back"), ontap: "backFromSpinner"},
         					{name: "infoInstallButton", kind: "onyx.Button", classes: "onyx-dark", style: "margin:5px; width: 18%; min-width: 100px; font-size: 18px;", content: $L("Install"), ontap: "install"}
         				]}
-                        /*{
-                            kind: "onyx.Toolbar",
-                            comonents: [
-                                { kind: "onyx.Button", content: $L("Close"), ontap: "closePopup"}
-                            ]
-                        }*/
                     ]
                 },
                 {
                     name: "filePickerPanel",
-                    //style: "border-radius: 8px; height: 85% !important; width: 100%;",
                     classes: "enyo-fill",
                     components: [
                         {
@@ -243,12 +289,11 @@ enyo.kind({
                 infoObj.type = "Package";
                 infoObj.filename = this.filename;
                 infoObj.location = this.uri;
-                pkgModel = new preware.PackageModel(infoObj);
-                this.ipkOperation = false;
-                if (pkgModel) {
-                    //this.$.packageDisplay.setCurrentPackage(pkgModel);
-                    //this.$.packageDisplay.refreshPackageDisplay();
 
+                this.ipkOperation = false;
+                
+                if (infoObj) {
+                    this.refreshInfoPanel(infoObj);
                     this.$.Panels.setIndex(this.infoPanelIndex);
                     return;
                 }
@@ -261,13 +306,168 @@ enyo.kind({
             }
         }
     },
+    
     installDone: function (inSender, inEvent) {
         this.$.message.setContent(this.originalMessage + "<br /><bold>Done:</bold> " + inEvent.message);
         this.ipkOperation = false;
         this.$.spinnerBackBtn.show();
     },
+    
     statusMessage: function (inSender, inEvent) {
         this.$.message.setContent(this.originalMessage + "<br />" + inEvent.message);
+    },
+    
+    refreshInfoPanel: function (infoObj) {
+        if (infoObj.Description)
+        {
+        	this.$.pkgInfoTitle.setContent(infoObj.Description);
+        }
+        else
+        {
+        	this.$.pkgInfoTitle.setContent("N/A");
+        }
+        
+        if (infoObj.Icon)
+        {
+        	this.$.pkgInfoIcon.setSrc(infoObj.Icon);
+        }
+        
+        if (infoObj.Description)
+        {
+        	this.$.pkgInfoDescriptionContainer.show();
+        	this.$.pkgInfoDescription.setContent(infoObj.Description);
+        }
+        else
+        {
+        	this.$.pkgInfoDescriptionContainer.hide();
+        }
+       
+        if (infoObj.Homepage)
+        {
+        	this.$.pkgInfoHomepageContainer.show();
+        	this.$.pkgInfoHomepage.setContent(infoObj.Homepage);
+        }
+        else
+        {
+        	this.$.pkgInfoHomepageContainer.hide();
+        }
+
+        if (infoObj.Maintainer && infoObj.Maintainer[0].name)
+        {
+        	this.$.pkgInfoMaintainerContainer.show();
+        	this.$.pkgInfoMaintainer.setContent(infoObj.Maintainer[0].name);
+        }
+        else
+        {
+        	this.$.pkgInfoMaintainerContainer.hide();
+        }
+
+    	if (infoObj.Version)
+        {
+        	this.$.pkgInfoVersionContainer.show();
+        	this.$.pkgInfoVersion.setContent(infoObj.Version);
+        }
+        else
+        {
+        	this.$.pkgInfoVersionContainer.hide();
+        }
+
+    	if (infoObj.date)
+        {
+        	this.$.pkgInfoLastUpdatedContainer.show();
+        	this.$.pkgInfoLastUpdated.setContent(infoObj.date);
+        }
+        else
+        {
+        	this.$.pkgInfoLastUpdatedContainer.hide();
+        }        
+
+        if (infoObj.Size)
+        {
+        	this.$.pkgInfoDownloadSizeContainer.show();
+        	this.$.pkgInfoDownloadSize.setContent(infoObj.Size);
+        }
+        else
+        {
+        	this.$.pkgInfoDownloadSizeContainer.hide();
+        }
+
+		if (infoObj.VersionInstalled)
+        {
+        	this.$.pkgInfoInstalledVersionContainer.show();
+        	this.$.pkgInfoInstalledVersion.setContent(infoObj.VersionInstalled);
+        }
+        else
+        {
+        	this.$.pkgInfoInstalledVersionContainer.hide();
+        }
+
+        if (infoObj['Installed-Time'])
+        {
+        	this.$.pkgInfoInstalledDateContainer.show();
+        	this.$.pkgInfoInstalledDate.setContent(infoObj['Installed-Time']);
+        }
+        else
+        {
+        	this.$.pkgInfoInstalledDateContainer.hide();
+        }
+
+        if (infoObj['Installed-Size'])
+        {
+        	this.$.pkgInfoInstalledSizeContainer.show();
+        	this.$.pkgInfoInstalledSize.setContent(infoObj['Installed-Size']);
+        }
+        else
+        {
+        	this.$.pkgInfoInstalledSizeContainer.hide();
+        }
+
+        if (infoObj.Package)
+        {
+        	this.$.pkgInfoIDContainer.show();
+        	this.$.pkgInfoID.setContent(infoObj.Package);
+        }
+        else
+        {
+        	this.$.pkgInfoIDContainer.hide();
+        }
+
+        if (infoObj.License)
+        {
+        	this.$.pkgInfoLicenseContainer.show();
+        	this.$.pkgInfoLicense.setContent(infoObj.License);
+        }
+        else
+        {
+        	this.$.pkgInfoLicenseContainer.hide();
+        }
+
+        if (infoObj.type)
+        {
+        	this.$.pkgInfoType.setContent(infoObj.type);
+        }
+        else
+        {
+           	this.$.pkgInfoType.setContent($L("Package"));
+        }
+
+        if (infoObj.Category)
+        {
+        	this.$.pkgInfoCategory.setContent(infoObj.Category);
+        }
+        else
+        {
+           	this.$.pkgInfoCategory.setContent($L("Unsorted"));
+        }
+
+        if (infoObj.Feed)
+        {
+        	this.$.pkgInfoFeed.setContent(infoObj.Feed);
+        }
+        else
+        {
+           	this.$.pkgInfoFeed.setContent($L("Unknown"));
+        }                
     },
     
     //processing
@@ -307,6 +507,33 @@ enyo.kind({
 						throw $L("Failed to Parse Package");
                     }
                 }
+                
+                // parse maintainer
+                var maintainer;
+				if (curPkg.Maintainer) {
+					maintainer = [];
+					splitRes = curPkg.Maintainer.split(',');
+					r = new RegExp("^([^<]*)<([^>]*)>?"); // this one is win
+					for (i = 0; i < splitRes.length; i += 1) {
+						match = trim(splitRes[i]).match(r);
+						if (match) {
+							tmp = {name: trim(match[1]), url: match[2]};
+							if (tmp.url.include('@')) {
+								// remove stupid default palm address for palm-package'd apps
+								if (tmp.url === 'palm@palm.com' ||        // v1.1 style
+										tmp.url === 'nobody@example.com') {// v1.2 style
+									tmp.url = false;
+								} else {
+									tmp.url = 'mailto:' + tmp.url + '?subject=' + this.title;
+								}
+							}
+							maintainer.push(tmp);
+						} else {
+							maintainer.push({name: trim(splitRes[i]), url: false});
+						}
+					}
+					curPkg.Maintainer = maintainer;
+				}    
             }
         } catch (e) {
             console.error('error in packagesModel#parsePackages: ' + e);
@@ -314,7 +541,7 @@ enyo.kind({
             this.ipkOperation = false;
             setTimeout(function () { this.$.Panels.setIndex(this.selectPanelIndex);  }.bind(this), 2000);
         }
-
+        
         return curPkg;
     },
     

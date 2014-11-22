@@ -204,3 +204,26 @@
 	float: right;
 }
 /* End Manage Feeds Dialog */
+
+/* Style for Install Package Dialog */
+.package-info-container
+{
+	color: white; 
+	background-color: #5E5E5E; 
+	padding: 10px; 
+	overflow: hidden;
+	border-bottom: 1px white groove;
+}
+
+.package-info-title
+{
+	float: left; 
+	color: SkyBlue; 
+	text-transform:uppercase;
+}
+
+.package-info-content
+{
+	float: right;
+}
+/* End Install Package Dialog */
