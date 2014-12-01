@@ -48,8 +48,8 @@ enyo.kind({
                                 {name: "PackageHomepage",
                                     style: "padding: 15px; color: white;"},
 
-                                {kind: "onyx.GroupboxHeader", content: "Maintainter"},
-                                {name: "PackageMaintainer",
+                                {kind: "onyx.GroupboxHeader", content: "Maintainer"},
+                                {name: "PackageMaintainer", allowHtml: true,
                                     style: "padding: 15px; color: white;"},
 
                                 {kind: "onyx.GroupboxHeader", content: "Version"},
@@ -247,7 +247,11 @@ enyo.kind({
         this.$.PackageIcon.setSrc(this.currentPackage.icon);
         this.$.PackageDescription.setContent(this.currentPackage.description);
         this.$.PackageHomepage.setContent(this.currentPackage.homepage);
-        this.$.PackageMaintainer.setContent(this.currentPackage.maintainer);
+        
+        this.$.PackageMaintainer.setContent(this.currentPackage.maintainer.map(function (currentValue) {
+        	return currentValue.name + (currentValue.url ? '<br>' + currentValue.url : "");
+        }).join('<br><br>'));
+        
         this.$.PackageVersion.setContent(this.currentPackage.version);
         this.$.PackageLastUpdated.setContent(this.currentPackage.date);
         this.$.PackageDownloadSize.setContent(this.currentPackage.size);
