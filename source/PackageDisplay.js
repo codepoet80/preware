@@ -16,6 +16,7 @@ enyo.kind({
             onBackendSimpleMessage: "processSimpleMessage",
             onPackageProgressMessage: "processProgressMessage"
         },
+		{name: "openService", kind: "enyo.PalmService", service: "palm://com.palm.applicationManager/", method: "open", onError: "openError"},
         {
             kind: "onyx.Toolbar",
             components: [
@@ -50,7 +51,7 @@ enyo.kind({
 
                                 {kind: "onyx.GroupboxHeader", content: "Maintainer"},
                                 {name: "PackageMaintainer", allowHtml: true,
-                                    style: "padding: 15px; color: white;"},
+                                    style: "padding: 15px; color: white;", ontap: "maintainerTap"},
 
                                 {kind: "onyx.GroupboxHeader", content: "Version"},
                                 {name: "PackageVersion",
@@ -170,6 +171,20 @@ enyo.kind({
     removeTapped: function () {
         this.currentPackage.doRemove();
     },
+    
+    /** Opens every maintainer URL found. Realistically, will there ever be more than one? */
+    maintainerTap: function () {
+    	var i;
+    	for (i=0; i<this.currentPackage.maintainer.length; ++i) {
+    		if (this.currentPackage.maintainer[i].url) {
+    			this.$.openService.send({target: this.currentPackage.maintainer[i].url});
+    		}
+    	}
+    },
+    openError: function (inSender, inError) {
+    	this.error(inError);
+    },
+    
     handlePackageRefresh: function () {
         if (this.currentPackage && this.currentPackage.title) {
             this.updateCurrentPackage(this.currentPackage.title);
