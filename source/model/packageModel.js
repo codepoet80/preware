@@ -563,9 +563,9 @@ enyo.kind({
                 if (!this.icon || this.icon === '') {
                     this.iconImg.local = true;
                     if (appInfo.icon) {
-                        this.icon = '../' + this.pkg + '/' + appInfo.icon;
+                        this.icon = '/media/cryptofs/apps/usr/palm/applications/' + this.pkg + '/' + appInfo.icon;
                     } else {
-                        this.icon = '../' + this.pkg + '/icon.png';
+                        this.icon = '/media/cryptofs/apps/usr/palm/applications/' + this.pkg + '/icon.png';
                     }
                 }
                 if ((!this.maintainer || this.maintainer.length === 0 ||
