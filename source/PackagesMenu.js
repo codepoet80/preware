@@ -32,17 +32,21 @@ enyo.kind({
         availableCategories: [],
         listOfEverything: []
     },
-    bindings: [
-        {from: ".listOfEverything", to: ".$.listOfEverythingItem.count", transform: function (list) { return list.length;}}
-    ],
-
 
     components: [
         {kind: "ListItem", content: "Package Updates", ontap: "showUpdatablePackages" },
         {kind: "ListItem", content: "Available Packages", ontap: "showAvailableTypeList" },
-        {kind: "ListItem", content: "Installed Packages", ontap: "showInstalledPackages" },
+        {name: "installedItem", kind: "ListItem", content: "Installed Packages", ontap: "showInstalledPackages" },
         {name: "listOfEverythingItem", kind: "ListItem", content: $L("List of Everything"), ontap: "showListOfEverything" }
     ],
+    
+    listOfEverythingChanged: function (oldList, newList) {
+    	// TODO: refactor from item tap handlers to here
+    	this.$.listOfEverythingItem.set("count", newList.length);
+    	this.$.installedItem.set("count", newList.reduce(function (accumulatedValue, pkg) {
+    		return accumulatedValue + (pkg.isInstalled ? 1 : 0);
+    	}, 0));
+    },
 
     //handlers:
     showUpdatablePackages: function () {
