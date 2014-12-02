@@ -35,17 +35,24 @@ enyo.kind({
 
     components: [
         {kind: "ListItem", content: "Package Updates", ontap: "showUpdatablePackages" },
-        {kind: "ListItem", content: "Available Packages", ontap: "showAvailableTypeList" },
-        {name: "installedItem", kind: "ListItem", content: "Installed Packages", ontap: "showInstalledPackages" },
+        {name: "availableItem", kind: "ListItem", content: $L("Available Packages"), ontap: "showAvailableTypeList" },
+        {name: "installedItem", kind: "ListItem", content: $L("Installed Packages"), ontap: "showInstalledPackages" },
         {name: "listOfEverythingItem", kind: "ListItem", content: $L("List of Everything"), ontap: "showListOfEverything" }
     ],
     
     listOfEverythingChanged: function (oldList, newList) {
     	// TODO: refactor from item tap handlers to here
     	this.$.listOfEverythingItem.set("count", newList.length);
+    	
     	this.$.installedItem.set("count", newList.reduce(function (accumulatedValue, pkg) {
     		return accumulatedValue + (pkg.isInstalled ? 1 : 0);
     	}, 0));
+    	
+    	if (preware.PrefCookie.get().listInstalled) { //include installed packages.
+    		this.$.availableItem.set("count", newList.length);
+    	} else {
+    		this.$.availableItem.set("count", newList.length - this.$.installedItem.get("count"));    		
+    	}
     },
 
     //handlers:
