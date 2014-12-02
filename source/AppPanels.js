@@ -5,6 +5,7 @@ enyo.kind({
     name: "AppPanels",
     kind: "Panels",
     arrangerKind: "CollapsingArranger",
+    peekWidth: 70,   // (600-320)/4
     classes: "app-panels enyo-fill",
     // required ipkgservice
     ipkgServiceVersion: 14,
@@ -42,6 +43,7 @@ enyo.kind({
                         "Installing packages, with a penguin!",
                         "How many Ports could a webOS Ports Port?",
                         "Not just for Apps anymore.",
+                        "Serving apps for the last 1.67x10^8 seconds",
                         "Now with 100% more Enyo2!"
                     ]
                 },

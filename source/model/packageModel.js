@@ -570,8 +570,8 @@ enyo.kind({
                 }
                 if ((!this.maintainer || this.maintainer.length === 0 ||
                      (this.maintainer.length === 1 && this.maintainer[0].name === 'N/A')) &&
-                    appInfo.vendor) {
-                    this.maintainer = [{name: appInfo.vendor, url: false}];
+                    (appInfo.vendor || appInfo.vendorurl)) {
+                    this.maintainer = [{name: appInfo.vendor || 'N/A', url: appInfo.vendorurl || false}];
                 }
             }
 
