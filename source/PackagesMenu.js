@@ -29,15 +29,19 @@ enyo.kind({
     published: {
         availablePackages: [],
         availableTypes: [],
-        availableCategories: []
+        availableCategories: [],
+        listOfEverything: []
     },
+    bindings: [
+        {from: ".listOfEverything", to: ".$.listOfEverythingItem.count", transform: function (list) { return list.length;}}
+    ],
 
 
     components: [
         {kind: "ListItem", content: "Package Updates", ontap: "showUpdatablePackages" },
         {kind: "ListItem", content: "Available Packages", ontap: "showAvailableTypeList" },
         {kind: "ListItem", content: "Installed Packages", ontap: "showInstalledPackages" },
-        {kind: "ListItem", content: "List of Everything", ontap: "showListOfEverything" }
+        {name: "listOfEverythingItem", kind: "ListItem", content: $L("List of Everything"), ontap: "showListOfEverything" }
     ],
 
     //handlers:

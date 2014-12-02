@@ -299,6 +299,7 @@ enyo.kind({
     },
     doneLoading: function (inSender, inEvent) {
         this.log("Done loading, num Packages: " + preware.PackagesModel.packages.length);
+        this.$.packagesMenu.set("listOfEverything", preware.PackagesModel.packages);
         // so if we're inactive we know to push a scene when we return
         //this.isLoading = false;
 
