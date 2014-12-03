@@ -196,12 +196,12 @@ enyo.kind({
     
     /** Opens every maintainer URL found. Realistically, will there ever be more than one? */
     maintainerTap: function () {
-    	var i;
+    	/*var i;
     	for (i=0; i<this.currentPackage.maintainer.length; ++i) {
     		if (this.currentPackage.maintainer[i].url) {
     			this.$.openService.send({target: this.currentPackage.maintainer[i].url});
     		}
-    	}
+    	}*/
     },
     openError: function (inSender, inError) {
     	this.error(inError);
@@ -213,7 +213,6 @@ enyo.kind({
             this.refreshPackageDisplay();
         }
     },
-
 
     //handlers for messages:
     processSimpleMessage: function (inSender, inEvent) {
@@ -280,21 +279,51 @@ enyo.kind({
         }
     },
     refreshPackageDisplay: function () {
-        this.$.PackageTitle.setContent(this.currentPackage.title);
+		this.$.PackageTitle.setContent(this.currentPackage.title);
         this.$.PackageIcon.setSrc(this.currentPackage.icon);
         this.$.PackageDescription.setContent(this.currentPackage.description);
-        this.$.PackageHomepage.setContent(this.currentPackage.homepage);
+        this.$.PackageHomepage.setContent('<a href="' + this.currentPackage.homepage + '" target="_blank">' + this.currentPackage.homepage + '</a>');
         
         this.$.PackageMaintainer.setContent(this.currentPackage.maintainer.map(function (currentValue) {
-        	return currentValue.name + (currentValue.url ? '<br>' + currentValue.url : "");
+        	return currentValue.url ? '<a href="' + currentValue.url + '" target="_blank">' + currentValue.name + '</a>': currentValue.name;
         }).join('<br><br>'));
         
-        this.$.PackageVersion.setContent(this.currentPackage.version);
-        this.$.PackageLastUpdated.setContent(this.currentPackage.date);
-        this.$.PackageDownloadSize.setContent(this.currentPackage.size);
-        this.$.PackageInstalledVersion.setContent(this.currentPackage.versionInstalled);
-        this.$.PackageInstalledDate.setContent(this.currentPackage.dateInstalled);
-        this.$.PackageInstalledSize.setContent(this.currentPackage.sizeInstalled);
+        this.$.PackageVersion.setContent(this.currentPackage.version ? this.currentPackage.version : this.currentPackage.Version);
+        
+        this.$.PackageLastUpdated.setContent(this.currentPackage.date ? new Date(parseInt(this.currentPackage.date + "000")).toDateString() : new Date(parseInt(JSON.parse(this.currentPackage.Source).LastUpdated + "000")).toDateString());
+        this.$.PackageDownloadSize.setContent(this.humanFileSize(this.currentPackage.size, true));
+        
+        if (this.currentPackage.versionInstalled != undefined)
+        {
+        	this.$.PackageInstalledVersionGroupbox.show();
+			this.$.PackageInstalledVersion.setContent(this.currentPackage.versionInstalled);
+        }
+        else
+        {
+           	this.$.PackageInstalledVersionGroupbox.hide();
+        }
+        
+        if (this.currentPackage.dateInstalled)
+        {
+        	this.$.PackageInstalledDateGroupbox.show();
+			this.$.PackageInstalledDate.setContent(new Date(parseInt(this.currentPackage.dateInstalled + "000")).toDateString());
+        }
+        else
+        {
+        	this.$.PackageInstalledDateGroupbox.hide();
+        }
+        
+        if (this.currentPackage.sizeInstalled)
+        {
+           	this.$.PackageInstalledSizeGroupbox.show();
+			this.$.PackageInstalledSize.setContent(this.humanFileSize(this.currentPackage.sizeInstalled * 1000, true));
+        }
+        else
+        {
+       		this.$.PackageInstalledSizeGroupbox.hide();
+        }
+        
+        
         this.$.PackageID.setContent(this.currentPackage.pkg);
         this.$.PackageLicense.setContent(this.currentPackage.license);
         this.$.PackageType.setContent(this.currentPackage.type);
@@ -320,5 +349,17 @@ enyo.kind({
     	if(this.currentPackage.hasUpdate){
     		this.$.UpdateButton.show();
     	}
-    }
+    },
+    
+    humanFileSize: function(bytes, si) {
+    	var thresh = si ? 1000 : 1024;
+    	if(bytes < thresh) return bytes + ' B';
+    	var units = si ? ['kB','MB','GB','TB','PB','EB','ZB','YB'] : ['KiB','MiB','GiB','TiB','PiB','EiB','ZiB','YiB'];
+    	var u = -1;
+    	do {
+        	bytes /= thresh;
+        	++u;
+    	} while(bytes >= thresh);
+    	return bytes.toFixed(1)+' '+units[u];
+	},
 });
