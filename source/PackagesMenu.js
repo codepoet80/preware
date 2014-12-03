@@ -158,16 +158,21 @@ enyo.kind({
     filterCategories: function (type) {
         this.availableCategories = [];
 
-        var i, pkg;
+        var i, pkg, availableCategoriesHash = {}, category;
         for (i = 0; i < preware.PackagesModel.packages.length; i += 1) {
             pkg = preware.PackagesModel.packages[i];
             if (this.checkPackageStatus(pkg) && pkg.type === type) {
-                if (this.availableCategories.indexOf(pkg.category) === -1) {
-                    this.availableCategories.push(pkg.category);
-                }
+            	if (availableCategoriesHash[pkg.category]) {   // already a package in this category
+            		availableCategoriesHash[pkg.category].count++;
+            	} else {
+            		availableCategoriesHash[pkg.category] = {category: pkg.category, count: 1};
+            	}
             }
         }
-        this.availableCategories.sort();
+        for (category in availableCategoriesHash) {   // xform hash to array
+        	this.availableCategories.push(availableCategoriesHash[category]);
+        }
+        this.availableCategories.sort(function (a,b) { return a.category.localeCompare(b.category);});
 
         this.doSelected({name: "filtered", showTypeAndCategoriesPanels: true, categoriesLength: this.availableCategories.length});
     },

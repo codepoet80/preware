@@ -29,5 +29,6 @@ not implemented at all:
 - stayAwake.js
 - utility.js (will cause crashes in packageModel.js!)
 
-On the GUI side there is not much there, now... just some buttons to test and some ugly log output.
-App.js tries to load feeds like update-assistant does..
+UI TO-DOs
+- show a spinner while installing a package
+- if a Repeater has no items, display a message in the blank space

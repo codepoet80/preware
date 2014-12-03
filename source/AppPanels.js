@@ -286,7 +286,7 @@ enyo.kind({
         this.$.packagesMenu.filterCategories(this.currentType);
     },
     categoryTapped: function (inSender, inEvent) {
-        this.$.packagesMenu.filterByCategoryAndType(this.$.packagesMenu.availableCategories[inEvent.index], this.currentType);
+        this.$.packagesMenu.filterByCategoryAndType(this.$.packagesMenu.availableCategories[inEvent.index].category, this.currentType);
     },
     packageTapped: function (inSender, inEvent) {
         this.$.packageDisplay.setCurrentPackage(this.$.packagesMenu.getPackage(inEvent.index));
@@ -341,7 +341,9 @@ enyo.kind({
     },
     setupCategoryItem: function (inSender, inEvent) {
     	// TODO: refactor the CategoryRepeater into its own kind
-        inEvent.item.$.listItem.$.ItemTitle.setContent(this.$.packagesMenu.availableCategories[inEvent.index]);
+        var categoryRecord = this.$.packagesMenu.availableCategories[inEvent.index];
+        inEvent.item.$.listItem.set("title", categoryRecord.category);
+        inEvent.item.$.listItem.set("count", categoryRecord.count);
         return true;
     },
     setupPackageItem: function (inSender, inEvent) {
