@@ -34,10 +34,10 @@ enyo.kind({
     },
 
     components: [
-        {name: "updatesItem", kind: "ListItem", content: $L("Package Updates"), ontap: "showUpdatablePackages" },
-        {name: "availableItem", kind: "ListItem", content: $L("Available Packages"), ontap: "showAvailableTypeList" },
-        {name: "installedItem", kind: "ListItem", content: $L("Installed Packages"), ontap: "showInstalledPackages" },
-        {name: "listOfEverythingItem", kind: "ListItem", content: $L("List of Everything"), ontap: "showListOfEverything" }
+        {name: "updatesItem", kind: "ListItem", title: $L("Package Updates"), ontap: "showUpdatablePackages" },
+        {name: "availableItem", kind: "ListItem", title: $L("Available Packages"), ontap: "showAvailableTypeList" },
+        {name: "installedItem", kind: "ListItem", title: $L("Installed Packages"), ontap: "showInstalledPackages" },
+        {name: "listOfEverythingItem", kind: "ListItem", title: $L("List of Everything"), ontap: "showListOfEverything" }
     ],
     
     listOfEverythingChanged: function (oldList, newList) {
@@ -81,16 +81,21 @@ enyo.kind({
         this.currentPackageFilter = this.packageFilters.available;
         this.availableTypes = [];
 
-        var i, pkg;
+        var i, pkg, availableTypesHash = {}, type;
         for (i = 0; i < preware.PackagesModel.packages.length; i += 1) {
             pkg = preware.PackagesModel.packages[i];
             if (this.checkPackageStatus(pkg)) {
-                if (this.availableTypes.indexOf(pkg.type) === -1) {
-                    this.availableTypes.push(pkg.type);
-                }
+            	if (availableTypesHash[pkg.type]) {   // already a pkg of this type
+            		availableTypesHash[pkg.type].count++;
+            	} else {
+            		availableTypesHash[pkg.type] = {type: pkg.type, count: 1};
+            	}
             }
         }
-        this.availableTypes.sort();
+        for (type in availableTypesHash) {
+        	this.availableTypes.push(availableTypesHash[type]);
+        }
+        this.availableTypes.sort(function (a,b) { return a.type.localeCompare(b.type);});
 
         this.doSelected({name: "available", showTypeAndCategoriesPanels: true, typesLength: this.availableTypes.length});
     },

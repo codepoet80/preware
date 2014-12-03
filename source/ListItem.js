@@ -4,11 +4,12 @@ enyo.kind({
     classes: "list-item",
     ontap: "menuItemTapped",
     published: {
-        content: "List Item",
+        title: "[list item]",
         icon: false,
         count: -1
     },
     bindings: [
+        {from: ".title", to: ".$.ItemTitle.content"},
         {from: ".count", to: ".$.itemCount.content", transform: function (val) {
         	if (val >= 0) {
         		this.$.itemCount.show(); 
@@ -28,7 +29,7 @@ enyo.kind({
     ],
     create:    function() {
         this.inherited(arguments);
-        this.$.ItemTitle.setContent(this.content);
+        this.$.ItemTitle.setContent(this.title);
     },
     rendered: function() {
         if(this.icon) {

@@ -105,7 +105,7 @@ enyo.kind({
                             fit: true,
                             components: [
                                 {name: "TypeRepeater", kind: "Repeater", onSetupItem: "setupTypeItem", count: 0, components: [
-                                    {kind: "ListItem", content: "Type", ontap: "typeTapped"}
+                                    {kind: "ListItem", title: "[type]", ontap: "typeTapped"}
                                 ]}
                             ]
                         },
@@ -138,7 +138,7 @@ enyo.kind({
                             fit: true,
                             components: [
                                 {name: "CategoryRepeater", kind: "Repeater", onSetupItem: "setupCategoryItem", count: 0, components: [
-                                    {kind: "ListItem", content: "Category", ontap: "categoryTapped"}
+                                    {kind: "ListItem", title: "[category]", ontap: "categoryTapped"}
                                 ]}
                             ]},
                         {kind: "GrabberToolbar"}
@@ -170,7 +170,7 @@ enyo.kind({
                             fit: true,
                             components: [
                                 {name: "PackageRepeater", kind: "Repeater", onSetupItem: "setupPackageItem", count: 0, components: [
-                                    {kind: "ListItem", content: "Package", icon: true, ontap: "packageTapped"}
+                                    {kind: "ListItem", title: "[package]", icon: true, ontap: "packageTapped"}
                                 ]}
                             ]
                         },
@@ -272,7 +272,7 @@ enyo.kind({
     //Action Functions
     log: function (text) {
         //this.inherited(arguments);
-        console.log(text);
+        console.log.apply(console, arguments);
         this.$.SpinnerText.setContent(text);
     },
     showTypeAndCategoriesPanels: function (show) {
@@ -282,7 +282,7 @@ enyo.kind({
         this.render();
     },
     typeTapped: function (inSender, inEvent) {
-        this.currentType = this.$.packagesMenu.availableTypes[inEvent.index];
+        this.currentType = this.$.packagesMenu.availableTypes[inEvent.index].type;
         this.$.packagesMenu.filterCategories(this.currentType);
     },
     categoryTapped: function (inSender, inEvent) {
@@ -333,10 +333,14 @@ enyo.kind({
         }, 500);
     },
     setupTypeItem: function (inSender, inEvent) {
-        inEvent.item.$.listItem.$.ItemTitle.setContent(this.$.packagesMenu.availableTypes[inEvent.index]);
+    	// TODO: refactor the TypeRepeater into its own kind
+    	var typeRecord = this.$.packagesMenu.availableTypes[inEvent.index];
+        inEvent.item.$.listItem.set("title", typeRecord.type);
+        inEvent.item.$.listItem.set("count", typeRecord.count);
         return true;
     },
     setupCategoryItem: function (inSender, inEvent) {
+    	// TODO: refactor the CategoryRepeater into its own kind
         inEvent.item.$.listItem.$.ItemTitle.setContent(this.$.packagesMenu.availableCategories[inEvent.index]);
         return true;
     },
