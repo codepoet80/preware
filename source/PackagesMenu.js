@@ -34,7 +34,7 @@ enyo.kind({
     },
 
     components: [
-        {kind: "ListItem", content: "Package Updates", ontap: "showUpdatablePackages" },
+        {name: "updatesItem", kind: "ListItem", content: $L("Package Updates"), ontap: "showUpdatablePackages" },
         {name: "availableItem", kind: "ListItem", content: $L("Available Packages"), ontap: "showAvailableTypeList" },
         {name: "installedItem", kind: "ListItem", content: $L("Installed Packages"), ontap: "showInstalledPackages" },
         {name: "listOfEverythingItem", kind: "ListItem", content: $L("List of Everything"), ontap: "showListOfEverything" }
@@ -53,6 +53,10 @@ enyo.kind({
     	} else {
     		this.$.availableItem.set("count", newList.length - this.$.installedItem.get("count"));    		
     	}
+    	
+    	this.$.updatesItem.set("count", newList.reduce(function (accumulatedValue, pkg) {
+    		return accumulatedValue + (pkg.hasUpdate ? 1 : 0);
+    	}, 0));
     },
 
     //handlers:
