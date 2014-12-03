@@ -33,71 +33,93 @@ enyo.kind({
             fit: true,
             components: [
                 {
-                    style: "padding: 0px 0px 70px 0px; height: 100%; width: 80%; margin: 0px auto; display: block;",
+                    style: "padding: 0px 0px 70px 0px; height: 100%; width: 80%; margin: 0px auto; display: block; color: white",
                     fit: true,
                     components: [
-                        {
-                            kind: "onyx.Groupbox",
-                            components: [
-                                {kind: "onyx.GroupboxHeader", content: "Description"},
-                                {
-                                    name: "PackageDescription",
-                                    style: "padding: 15px; color: white;",
-                                    allowHtml: true
-                                },
-                                {kind: "onyx.GroupboxHeader", content: "Homepage"},
-                                {name: "PackageHomepage",
-                                    style: "padding: 15px; color: white;"},
-
-                                {kind: "onyx.GroupboxHeader", content: "Maintainer"},
-                                {name: "PackageMaintainer", allowHtml: true,
-                                    style: "padding: 15px; color: white;", ontap: "maintainerTap"},
-
-                                {kind: "onyx.GroupboxHeader", content: "Version"},
-                                {name: "PackageVersion",
-                                    style: "padding: 15px; color: white;"},
-
-                                {kind: "onyx.GroupboxHeader", content: "Last Updated"},
-                                {name: "PackageLastUpdated",
-                                    style: "padding: 15px; color: white;"},
-
-                                {kind: "onyx.GroupboxHeader", content: "Download Size"},
-                                {name: "PackageDownloadSize",
-                                    style: "padding: 15px; color: white;"},
-
-                                {kind: "onyx.GroupboxHeader", content: "Installed Version"},
-                                {name: "PackageInstalledVersion",
-                                    style: "padding: 15px; color: white;"},
-
-                                {kind: "onyx.GroupboxHeader", content: "Installed"},
-                                {name: "PackageInstalledDate",
-                                    style: "padding: 15px; color: white;"},
-
-                                {kind: "onyx.GroupboxHeader", content: "Installed Size"},
-                                {name: "PackageInstalledSize",
-                                    style: "padding: 15px; color: white;"},
-
-                                {kind: "onyx.GroupboxHeader", content: "ID"},
-                                {name: "PackageID",
-                                    style: "padding: 15px; color: white;"},
-
-                                {kind: "onyx.GroupboxHeader", content: "License"},
-                                {name: "PackageLicense",
-                                    style: "padding: 15px; color: white;"},
-
-                                {kind: "onyx.GroupboxHeader", content: "Type"},
-                                {name: "PackageType",
-                                    style: "padding: 15px; color: white;"},
-
-                                {kind: "onyx.GroupboxHeader", content: "Category"},
-                                {name: "PackageCategory",
-                                    style: "padding: 15px; color: white;"},
-
-                                {kind: "onyx.GroupboxHeader", content: "Feed"},
-                                {name: "PackageFeed",
-                                    style: "padding: 15px; color: white;"}
-                            ]
-                        }
+                        {tag: "div", classes: "webosstyle-groupbox", components: [
+                        	{tag: "div", classes: "webosstyle-groupbox-header", content: $L("Description")},
+                			{tag: "div", classes: "webosstyle-groupbox-body-single", style: "width: 100%", components:[
+               					{name: "PackageDescription", allowHtml: true},
+                			]},
+                		]},
+                		{tag: "div", classes: "webosstyle-groupbox", components: [
+                        	{tag: "div", classes: "webosstyle-groupbox-header", content: $L("Homepage")},
+                			{tag: "div", classes: "webosstyle-groupbox-body-single", style: "width: 100%", components:[
+               					{name: "PackageHomepage", allowHtml: true},
+                			]},
+                		]},
+                		{tag: "div", classes: "webosstyle-groupbox", components: [
+                        	{tag: "div", classes: "webosstyle-groupbox-header", content: $L("Maintainer")},
+                			{tag: "div", classes: "webosstyle-groupbox-body-single", style: "width: 100%", components:[
+               					{name: "PackageMaintainer", allowHtml: true, ontap: "maintainerTap"},
+                			]},
+                		]},
+                		{tag: "div", classes: "webosstyle-groupbox", components: [
+                        	{tag: "div", classes: "webosstyle-groupbox-header", content: $L("Version")},
+                			{tag: "div", classes: "webosstyle-groupbox-body-single", style: "width: 100%", components:[
+               					{name: "PackageVersion"},
+                			]},
+                		]},
+                		{tag: "div", classes: "webosstyle-groupbox", components: [
+                        	{tag: "div", classes: "webosstyle-groupbox-header", content: $L("Last Updated")},
+                			{tag: "div", classes: "webosstyle-groupbox-body-single", style: "width: 100%", components:[
+               					{name: "PackageLastUpdated"},
+                			]},
+                		]},
+                		{tag: "div", classes: "webosstyle-groupbox", components: [
+                        	{tag: "div", classes: "webosstyle-groupbox-header", content: $L("Download Size")},
+                			{tag: "div", classes: "webosstyle-groupbox-body-single", style: "width: 100%", components:[
+               					{name: "PackageDownloadSize"},
+                			]},
+                		]},
+                		{name: "PackageInstalledVersionGroupbox", tag: "div", classes: "webosstyle-groupbox", components: [
+                        	{tag: "div", classes: "webosstyle-groupbox-header", content: $L("Installed Version")},
+                			{tag: "div", classes: "webosstyle-groupbox-body-single", style: "width: 100%", components:[
+               					{name: "PackageInstalledVersion"},
+                			]},
+                		]},
+                		{name: "PackageInstalledDateGroupbox", tag: "div", classes: "webosstyle-groupbox", components: [
+                        	{tag: "div", classes: "webosstyle-groupbox-header", content: $L("Installed")},
+                			{tag: "div", classes: "webosstyle-groupbox-body-single", style: "width: 100%", components:[
+               					{name: "PackageInstalledDate"},
+                			]},
+                		]},
+                		{name: "PackageInstalledSizeGroupbox", tag: "div", classes: "webosstyle-groupbox", components: [
+                        	{tag: "div", classes: "webosstyle-groupbox-header", content: $L("Installed Size")},
+                			{tag: "div", classes: "webosstyle-groupbox-body-single", style: "width: 100%", components:[
+               					{name: "PackageInstalledSize"},
+                			]},
+                		]},
+                		{tag: "div", classes: "webosstyle-groupbox", components: [
+                        	{tag: "div", classes: "webosstyle-groupbox-header", content: $L("ID")},
+                			{tag: "div", classes: "webosstyle-groupbox-body-single", style: "width: 100%", components:[
+               					{name: "PackageID"},
+                			]},
+                		]},
+                		{tag: "div", classes: "webosstyle-groupbox", components: [
+                        	{tag: "div", classes: "webosstyle-groupbox-header", content: $L("License")},
+                			{tag: "div", classes: "webosstyle-groupbox-body-single", style: "width: 100%", components:[
+               					{name: "PackageLicense"},
+                			]},
+                		]},
+                		{tag: "div", classes: "webosstyle-groupbox", components: [
+                        	{tag: "div", classes: "webosstyle-groupbox-header", content: $L("Type")},
+                			{tag: "div", classes: "webosstyle-groupbox-body-single", style: "width: 100%", components:[
+               					{name: "PackageType"},
+                			]},
+                		]},
+                		{tag: "div", classes: "webosstyle-groupbox", components: [
+                        	{tag: "div", classes: "webosstyle-groupbox-header", content: $L("Category")},
+                			{tag: "div", classes: "webosstyle-groupbox-body-single", style: "width: 100%", components:[
+               					{name: "PackageCategory"},
+                			]},
+                		]},
+                		{tag: "div", classes: "webosstyle-groupbox", components: [
+                        	{tag: "div", classes: "webosstyle-groupbox-header", content: $L("Feed")},
+                			{tag: "div", classes: "webosstyle-groupbox-body-single", style: "width: 100%", components:[
+               					{name: "PackageFeed"},
+                			]},
+                		]}
                     ]
                 }
             ]
