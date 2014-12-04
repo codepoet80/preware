@@ -33,71 +33,93 @@ enyo.kind({
             fit: true,
             components: [
                 {
-                    style: "padding: 0px 0px 70px 0px; height: 100%; width: 80%; margin: 0px auto; display: block;",
+                    style: "padding: 0px 0px 70px 0px; height: 100%; width: 80%; margin: 0px auto; display: block; color: white",
                     fit: true,
                     components: [
-                        {
-                            kind: "onyx.Groupbox",
-                            components: [
-                                {kind: "onyx.GroupboxHeader", content: "Description"},
-                                {
-                                    name: "PackageDescription",
-                                    style: "padding: 15px; color: white;",
-                                    allowHtml: true
-                                },
-                                {kind: "onyx.GroupboxHeader", content: "Homepage"},
-                                {name: "PackageHomepage",
-                                    style: "padding: 15px; color: white;"},
-
-                                {kind: "onyx.GroupboxHeader", content: "Maintainer"},
-                                {name: "PackageMaintainer", allowHtml: true,
-                                    style: "padding: 15px; color: white;", ontap: "maintainerTap"},
-
-                                {kind: "onyx.GroupboxHeader", content: "Version"},
-                                {name: "PackageVersion",
-                                    style: "padding: 15px; color: white;"},
-
-                                {kind: "onyx.GroupboxHeader", content: "Last Updated"},
-                                {name: "PackageLastUpdated",
-                                    style: "padding: 15px; color: white;"},
-
-                                {kind: "onyx.GroupboxHeader", content: "Download Size"},
-                                {name: "PackageDownloadSize",
-                                    style: "padding: 15px; color: white;"},
-
-                                {kind: "onyx.GroupboxHeader", content: "Installed Version"},
-                                {name: "PackageInstalledVersion",
-                                    style: "padding: 15px; color: white;"},
-
-                                {kind: "onyx.GroupboxHeader", content: "Installed"},
-                                {name: "PackageInstalledDate",
-                                    style: "padding: 15px; color: white;"},
-
-                                {kind: "onyx.GroupboxHeader", content: "Installed Size"},
-                                {name: "PackageInstalledSize",
-                                    style: "padding: 15px; color: white;"},
-
-                                {kind: "onyx.GroupboxHeader", content: "ID"},
-                                {name: "PackageID",
-                                    style: "padding: 15px; color: white;"},
-
-                                {kind: "onyx.GroupboxHeader", content: "License"},
-                                {name: "PackageLicense",
-                                    style: "padding: 15px; color: white;"},
-
-                                {kind: "onyx.GroupboxHeader", content: "Type"},
-                                {name: "PackageType",
-                                    style: "padding: 15px; color: white;"},
-
-                                {kind: "onyx.GroupboxHeader", content: "Category"},
-                                {name: "PackageCategory",
-                                    style: "padding: 15px; color: white;"},
-
-                                {kind: "onyx.GroupboxHeader", content: "Feed"},
-                                {name: "PackageFeed",
-                                    style: "padding: 15px; color: white;"}
-                            ]
-                        }
+                        {tag: "div", classes: "webosstyle-groupbox", components: [
+                        	{tag: "div", classes: "webosstyle-groupbox-header", content: $L("Description")},
+                			{tag: "div", classes: "webosstyle-groupbox-body-single", style: "width: 100%", components:[
+               					{name: "PackageDescription", allowHtml: true},
+                			]},
+                		]},
+                		{tag: "div", classes: "webosstyle-groupbox", components: [
+                        	{tag: "div", classes: "webosstyle-groupbox-header", content: $L("Homepage")},
+                			{tag: "div", classes: "webosstyle-groupbox-body-single", style: "width: 100%", components:[
+               					{name: "PackageHomepage", allowHtml: true},
+                			]},
+                		]},
+                		{tag: "div", classes: "webosstyle-groupbox", components: [
+                        	{tag: "div", classes: "webosstyle-groupbox-header", content: $L("Maintainer")},
+                			{tag: "div", classes: "webosstyle-groupbox-body-single", style: "width: 100%", components:[
+               					{name: "PackageMaintainer", allowHtml: true, ontap: "maintainerTap"},
+                			]},
+                		]},
+                		{tag: "div", classes: "webosstyle-groupbox", components: [
+                        	{tag: "div", classes: "webosstyle-groupbox-header", content: $L("Version")},
+                			{tag: "div", classes: "webosstyle-groupbox-body-single", style: "width: 100%", components:[
+               					{name: "PackageVersion"},
+                			]},
+                		]},
+                		{tag: "div", classes: "webosstyle-groupbox", components: [
+                        	{tag: "div", classes: "webosstyle-groupbox-header", content: $L("Last Updated")},
+                			{tag: "div", classes: "webosstyle-groupbox-body-single", style: "width: 100%", components:[
+               					{name: "PackageLastUpdated"},
+                			]},
+                		]},
+                		{tag: "div", classes: "webosstyle-groupbox", components: [
+                        	{tag: "div", classes: "webosstyle-groupbox-header", content: $L("Download Size")},
+                			{tag: "div", classes: "webosstyle-groupbox-body-single", style: "width: 100%", components:[
+               					{name: "PackageDownloadSize"},
+                			]},
+                		]},
+                		{name: "PackageInstalledVersionGroupbox", tag: "div", classes: "webosstyle-groupbox", components: [
+                        	{tag: "div", classes: "webosstyle-groupbox-header", content: $L("Installed Version")},
+                			{tag: "div", classes: "webosstyle-groupbox-body-single", style: "width: 100%", components:[
+               					{name: "PackageInstalledVersion"},
+                			]},
+                		]},
+                		{name: "PackageInstalledDateGroupbox", tag: "div", classes: "webosstyle-groupbox", components: [
+                        	{tag: "div", classes: "webosstyle-groupbox-header", content: $L("Installed")},
+                			{tag: "div", classes: "webosstyle-groupbox-body-single", style: "width: 100%", components:[
+               					{name: "PackageInstalledDate"},
+                			]},
+                		]},
+                		{name: "PackageInstalledSizeGroupbox", tag: "div", classes: "webosstyle-groupbox", components: [
+                        	{tag: "div", classes: "webosstyle-groupbox-header", content: $L("Installed Size")},
+                			{tag: "div", classes: "webosstyle-groupbox-body-single", style: "width: 100%", components:[
+               					{name: "PackageInstalledSize"},
+                			]},
+                		]},
+                		{tag: "div", classes: "webosstyle-groupbox", components: [
+                        	{tag: "div", classes: "webosstyle-groupbox-header", content: $L("ID")},
+                			{tag: "div", classes: "webosstyle-groupbox-body-single", style: "width: 100%", components:[
+               					{name: "PackageID"},
+                			]},
+                		]},
+                		{tag: "div", classes: "webosstyle-groupbox", components: [
+                        	{tag: "div", classes: "webosstyle-groupbox-header", content: $L("License")},
+                			{tag: "div", classes: "webosstyle-groupbox-body-single", style: "width: 100%", components:[
+               					{name: "PackageLicense"},
+                			]},
+                		]},
+                		{tag: "div", classes: "webosstyle-groupbox", components: [
+                        	{tag: "div", classes: "webosstyle-groupbox-header", content: $L("Type")},
+                			{tag: "div", classes: "webosstyle-groupbox-body-single", style: "width: 100%", components:[
+               					{name: "PackageType"},
+                			]},
+                		]},
+                		{tag: "div", classes: "webosstyle-groupbox", components: [
+                        	{tag: "div", classes: "webosstyle-groupbox-header", content: $L("Category")},
+                			{tag: "div", classes: "webosstyle-groupbox-body-single", style: "width: 100%", components:[
+               					{name: "PackageCategory"},
+                			]},
+                		]},
+                		{tag: "div", classes: "webosstyle-groupbox", components: [
+                        	{tag: "div", classes: "webosstyle-groupbox-header", content: $L("Feed")},
+                			{tag: "div", classes: "webosstyle-groupbox-body-single", style: "width: 100%", components:[
+               					{name: "PackageFeed"},
+                			]},
+                		]}
                     ]
                 }
             ]
@@ -174,12 +196,12 @@ enyo.kind({
     
     /** Opens every maintainer URL found. Realistically, will there ever be more than one? */
     maintainerTap: function () {
-    	var i;
+    	/*var i;
     	for (i=0; i<this.currentPackage.maintainer.length; ++i) {
     		if (this.currentPackage.maintainer[i].url) {
     			this.$.openService.send({target: this.currentPackage.maintainer[i].url});
     		}
-    	}
+    	}*/
     },
     openError: function (inSender, inError) {
     	this.error(inError);
@@ -191,7 +213,6 @@ enyo.kind({
             this.refreshPackageDisplay();
         }
     },
-
 
     //handlers for messages:
     processSimpleMessage: function (inSender, inEvent) {
@@ -258,21 +279,51 @@ enyo.kind({
         }
     },
     refreshPackageDisplay: function () {
-        this.$.PackageTitle.setContent(this.currentPackage.title);
+		this.$.PackageTitle.setContent(this.currentPackage.title);
         this.$.PackageIcon.setSrc(this.currentPackage.icon);
         this.$.PackageDescription.setContent(this.currentPackage.description);
-        this.$.PackageHomepage.setContent(this.currentPackage.homepage);
+        this.$.PackageHomepage.setContent('<a href="' + this.currentPackage.homepage + '" target="_blank">' + this.currentPackage.homepage + '</a>');
         
         this.$.PackageMaintainer.setContent(this.currentPackage.maintainer.map(function (currentValue) {
-        	return currentValue.name + (currentValue.url ? '<br>' + currentValue.url : "");
+        	return currentValue.url ? '<a href="' + currentValue.url + '" target="_blank">' + currentValue.name + '</a>': currentValue.name;
         }).join('<br><br>'));
         
-        this.$.PackageVersion.setContent(this.currentPackage.version);
-        this.$.PackageLastUpdated.setContent(this.currentPackage.date);
-        this.$.PackageDownloadSize.setContent(this.currentPackage.size);
-        this.$.PackageInstalledVersion.setContent(this.currentPackage.versionInstalled);
-        this.$.PackageInstalledDate.setContent(this.currentPackage.dateInstalled);
-        this.$.PackageInstalledSize.setContent(this.currentPackage.sizeInstalled);
+        this.$.PackageVersion.setContent(this.currentPackage.version ? this.currentPackage.version : this.currentPackage.Version);
+        
+        this.$.PackageLastUpdated.setContent(this.currentPackage.date ? new Date(parseInt(this.currentPackage.date + "000")).toDateString() : new Date(parseInt(JSON.parse(this.currentPackage.Source).LastUpdated + "000")).toDateString());
+        this.$.PackageDownloadSize.setContent(this.humanFileSize(this.currentPackage.size, true));
+        
+        if (this.currentPackage.versionInstalled != undefined)
+        {
+        	this.$.PackageInstalledVersionGroupbox.show();
+			this.$.PackageInstalledVersion.setContent(this.currentPackage.versionInstalled);
+        }
+        else
+        {
+           	this.$.PackageInstalledVersionGroupbox.hide();
+        }
+        
+        if (this.currentPackage.dateInstalled)
+        {
+        	this.$.PackageInstalledDateGroupbox.show();
+			this.$.PackageInstalledDate.setContent(new Date(parseInt(this.currentPackage.dateInstalled + "000")).toDateString());
+        }
+        else
+        {
+        	this.$.PackageInstalledDateGroupbox.hide();
+        }
+        
+        if (this.currentPackage.sizeInstalled)
+        {
+           	this.$.PackageInstalledSizeGroupbox.show();
+			this.$.PackageInstalledSize.setContent(this.humanFileSize(this.currentPackage.sizeInstalled * 1000, true));
+        }
+        else
+        {
+       		this.$.PackageInstalledSizeGroupbox.hide();
+        }
+        
+        
         this.$.PackageID.setContent(this.currentPackage.pkg);
         this.$.PackageLicense.setContent(this.currentPackage.license);
         this.$.PackageType.setContent(this.currentPackage.type);
@@ -298,5 +349,17 @@ enyo.kind({
     	if(this.currentPackage.hasUpdate){
     		this.$.UpdateButton.show();
     	}
-    }
+    },
+    
+    humanFileSize: function(bytes, si) {
+    	var thresh = si ? 1000 : 1024;
+    	if(bytes < thresh) return bytes + ' B';
+    	var units = si ? ['kB','MB','GB','TB','PB','EB','ZB','YB'] : ['KiB','MiB','GiB','TiB','PiB','EiB','ZiB','YiB'];
+    	var u = -1;
+    	do {
+        	bytes /= thresh;
+        	++u;
+    	} while(bytes >= thresh);
+    	return bytes.toFixed(1)+' '+units[u];
+	},
 });
