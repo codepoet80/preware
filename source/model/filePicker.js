@@ -62,7 +62,7 @@ enyo.kind({
             fit: true,
             components: [
                 {name: "ContentRepeater", kind: "enyo.Repeater", classes: "enyo-fill enyo-fit", fit: true, onSetupItem: "setupContentItem", count: 0, components: [
-                    {kind: "ListItem", content: "File", icon: true, ontap: "contentTapped"}
+                    {kind: "ListItem", title: "[file]", icon: true, ontap: "contentTapped"}
                 ]}
             ]
         },

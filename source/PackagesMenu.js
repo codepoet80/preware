@@ -29,16 +29,35 @@ enyo.kind({
     published: {
         availablePackages: [],
         availableTypes: [],
-        availableCategories: []
+        availableCategories: [],
+        listOfEverything: []
     },
 
-
     components: [
-        {kind: "ListItem", content: "Package Updates", ontap: "showUpdatablePackages" },
-        {kind: "ListItem", content: "Available Packages", ontap: "showAvailableTypeList" },
-        {kind: "ListItem", content: "Installed Packages", ontap: "showInstalledPackages" },
-        {kind: "ListItem", content: "List of Everything", ontap: "showListOfEverything" }
+        {name: "updatesItem", kind: "ListItem", title: $L("Package Updates"), ontap: "showUpdatablePackages" },
+        {name: "availableItem", kind: "ListItem", title: $L("Available Packages"), ontap: "showAvailableTypeList" },
+        {name: "installedItem", kind: "ListItem", title: $L("Installed Packages"), ontap: "showInstalledPackages" },
+        {name: "listOfEverythingItem", kind: "ListItem", title: $L("List of Everything"), ontap: "showListOfEverything" }
     ],
+    
+    listOfEverythingChanged: function (oldList, newList) {
+    	// TODO: refactor from item tap handlers to here
+    	this.$.listOfEverythingItem.set("count", newList.length);
+    	
+    	this.$.installedItem.set("count", newList.reduce(function (accumulatedValue, pkg) {
+    		return accumulatedValue + (pkg.isInstalled ? 1 : 0);
+    	}, 0));
+    	
+    	if (preware.PrefCookie.get().listInstalled) { //include installed packages.
+    		this.$.availableItem.set("count", newList.length);
+    	} else {
+    		this.$.availableItem.set("count", newList.length - this.$.installedItem.get("count"));    		
+    	}
+    	
+    	this.$.updatesItem.set("count", newList.reduce(function (accumulatedValue, pkg) {
+    		return accumulatedValue + (pkg.hasUpdate ? 1 : 0);
+    	}, 0));
+    },
 
     //handlers:
     showUpdatablePackages: function () {
@@ -62,16 +81,21 @@ enyo.kind({
         this.currentPackageFilter = this.packageFilters.available;
         this.availableTypes = [];
 
-        var i, pkg;
+        var i, pkg, availableTypesHash = {}, type;
         for (i = 0; i < preware.PackagesModel.packages.length; i += 1) {
             pkg = preware.PackagesModel.packages[i];
             if (this.checkPackageStatus(pkg)) {
-                if (this.availableTypes.indexOf(pkg.type) === -1) {
-                    this.availableTypes.push(pkg.type);
-                }
+            	if (availableTypesHash[pkg.type]) {   // already a pkg of this type
+            		availableTypesHash[pkg.type].count++;
+            	} else {
+            		availableTypesHash[pkg.type] = {type: pkg.type, count: 1};
+            	}
             }
         }
-        this.availableTypes.sort();
+        for (type in availableTypesHash) {
+        	this.availableTypes.push(availableTypesHash[type]);
+        }
+        this.availableTypes.sort(function (a,b) { return a.type.localeCompare(b.type);});
 
         this.doSelected({name: "available", showTypeAndCategoriesPanels: true, typesLength: this.availableTypes.length});
     },
@@ -134,16 +158,21 @@ enyo.kind({
     filterCategories: function (type) {
         this.availableCategories = [];
 
-        var i, pkg;
+        var i, pkg, availableCategoriesHash = {}, category;
         for (i = 0; i < preware.PackagesModel.packages.length; i += 1) {
             pkg = preware.PackagesModel.packages[i];
             if (this.checkPackageStatus(pkg) && pkg.type === type) {
-                if (this.availableCategories.indexOf(pkg.category) === -1) {
-                    this.availableCategories.push(pkg.category);
-                }
+            	if (availableCategoriesHash[pkg.category]) {   // already a package in this category
+            		availableCategoriesHash[pkg.category].count++;
+            	} else {
+            		availableCategoriesHash[pkg.category] = {category: pkg.category, count: 1};
+            	}
             }
         }
-        this.availableCategories.sort();
+        for (category in availableCategoriesHash) {   // xform hash to array
+        	this.availableCategories.push(availableCategoriesHash[category]);
+        }
+        this.availableCategories.sort(function (a,b) { return a.category.localeCompare(b.category);});
 
         this.doSelected({name: "filtered", showTypeAndCategoriesPanels: true, categoriesLength: this.availableCategories.length});
     },

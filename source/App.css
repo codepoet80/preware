@@ -28,6 +28,15 @@
     background-color: MidnightBlue;
 }
 
+.item-count {
+	float: right;
+	margin: 2px;
+	padding: 2px 9px;
+    border-radius: 16px;
+    color: black;
+    background-color: #ccc;
+}
+
 .center {
     text-align: center;
     margin: 0px auto;
