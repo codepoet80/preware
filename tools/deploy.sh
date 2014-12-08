@@ -34,6 +34,8 @@ while [ "$1" != "" ]; do
             ;;
         -i | --install )
             cp "$SRC"/appinfo.json "$DEST"
+#            mkdir "$DEST"/control
+#            cp "$SRC"/control/* "$DEST"/control
             
             # install
             adb push "$DEST" /usr/palm/applications/org.webosinternals.preware
