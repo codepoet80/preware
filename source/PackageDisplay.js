@@ -45,7 +45,7 @@ enyo.kind({
                 		{tag: "div", classes: "webosstyle-groupbox", components: [
                         	{tag: "div", classes: "webosstyle-groupbox-header", content: $L("Homepage")},
                 			{tag: "div", classes: "webosstyle-groupbox-body-single", style: "width: 100%", components:[
-               					{name: "PackageHomepage", allowHtml: true},
+               					{name: "PackageHomepage", allowHtml: true, ontap: "homepageTap"},
                 			]},
                 		]},
                 		{tag: "div", classes: "webosstyle-groupbox", components: [
@@ -196,12 +196,17 @@ enyo.kind({
     
     /** Opens every maintainer URL found. Realistically, will there ever be more than one? */
     maintainerTap: function () {
-    	/*var i;
+    	var i;
     	for (i=0; i<this.currentPackage.maintainer.length; ++i) {
     		if (this.currentPackage.maintainer[i].url) {
     			this.$.openService.send({target: this.currentPackage.maintainer[i].url});
     		}
-    	}*/
+    	}
+    },
+    homepageTap: function () {
+		if (this.currentPackage.homepage) {
+			this.$.openService.send({target: this.currentPackage.homepage});
+		}
     },
     openError: function (inSender, inError) {
     	this.error(inError);
@@ -282,10 +287,10 @@ enyo.kind({
 		this.$.PackageTitle.setContent(this.currentPackage.title);
         this.$.PackageIcon.setSrc(this.currentPackage.icon);
         this.$.PackageDescription.setContent(this.currentPackage.description);
-        this.$.PackageHomepage.setContent('<a href="' + this.currentPackage.homepage + '" target="_blank">' + this.currentPackage.homepage + '</a>');
+        this.$.PackageHomepage.setContent(this.currentPackage.homepage);
         
         this.$.PackageMaintainer.setContent(this.currentPackage.maintainer.map(function (currentValue) {
-        	return currentValue.url ? '<a href="' + currentValue.url + '" target="_blank">' + currentValue.name + '</a>': currentValue.name;
+        	return currentValue.url ? currentValue.name + ' (' + currentValue.url + ')': currentValue.name;
         }).join('<br><br>'));
         
         this.$.PackageVersion.setContent(this.currentPackage.version ? this.currentPackage.version : this.currentPackage.Version);
