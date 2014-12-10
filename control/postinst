@@ -11,7 +11,8 @@ SID="org.webosinternals.ipkgservice"
 
 APPS=/media/cryptofs/apps
 
-VERSION=`grep PRODUCT_VERSION_STRING /etc/palm-build-info | sed -e 's/.* webOS \([0-9.]*\).*/\1/'`
+# no longer in palm-build-info & only needed for patches feeds
+#VERSION=`grep PRODUCT_VERSION_STRING /etc/palm-build-info | sed -e 's/.* webOS \([0-9.]*\).*/\1/'`
 
 # Remove the obsolete Package Manager Service
 #if [ -f $APPS/usr/lib/ipkg/info/org.webosinternals.ipkgservice.prerm ] ; then

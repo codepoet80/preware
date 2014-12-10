@@ -60,7 +60,9 @@ enyo.kind({
         	{kind: "onyx.Button", classes: "onyx-affirmative", style: "margin:5px; width: 18%; min-width: 100px; font-size: 18px;", content: $L("Close"), ontap: "closePopup"}
         ]},
         {name: "alertDialog", kind: Preware.AlertDialog, onDismiss: "closeDialog"},
-        {name: "warningDialog", kind: Preware.ChoiceDialog, onAction: "okWarning", onDismiss: "closeDialog"},
+        {name: "warningDialog", kind: Preware.ChoiceDialog, title: $L("Non-webos-ports Feed"),
+        	body: $L("<p>By adding a non-webos-ports feed, you're trusting both the package developers and feed maintainer, and that their sites haven't been hacked.</p><p>You take full responsibility for any and all potential outcomes that may occur as a result of doing so, including (but not limited to): loss of warranty, loss of all data, loss of all privacy, security vulnerabilities and device damage.</p>"),
+        	onDismiss: "closeDialog"},
     ],
 
 	//setup
@@ -253,9 +255,23 @@ enyo.kind({
 		{
 			return true;
 		}
+
 		var i = inEvent.index;
+		if (this.feeds[i].enabled || this.warningOkd || /^https?:\/\/feeds.webos-ports.org(:|\/)/.test(this.feeds[i].url)) {
+			this.toggleFeed(i);
+		} else {   // enabling feed or warning not previously accepted
+			this.$.warningDialog.set("onAction", "okFeedToggle");
+			this.$.warningDialog.show(i);
+		}
+	},
+	okFeedToggle: function (inSender, inEvent) {
+    	this.$.warningDialog.hide();
+    	this.warningOkd = true;
+    	
+    	this.toggleFeed(inEvent.data);
+	},
+	toggleFeed: function (i) {
 		var item = this.feeds[i];
-		
 		item.enabled = !item.enabled;
 		
 		this.$.ManageFeedsList.renderRow(i);
@@ -299,7 +315,8 @@ enyo.kind({
 		{
 			if (!this.warningOkd)
 			{
-				this.$.warningDialog.show($L("Custom Feed"),$L("By adding a custom feed, you take full responsibility for any and all potential outcomes that may occur as a result of doing so, including (but not limited to): loss of warranty, loss of all data, loss of all privacy, security vulnerabilities and device damage."));
+				this.$.warningDialog.set("onAction", "okWarning");
+				this.$.warningDialog.show();
 			}
 			else
 			{
