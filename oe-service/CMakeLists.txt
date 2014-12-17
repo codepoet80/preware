@@ -16,7 +16,7 @@ pkg_check_modules(LUNASERVICE2 REQUIRED luna-service2)
 include_directories(${LUNASERVICE2_INCLUDE_DIRS})
 webos_add_compiler_flags(ALL ${LUNASERVICE2_CFLAGS})
 
-pkg_check_modules(MJSON REQUIRED mjson)
+pkg_check_modules(MJSON REQUIRED json-c)
 include_directories(${MJSON_INCLUDE_DIRS})
 webos_add_compiler_flags(ALL ${MJSON_CFLAGS})
 
