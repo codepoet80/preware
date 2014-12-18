@@ -101,14 +101,14 @@ static char *json_escape_str(char *str)
 	memcpy(resultsPt, str + start_offset, pos - start_offset);
 	resultsPt += pos - start_offset;
       };
-      
+
       // Escape the character
-      if      (c == '\b') {memcpy(resultsPt, "\\b",  2); resultsPt += 2;} 
-      else if (c == '\n') {memcpy(resultsPt, "\\n",  2); resultsPt += 2;} 
-      else if (c == '\r') {memcpy(resultsPt, "\\r",  2); resultsPt += 2;} 
-      else if (c == '\t') {memcpy(resultsPt, "\\t",  2); resultsPt += 2;} 
-      else if (c == '"')  {memcpy(resultsPt, "\\\"", 2); resultsPt += 2;} 
-      else if (c == '\\') {memcpy(resultsPt, "\\\\", 2); resultsPt += 2;} 
+      if      (c == '\b') {memcpy(resultsPt, "\\b",  2); resultsPt += 2;}
+      else if (c == '\n') {memcpy(resultsPt, "\\n",  2); resultsPt += 2;}
+      else if (c == '\r') {memcpy(resultsPt, "\\r",  2); resultsPt += 2;}
+      else if (c == '\t') {memcpy(resultsPt, "\\t",  2); resultsPt += 2;}
+      else if (c == '"')  {memcpy(resultsPt, "\\\"", 2); resultsPt += 2;}
+      else if (c == '\\') {memcpy(resultsPt, "\\\\", 2); resultsPt += 2;}
 
       // Reset the start of the next chunk
       start_offset = ++pos;
@@ -116,7 +116,7 @@ static char *json_escape_str(char *str)
     }
 
     default:
-      
+
       // Check for "special" characters
       if ((c < ' ') || (c > 127)) {
 
@@ -145,7 +145,7 @@ static char *json_escape_str(char *str)
   if (pos - start_offset > 0) {
     memcpy(resultsPt, str + start_offset, pos - start_offset);
     resultsPt += pos - start_offset;
-  } 
+  }
 
   // Terminate the output buffer ...
   memcpy(resultsPt, "\0", 1);
@@ -168,7 +168,6 @@ bool dummy_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
  error:
   LSErrorPrint(&lserror, stderr);
   LSErrorFree(&lserror);
- end:
   return false;
 }
 
@@ -186,7 +185,6 @@ bool version_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
  error:
   LSErrorPrint(&lserror, stderr);
   LSErrorFree(&lserror);
- end:
   return false;
 }
 
@@ -350,7 +348,7 @@ static bool run_command(char *command, LSMessage *message, subscribefun subscrib
 
     // Read and store characters up to the next LF or NL.
     int c;
-    while ((len < MAXLINLEN) && ((c = fgetc(fp)) != EOF)) { 
+    while ((len < MAXLINLEN) && ((c = fgetc(fp)) != EOF)) {
       // Rewind the buffer for carriage returns without a linefeed.
       if (c == '\r') {
 	*lastpos = '\0';
@@ -443,7 +441,6 @@ static bool run_command(char *command, LSMessage *message, subscribefun subscrib
  error:
   LSErrorPrint(&lserror, stderr);
   LSErrorFree(&lserror);
- end:
   // %%% We need a way to distinguish command failures from LSMessage failures %%%
   // %%% This may need to be true if we just want to ignore LSMessage failures %%%
   return false;
@@ -489,7 +486,6 @@ static bool report_command_failure(LSMessage *message, char *command, char *stdE
  error:
   LSErrorPrint(&lserror, stderr);
   LSErrorFree(&lserror);
- end:
   return false;
 }
 
@@ -572,27 +568,27 @@ bool set_auth_params_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
   LSErrorInit(&lserror);
 
   // Extract the deviceId argument from the message
-  json_t *object = json_parse_document(LSMessageGetPayload(message));
-  json_t *id = json_find_first_label(object, "deviceId");
-  if (!id || (id->child->type != JSON_STRING) || (strspn(id->child->text, ALLOWED_CHARS":") != strlen(id->child->text))) {
+  json_object *object = json_tokener_parse(LSMessageGetPayload(message));
+  json_object *id = json_object_object_get(object, "deviceId");
+  if (!id || !json_object_is_type(id, json_type_string) || (strspn(json_object_get_string(id), ALLOWED_CHARS":") != strlen(json_object_get_string(id)))) {
     if (!LSMessageRespond(message,
 			  "{\"returnValue\": false, \"errorCode\": -1, \"errorText\": \"Invalid or missing deviceId\"}",
 			  &lserror)) goto error;
     return true;
   }
 
-  strncpy(device, id->child->text, MAXNAMLEN);
+  strncpy(device, json_object_get_string(id), MAXNAMLEN);
 
   // Extract the token argument from the message
-  id = json_find_first_label(object, "token");
-  if (!id || (id->child->type != JSON_STRING) || (strspn(id->child->text, ALLOWED_CHARS) != strlen(id->child->text))) {
+  id = json_object_object_get(object, "token");
+  if (!id || !json_object_is_type(id, json_type_string) || (strspn(json_object_get_string(id), ALLOWED_CHARS) != strlen(json_object_get_string(id)))) {
     if (!LSMessageRespond(message,
 			  "{\"returnValue\": false, \"errorCode\": -1, \"errorText\": \"Invalid or missing token\"}",
 			  &lserror)) goto error;
     return true;
   }
 
-  strncpy(token, id->child->text, MAXNAMLEN);
+  strncpy(token, json_object_get_string(id), MAXNAMLEN);
 
   if (!LSMessageRespond(message, "{\"returnValue\": true}", &lserror)) goto error;
 
@@ -600,7 +596,6 @@ bool set_auth_params_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
  error:
   LSErrorPrint(&lserror, stderr);
   LSErrorFree(&lserror);
- end:
   return false;
 }
 
@@ -758,7 +753,7 @@ void *update_thread(void *arg) {
 
     // Even if there is an error, continue to move the files below
   }
- 
+
   // Create the cache directory
   strcpy(command, "/bin/mkdir -p /media/cryptofs/apps/var/lib/opkg/cache 2>&1");
   strcpy(run_command_buffer, "[");
@@ -768,7 +763,7 @@ void *update_thread(void *arg) {
     error = true;
     // Even if there is an error, continue to move the files below
   }
- 
+
   // Remove any existing cache files
   strcpy(command, "/bin/rm -f /media/cryptofs/apps/var/lib/opkg/cache/* 2>&1");
   strcpy(run_command_buffer, "[");
@@ -778,7 +773,7 @@ void *update_thread(void *arg) {
     error = true;
     // Even if there is an error, continue to move the files below
   }
- 
+
   // Determine if any feeds were updated
   bool anyfeeds = false;
   DIR *dp = opendir ("/media/cryptofs/apps/var/lib/opkg/lists/");
@@ -803,7 +798,7 @@ void *update_thread(void *arg) {
       // At this point, we're done anyway
     }
   }
- 
+
   // Report the error status of the initial update command
   if (error) {
     if (!LSMessageRespond(message, "{\"returnValue\": false, \"stage\": \"failed\"}", &lserror)) goto error;
@@ -845,7 +840,6 @@ bool update_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
  error:
   LSErrorPrint(&lserror, stderr);
   LSErrorFree(&lserror);
- end:
   return false;
 }
 
@@ -858,11 +852,11 @@ static bool read_file(LSMessage *message, char *filename) {
     sprintf(read_file_buffer,
 	    "{\"returnValue\": false, \"errorCode\": -1, \"errorText\": \"Cannot open %s\"}",
 	    filename);
-    
+
     if (!LSMessageRespond(message, read_file_buffer, &lserror)) goto error;
     return true;
   }
-  
+
   char chunk[CHUNKSIZE];
   int chunksize = CHUNKSIZE;
 
@@ -910,7 +904,6 @@ static bool read_file(LSMessage *message, char *filename) {
  error:
   LSErrorPrint(&lserror, stderr);
   LSErrorFree(&lserror);
- end:
   return false;
 }
 
@@ -921,9 +914,9 @@ bool get_list_file_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
   char filename[MAXLINLEN];
 
   // Extract the feed argument from the message
-  json_t *object = json_parse_document(LSMessageGetPayload(message));
-  json_t *id = json_find_first_label(object, "feed");               
-  if (!id || (id->child->type != JSON_STRING) || (strspn(id->child->text, ALLOWED_CHARS) != strlen(id->child->text))) {
+  json_object *object = json_tokener_parse(LSMessageGetPayload(message));
+  json_object *id = json_object_object_get(object, "feed");
+  if (!id || !json_object_is_type(id, json_type_string) || (strspn(json_object_get_string(id), ALLOWED_CHARS) != strlen(json_object_get_string(id)))) {
     if (!LSMessageRespond(message,
 			"{\"returnValue\": false, \"errorCode\": -1, \"errorText\": \"Invalid or missing feed\"}",
 			&lserror)) goto error;
@@ -931,14 +924,13 @@ bool get_list_file_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
   }
 
   strcpy(filename, "/media/cryptofs/apps/var/lib/opkg/cache/");
-  strcat(filename, id->child->text);
+  strcat(filename, json_object_get_string(id));
 
   return read_file(message, filename);
 
  error:
   LSErrorPrint(&lserror, stderr);
   LSErrorFree(&lserror);
- end:
   return false;
 }
 
@@ -959,10 +951,10 @@ bool get_package_info_method(LSHandle *lshandle, LSMessage *message, void *ctx) 
   int size;
   int datasize = 0;
 
-  json_t *object = json_parse_document(LSMessageGetPayload(message));
-  json_t *id = json_find_first_label(object, "package");               
+  json_object *object = json_tokener_parse(LSMessageGetPayload(message));
+  json_object *id = json_object_object_get(object, "package");
 
-  if (!id || (id->child->type != JSON_STRING) || (strspn(id->child->text, ALLOWED_CHARS) != strlen(id->child->text))) {
+  if (!id || !json_object_is_type(id, json_type_string) || (strspn(json_object_get_string(id), ALLOWED_CHARS) != strlen(json_object_get_string(id)))) {
     if (!LSMessageRespond(message,
 			"{\"returnValue\": false, \"errorCode\": -1, \"errorText\": \"Invalid or missing package\"}",
 			&lserror)) goto error;
@@ -983,9 +975,9 @@ bool get_package_info_method(LSHandle *lshandle, LSMessage *message, void *ctx) 
 
     packages = g_strsplit(contents, "\nPackage: ", -1);
     while (packages[i]) {
-      int len = strlen(id->child->text);
+      int len = strlen(json_object_get_string(id));
       int offset = (i == 0) ? strlen("Package: ") : 0;
-      if (!bcmp(id->child->text, &packages[i][offset], len) &&
+      if (!bcmp(json_object_get_string(id), &packages[i][offset], len) &&
           (packages[i][offset + len] == '\n')) {
         package = packages[i];
 	asprintf(&feedname, "%s", name);
@@ -1001,7 +993,7 @@ bool get_package_info_method(LSHandle *lshandle, LSMessage *message, void *ctx) 
   g_dir_close(dir);
 
   if (!package) {
-    if (!LSMessageRespond(message, 
+    if (!LSMessageRespond(message,
           "{\"returnValue\": true, \"size\": 0, \"contents\": \"\"}", &lserror)) {
       goto error;
     }
@@ -1039,7 +1031,6 @@ bool get_package_info_method(LSHandle *lshandle, LSMessage *message, void *ctx) 
  error:
   LSErrorPrint(&lserror, stderr);
   LSErrorFree(&lserror);
- end:
   g_free(feedname);
   g_strfreev(packages);
   return false;
@@ -1052,16 +1043,16 @@ bool get_control_file_method(LSHandle* lshandle, LSMessage *message, void *ctx) 
   char filename[MAXLINLEN];
 
   // Extract the feed argument from the message
-  json_t *object = json_parse_document(LSMessageGetPayload(message));
-  json_t *id = json_find_first_label(object, "package");               
-  if (!id || (id->child->type != JSON_STRING) || (strspn(id->child->text, ALLOWED_CHARS) != strlen(id->child->text))) {
+  json_object *object = json_tokener_parse(LSMessageGetPayload(message));
+  json_object *id = json_object_object_get(object, "package");
+  if (!id || !json_object_is_type(id, json_type_string) || (strspn(json_object_get_string(id), ALLOWED_CHARS) != strlen(json_object_get_string(id)))) {
     if (!LSMessageRespond(message,
 			"{\"returnValue\": false, \"errorCode\": -1, \"errorText\": \"Invalid or missing package\"}",
 			&lserror)) goto error;
   }
 
   strcpy(filename, "/media/cryptofs/apps/var/lib/opkg/info/");
-  strcat(filename, id->child->text);
+  strcat(filename, json_object_get_string(id));
   strcat(filename, ".control");
 
   return read_file(message, filename);
@@ -1069,7 +1060,6 @@ bool get_control_file_method(LSHandle* lshandle, LSMessage *message, void *ctx) 
  error:
   LSErrorPrint(&lserror, stderr);
   LSErrorFree(&lserror);
- end:
   return false;
 }
 
@@ -1079,10 +1069,8 @@ bool get_status_file_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
 
   return read_file(message, "/media/cryptofs/apps/var/lib/opkg/status");
 
- error:
   LSErrorPrint(&lserror, stderr);
   LSErrorFree(&lserror);
- end:
   return false;
 }
 
@@ -1093,9 +1081,9 @@ bool get_appinfo_file_method(LSHandle* lshandle, LSMessage *message, void *ctx) 
   char filename[MAXLINLEN];
 
   // Extract the feed argument from the message
-  json_t *object = json_parse_document(LSMessageGetPayload(message));
-  json_t *id = json_find_first_label(object, "package");               
-  if (!id || (id->child->type != JSON_STRING) || (strspn(id->child->text, ALLOWED_CHARS) != strlen(id->child->text))) {
+  json_object *object = json_tokener_parse(LSMessageGetPayload(message));
+  json_object *id = json_object_object_get(object, "package");
+  if (!id || !json_object_is_type(id, json_type_string) || (strspn(json_object_get_string(id), ALLOWED_CHARS) != strlen(json_object_get_string(id)))) {
     if (!LSMessageRespond(message,
 			"{\"returnValue\": false, \"errorCode\": -1, \"errorText\": \"Invalid or missing package\"}",
 			&lserror)) goto error;
@@ -1103,7 +1091,7 @@ bool get_appinfo_file_method(LSHandle* lshandle, LSMessage *message, void *ctx) 
   }
 
   strcpy(filename, "/media/cryptofs/apps/usr/palm/applications/");
-  strcat(filename, id->child->text);
+  strcat(filename, json_object_get_string(id));
   strcat(filename, "/appinfo.json");
 
   return read_file(message, filename);
@@ -1111,7 +1099,6 @@ bool get_appinfo_file_method(LSHandle* lshandle, LSMessage *message, void *ctx) 
  error:
   LSErrorPrint(&lserror, stderr);
   LSErrorFree(&lserror);
- end:
   return false;
 }
 
@@ -1124,26 +1111,23 @@ bool get_dir_listing_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
 
   struct dirent *ep;
 
-  // Local buffer to hold each line of output from ls
-  char line[MAXLINLEN];
-
   // Is this the first line of output?
   bool first = true;
 
   // Was there an error in accessing any of the files?
   bool error = false;
 
-  json_t *object = json_parse_document(LSMessageGetPayload(message));
-  json_t *id = json_find_first_label(object, "directory");
+  json_object *object = json_tokener_parse(LSMessageGetPayload(message));
+  json_object *id = json_object_object_get(object, "directory");
 
-  if (!id || (id->child->type != JSON_STRING) || (strspn(id->child->text, ALLOWED_CHARS"/") != strlen(id->child->text))) {
+  if (!id || !json_object_is_type(id, json_type_string) || (strspn(json_object_get_string(id), ALLOWED_CHARS"/") != strlen(json_object_get_string(id)))) {
     if (!LSMessageRespond(message,
 			"{\"returnValue\": false, \"errorCode\": -1, \"errorText\": \"Invalid or missing directory\"}",
 			&lserror)) goto error;
   }
 
   // Start execution of the command to list the directory contents
-  DIR *dp = opendir(id->child->text);
+  DIR *dp = opendir(json_object_get_string(id));
 
   // If the command cannot be started
   if (!dp) {
@@ -1210,7 +1194,6 @@ bool get_dir_listing_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
  error:
   LSErrorPrint(&lserror, stderr);
   LSErrorFree(&lserror);
- end:
   return false;
 }
 
@@ -1218,14 +1201,14 @@ bool set_config_state_method(LSHandle* lshandle, LSMessage *message, void *ctx) 
   LSError lserror;
   LSErrorInit(&lserror);
 
-  json_t *object = json_parse_document(LSMessageGetPayload(message));
-  json_t *id;
+  json_object *object = json_tokener_parse(LSMessageGetPayload(message));
+  json_object *id;
 
   // Extract the config argument from the message
-  id = json_find_first_label(object, "config");               
-  if (!id || (id->child->type != JSON_STRING) ||
-      (strlen(id->child->text) >= MAXNAMLEN) ||
-      (strspn(id->child->text, ALLOWED_CHARS) != strlen(id->child->text))) {
+  id = json_object_object_get(object, "config");
+  if (!id || !json_object_is_type(id, json_type_string) ||
+      (strlen(json_object_get_string(id)) >= MAXNAMLEN) ||
+      (strspn(json_object_get_string(id), ALLOWED_CHARS) != strlen(json_object_get_string(id)))) {
     if (!LSMessageRespond(message,
 			"{\"returnValue\": false, \"errorCode\": -1, "
 			"\"errorText\": \"Invalid or missing config parameter\"}",
@@ -1233,18 +1216,18 @@ bool set_config_state_method(LSHandle* lshandle, LSMessage *message, void *ctx) 
     return true;
   }
   char config[MAXNAMLEN];
-  strcpy(config, id->child->text);
+  strcpy(config, json_object_get_string(id));
 
   // Extract the enabled argument from the message
-  id = json_find_first_label(object, "enabled");
-  if (!id || ((id->child->type != JSON_TRUE) && id->child->type != JSON_FALSE)) {
+  id = json_object_object_get(object, "enabled");
+  if (!id || !json_object_is_type(id, json_type_boolean)) {
     if (!LSMessageRespond(message,
 			"{\"returnValue\": false, \"errorCode\": -1, "
 			"\"errorText\": \"Invalid or missing enabled parameter\"}",
 			&lserror)) goto error;
     return true;
   }
-  bool enabled = (id->child->type == JSON_TRUE);
+  bool enabled = json_object_get_boolean(id);
 
   char command[MAXLINLEN];
   if (enabled) {
@@ -1280,14 +1263,14 @@ bool add_config_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
   LSError lserror;
   LSErrorInit(&lserror);
 
-  json_t *object = json_parse_document(LSMessageGetPayload(message));
-  json_t *id;
+  json_object *object = json_tokener_parse(LSMessageGetPayload(message));
+  json_object *id;
 
   // Extract the config argument from the message
-  id = json_find_first_label(object, "config");               
-  if (!id || (id->child->type != JSON_STRING) ||
-      (strlen(id->child->text) >= MAXNAMLEN) ||
-      (strspn(id->child->text, ALLOWED_CHARS) != strlen(id->child->text))) {
+  id = json_object_object_get(object, "config");
+  if (!id || !json_object_is_type(id, json_type_string) ||
+      (strlen(json_object_get_string(id)) >= MAXNAMLEN) ||
+      (strspn(json_object_get_string(id), ALLOWED_CHARS) != strlen(json_object_get_string(id)))) {
     if (!LSMessageRespond(message,
 			"{\"returnValue\": false, \"errorCode\": -1, "
 			"\"errorText\": \"Invalid or missing config parameter\"}",
@@ -1295,13 +1278,13 @@ bool add_config_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
     return true;
   }
   char config[MAXNAMLEN];
-  strcpy(config, id->child->text);
+  strcpy(config, json_object_get_string(id));
 
   // Extract the name argument from the message
-  id = json_find_first_label(object, "name");               
-  if (!id || (id->child->type != JSON_STRING) ||
-      (strlen(id->child->text) >= MAXNAMLEN) ||
-      (strspn(id->child->text, ALLOWED_CHARS) != strlen(id->child->text))) {
+  id = json_object_object_get(object, "name");
+  if (!id || !json_object_is_type(id, json_type_string) ||
+      (strlen(json_object_get_string(id)) >= MAXNAMLEN) ||
+      (strspn(json_object_get_string(id), ALLOWED_CHARS) != strlen(json_object_get_string(id)))) {
     if (!LSMessageRespond(message,
 			"{\"returnValue\": false, \"errorCode\": -1, "
 			"\"errorText\": \"Invalid or missing name parameter\"}",
@@ -1309,12 +1292,12 @@ bool add_config_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
     return true;
   }
   char name[MAXNAMLEN];
-  strcpy(name, id->child->text);
+  strcpy(name, json_object_get_string(id));
 
   // Extract the url argument from the message
-  id = json_find_first_label(object, "url");               
-  if (!id || (id->child->type != JSON_STRING) ||
-      (strlen(id->child->text) >= MAXLINLEN)) {
+  id = json_object_object_get(object, "url");
+  if (!id || !json_object_is_type(id, json_type_string) ||
+      (strlen(json_object_get_string(id)) >= MAXLINLEN)) {
     if (!LSMessageRespond(message,
 			"{\"returnValue\": false, \"errorCode\": -1, "
 			"\"errorText\": \"Invalid or missing url parameter\"}",
@@ -1322,18 +1305,18 @@ bool add_config_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
     return true;
   }
   char url[MAXLINLEN];
-  strcpy(url, id->child->text);
+  strcpy(url, json_object_get_string(id));
 
   // Extract the gzip argument from the message
-  id = json_find_first_label(object, "gzip");
-  if (!id || ((id->child->type != JSON_TRUE) && id->child->type != JSON_FALSE)) {
+  id = json_object_object_get(object, "gzip");
+  if (!id || !json_object_is_type(id, json_type_boolean)) {
     if (!LSMessageRespond(message,
 			"{\"returnValue\": false, \"errorCode\": -1, "
 			"\"errorText\": \"Invalid or missing gzip parameter\"}",
 			&lserror)) goto error;
     return true;
   }
-  bool gzip = (id->child->type == JSON_TRUE);
+  bool gzip = json_object_get_boolean(id);
 
   char command[MAXLINLEN];
   snprintf(command, MAXLINLEN,
@@ -1362,14 +1345,14 @@ bool delete_config_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
   LSError lserror;
   LSErrorInit(&lserror);
 
-  json_t *object = json_parse_document(LSMessageGetPayload(message));
-  json_t *id;
+  json_object *object = json_tokener_parse(LSMessageGetPayload(message));
+  json_object *id;
 
   // Extract the config argument from the message
-  id = json_find_first_label(object, "config");               
-  if (!id || (id->child->type != JSON_STRING) ||
-      (strlen(id->child->text) >= MAXNAMLEN) ||
-      (strspn(id->child->text, ALLOWED_CHARS) != strlen(id->child->text))) {
+  id = json_object_object_get(object, "config");
+  if (!id || !json_object_is_type(id, json_type_string) ||
+      (strlen(json_object_get_string(id)) >= MAXNAMLEN) ||
+      (strspn(json_object_get_string(id), ALLOWED_CHARS) != strlen(json_object_get_string(id)))) {
     if (!LSMessageRespond(message,
 			"{\"returnValue\": false, \"errorCode\": -1, "
 			"\"errorText\": \"Invalid or missing config parameter\"}",
@@ -1377,13 +1360,13 @@ bool delete_config_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
     return true;
   }
   char config[MAXNAMLEN];
-  strcpy(config, id->child->text);
+  strcpy(config, json_object_get_string(id));
 
   // Extract the name argument from the message
-  id = json_find_first_label(object, "name");               
-  if (!id || (id->child->type != JSON_STRING) ||
-      (strlen(id->child->text) >= MAXNAMLEN) ||
-      (strspn(id->child->text, ALLOWED_CHARS) != strlen(id->child->text))) {
+  id = json_object_object_get(object, "name");
+  if (!id || !json_object_is_type(id, json_type_string) ||
+      (strlen(json_object_get_string(id)) >= MAXNAMLEN) ||
+      (strspn(json_object_get_string(id), ALLOWED_CHARS) != strlen(json_object_get_string(id)))) {
     if (!LSMessageRespond(message,
 			"{\"returnValue\": false, \"errorCode\": -1, "
 			"\"errorText\": \"Invalid or missing name parameter\"}",
@@ -1391,7 +1374,7 @@ bool delete_config_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
     return true;
   }
   char name[MAXNAMLEN];
-  strcpy(name, id->child->text);
+  strcpy(name, json_object_get_string(id));
 
   char command[MAXLINLEN];
   snprintf(command, MAXLINLEN,
@@ -1420,7 +1403,6 @@ bool do_download(LSMessage *message, bool gzipped, char *feed, char *url) {
   LSError lserror;
   LSErrorInit(&lserror);
 
-  struct stat info;
   char command[MAXLINLEN];
 
   char pathname[MAXNAMLEN];
@@ -1500,11 +1482,11 @@ void *feed_download_thread(void *arg) {
 
   LSMessage *message = (LSMessage *)arg;
 
-  json_t *object = json_parse_document(LSMessageGetPayload(message));
-  
+  json_object *object = json_tokener_parse(LSMessageGetPayload(message));
+
   // Extract the gzipped argument from the message
-  json_t *gzipped = json_find_first_label(object, "gzipped");
-  if (!gzipped || ((gzipped->child->type != JSON_TRUE) && (gzipped->child->type != JSON_FALSE))) {
+  json_object *gzipped = json_object_object_get(object, "gzipped");
+  if (!gzipped || !json_object_is_type(gzipped, json_type_boolean)) {
     if (!LSMessageRespond(message,
 			  "{\"returnValue\": false, \"errorCode\": -1, "
 			  "\"errorText\": \"Invalid or missing gzipped parameter\", "
@@ -1514,10 +1496,10 @@ void *feed_download_thread(void *arg) {
   }
 
   // Extract the feed argument from the message
-  json_t *feed = json_find_first_label(object, "feed");
-  if (!feed || (feed->child->type != JSON_STRING) ||
-      (strlen(feed->child->text) >= MAXNAMLEN) ||
-      (strspn(feed->child->text, ALLOWED_CHARS) != strlen(feed->child->text))) {
+  json_object *feed = json_object_object_get(object, "feed");
+  if (!feed || !json_object_is_type(feed, json_type_string) ||
+      (strlen(json_object_get_string(feed)) >= MAXNAMLEN) ||
+      (strspn(json_object_get_string(feed), ALLOWED_CHARS) != strlen(json_object_get_string(feed)))) {
     if (!LSMessageRespond(message,
 			"{\"returnValue\": false, \"errorCode\": -1, "
 			"\"errorText\": \"Invalid or missing feed parameter\", "
@@ -1527,9 +1509,9 @@ void *feed_download_thread(void *arg) {
   }
 
   // Extract the url argument from the message
-  json_t *url = json_find_first_label(object, "url");               
-  if (!url || (url->child->type != JSON_STRING) ||
-      (strlen(url->child->text) >= MAXLINLEN)) {
+  json_object *url = json_object_object_get(object, "url");
+  if (!url || !json_object_is_type(url, json_type_string) ||
+      (strlen(json_object_get_string(url)) >= MAXLINLEN)) {
     if (!LSMessageRespond(message,
 			"{\"returnValue\": false, \"errorCode\": -1, "
 			"\"errorText\": \"Invalid or missing url parameter\", "
@@ -1539,9 +1521,9 @@ void *feed_download_thread(void *arg) {
   }
 
   if (do_download(message,
-		  (gzipped->child->type == JSON_TRUE) ? true : false,
-		  feed->child->text,
-		  url->child->text)) {
+		  json_object_get_boolean(gzipped) ? true : false,
+		  json_object_get_string(feed),
+		  json_object_get_string(url))) {
     if (!LSMessageRespond(message, "{\"returnValue\": true, \"stage\": \"completed\"}", &lserror)) goto error;
   }
 
@@ -1571,7 +1553,6 @@ bool feed_download_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
  error:
   LSErrorPrint(&lserror, stderr);
   LSErrorFree(&lserror);
- end:
   return false;
 }
 
@@ -1584,7 +1565,7 @@ bool do_install(LSMessage *message, char *filename, char *url, bool useSvc) {
 
   char *installCommand;
   subscribefun installFilter;
-  
+
   bool installed = false;
 
   if (useSvc) {
@@ -1697,7 +1678,7 @@ bool do_install(LSMessage *message, char *filename, char *url, bool useSvc) {
 
       snprintf(command, MAXLINLEN,
 	       "/bin/mkdir -p /media/cryptofs/apps/.scripts/%s 2>&1", package);
-      
+
       strcpy(run_command_buffer, "{\"stdOut\": [");
       if (run_command(command, message, passthrough)) {
 	strcat(run_command_buffer, "], \"returnValue\": true, \"stage\": \"mkdir-prerm\"}");
@@ -1711,7 +1692,7 @@ bool do_install(LSMessage *message, char *filename, char *url, bool useSvc) {
 
       snprintf(command, MAXLINLEN,
 	       "/usr/bin/install -m 755 %s /media/cryptofs/apps/.scripts/%s/pmPreRemove.script 2>&1", prerm, package);
-      
+
       strcpy(run_command_buffer, "{\"stdOut\": [");
       if (run_command(command, message, passthrough)) {
 	strcat(run_command_buffer, "], \"returnValue\": true, \"stage\": \"install-prerm\"}");
@@ -1724,7 +1705,7 @@ bool do_install(LSMessage *message, char *filename, char *url, bool useSvc) {
       }
     }
   }
- 
+
   /* Check for an opkg postinst script, and run it */
 
   char postinst[MAXLINLEN];
@@ -1741,7 +1722,7 @@ bool do_install(LSMessage *message, char *filename, char *url, bool useSvc) {
 
       snprintf(command, MAXLINLEN,
 	       "OPKG_OFFLINE_ROOT=/media/cryptofs/apps /bin/sh %s 2>&1", postinst);
-      
+
       strcpy(run_command_buffer, "{\"stdOut\": [");
       if (run_command(command, message, passthrough)) {
 	strcat(run_command_buffer, "], \"returnValue\": true, \"stage\": \"postinst\"}");
@@ -1762,7 +1743,7 @@ bool do_install(LSMessage *message, char *filename, char *url, bool useSvc) {
   if (!installed) {
     snprintf(command, MAXLINLEN,
 	     "/usr/bin/opkg -o /media/cryptofs/apps remove %s 2>&1", package);
-    
+
     strcpy(run_command_buffer, "{\"stdOut\": [");
     if (run_command(command, message, appinstaller)) {
       strcat(run_command_buffer, "], \"returnValue\": true, \"stage\": \"remove\"}");
@@ -1776,7 +1757,7 @@ bool do_install(LSMessage *message, char *filename, char *url, bool useSvc) {
 
     snprintf(command, MAXLINLEN,
 	     "/bin/rm -rf /media/cryptofs/apps/usr/palm/applications/%s /media/cryptofs/apps/.scripts/%s 2>&1", package, package);
-    
+
     strcpy(run_command_buffer, "{\"stdOut\": [");
     if (run_command(command, message, appinstaller)) {
       strcat(run_command_buffer, "], \"returnValue\": true, \"stage\": \"delete\"}");
@@ -1826,7 +1807,7 @@ bool do_remove(LSMessage *message, char *package, bool replace, bool *removed) {
 
     snprintf(command, MAXLINLEN,
 	     "OPKG_OFFLINE_ROOT=/media/cryptofs/apps /bin/sh %s 2>&1", prerm);
-      
+
     strcpy(run_command_buffer, "{\"stdOut\": [");
     if (run_command(command, message, passthrough)) {
       strcat(run_command_buffer, "], \"returnValue\": true, \"stage\": \"prerm\"}");
@@ -1868,10 +1849,10 @@ bool do_remove(LSMessage *message, char *package, bool replace, bool *removed) {
     // Assume that it hasn't been removed properly (don't change *removed)
     return true;
   }
-  
+
   snprintf(command, MAXLINLEN,
 	   "/bin/rm -rf /media/cryptofs/apps/usr/palm/applications/%s /media/cryptofs/apps/.scripts/%s 2>&1", package, package);
-    
+
   strcpy(run_command_buffer, "{\"stdOut\": [");
   if (run_command(command, message, appinstaller)) {
     strcat(run_command_buffer, "], \"returnValue\": true, \"stage\": \"delete\"}");
@@ -1903,13 +1884,13 @@ void *appinstaller_install_thread(void *arg) {
 
   LSMessage *message = (LSMessage *)arg;
 
-  json_t *object = json_parse_document(LSMessageGetPayload(message));
-  
+  json_object *object = json_tokener_parse(LSMessageGetPayload(message));
+
   // Extract the filename argument from the message
-  json_t *filename = json_find_first_label(object, "filename");
-  if (!filename || (filename->child->type != JSON_STRING) ||
-      (strlen(filename->child->text) >= MAXNAMLEN) ||
-      (strspn(filename->child->text, ALLOWED_CHARS) != strlen(filename->child->text))) {
+  json_object *filename = json_object_object_get(object, "filename");
+  if (!filename || !json_object_is_type(filename, json_type_string) ||
+      (strlen(json_object_get_string(filename)) >= MAXNAMLEN) ||
+      (strspn(json_object_get_string(filename), ALLOWED_CHARS) != strlen(json_object_get_string(filename)))) {
     if (!LSMessageRespond(message,
 			"{\"returnValue\": false, \"errorCode\": -1, "
 			"\"errorText\": \"Invalid or missing filename parameter\", "
@@ -1919,9 +1900,9 @@ void *appinstaller_install_thread(void *arg) {
   }
 
   // Extract the url argument from the message
-  json_t *url = json_find_first_label(object, "url");               
-  if (!url || (url->child->type != JSON_STRING) ||
-      (strlen(url->child->text) >= MAXLINLEN)) {
+  json_object *url = json_object_object_get(object, "url");
+  if (!url || !json_object_is_type(url, json_type_string) ||
+      (strlen(json_object_get_string(url)) >= MAXLINLEN)) {
     if (!LSMessageRespond(message,
 			"{\"returnValue\": false, \"errorCode\": -1, "
 			"\"errorText\": \"Invalid or missing url parameter\", "
@@ -1930,7 +1911,7 @@ void *appinstaller_install_thread(void *arg) {
     goto end;
   }
 
-  do_install(message, filename->child->text, url->child->text, true);
+  do_install(message, json_object_get_string(filename), json_object_get_string(url), true);
 
  end:
   LSMessageUnref(message);
@@ -1958,7 +1939,6 @@ bool appinstaller_install_method(LSHandle* lshandle, LSMessage *message, void *c
  error:
   LSErrorPrint(&lserror, stderr);
   LSErrorFree(&lserror);
- end:
   return false;
 }
 
@@ -1968,13 +1948,13 @@ void *opkg_install_thread(void *arg) {
 
   LSMessage *message = (LSMessage *)arg;
 
-  json_t *object = json_parse_document(LSMessageGetPayload(message));
-  
+  json_object *object = json_tokener_parse(LSMessageGetPayload(message));
+
   // Extract the filename argument from the message
-  json_t *filename = json_find_first_label(object, "filename");
-  if (!filename || (filename->child->type != JSON_STRING) ||
-      (strlen(filename->child->text) >= MAXNAMLEN) ||
-      (strspn(filename->child->text, ALLOWED_CHARS) != strlen(filename->child->text))) {
+  json_object *filename = json_object_object_get(object, "filename");
+  if (!filename || !json_object_is_type(filename, json_type_string) ||
+      (strlen(json_object_get_string(filename)) >= MAXNAMLEN) ||
+      (strspn(json_object_get_string(filename), ALLOWED_CHARS) != strlen(json_object_get_string(filename)))) {
     if (!LSMessageRespond(message,
 			"{\"returnValue\": false, \"errorCode\": -1, "
 			"\"errorText\": \"Invalid or missing filename parameter\", "
@@ -1984,9 +1964,9 @@ void *opkg_install_thread(void *arg) {
   }
 
   // Extract the url argument from the message
-  json_t *url = json_find_first_label(object, "url");               
-  if (!url || (url->child->type != JSON_STRING) ||
-      (strlen(url->child->text) >= MAXLINLEN)) {
+  json_object *url = json_object_object_get(object, "url");
+  if (!url || !json_object_is_type(url, json_type_string) ||
+      (strlen(json_object_get_string(url)) >= MAXLINLEN)) {
     if (!LSMessageRespond(message,
 			"{\"returnValue\": false, \"errorCode\": -1, "
 			"\"errorText\": \"Invalid or missing url parameter\", "
@@ -1995,7 +1975,7 @@ void *opkg_install_thread(void *arg) {
     goto end;
   }
 
-  do_install(message, filename->child->text, url->child->text, false);
+  do_install(message, json_object_get_string(filename), json_object_get_string(url), false);
 
  end:
   LSMessageUnref(message);
@@ -2023,7 +2003,6 @@ bool opkg_install_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
  error:
   LSErrorPrint(&lserror, stderr);
   LSErrorFree(&lserror);
- end:
   return false;
 }
 
@@ -2034,11 +2013,11 @@ void *remove_thread(void *arg) {
   LSMessage *message = (LSMessage *)arg;
 
   // Extract the package argument from the message
-  json_t *object = json_parse_document(LSMessageGetPayload(message));
-  json_t *id = json_find_first_label(object, "package");
-  if (!id || (id->child->type != JSON_STRING) ||
-      (strlen(id->child->text) >= MAXNAMLEN) ||
-      (strspn(id->child->text, ALLOWED_CHARS) != strlen(id->child->text))) {
+  json_object *object = json_tokener_parse(LSMessageGetPayload(message));
+  json_object *id = json_object_object_get(object, "package");
+  if (!id || !json_object_is_type(id, json_type_string) ||
+      (strlen(json_object_get_string(id)) >= MAXNAMLEN) ||
+      (strspn(json_object_get_string(id), ALLOWED_CHARS) != strlen(json_object_get_string(id)))) {
     if (!LSMessageRespond(message,
 			"{\"returnValue\": false, \"errorCode\": -1, "
 			"\"errorText\": \"Invalid or missing package parameter\"}",
@@ -2047,7 +2026,7 @@ void *remove_thread(void *arg) {
   }
 
   bool removed = false;
-  do_remove(message, id->child->text, false, &removed);
+  do_remove(message, json_object_get_string(id), false, &removed);
 
  end:
   LSMessageUnref(message);
@@ -2075,7 +2054,6 @@ bool remove_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
  error:
   LSErrorPrint(&lserror, stderr);
   LSErrorFree(&lserror);
- end:
   return false;
 }
 
@@ -2085,13 +2063,13 @@ void *opkg_replace_thread(void *arg) {
 
   LSMessage *message = (LSMessage *)arg;
 
-  json_t *object = json_parse_document(LSMessageGetPayload(message));
+  json_object *object = json_tokener_parse(LSMessageGetPayload(message));
 
   // Extract the package argument from the message
-  json_t *package = json_find_first_label(object, "package");
-  if (!package || (package->child->type != JSON_STRING) ||
-      (strlen(package->child->text) >= MAXNAMLEN) ||
-      (strspn(package->child->text, ALLOWED_CHARS) != strlen(package->child->text))) {
+  json_object *package = json_object_object_get(object, "package");
+  if (!package || !json_object_is_type(package, json_type_string) ||
+      (strlen(json_object_get_string(package)) >= MAXNAMLEN) ||
+      (strspn(json_object_get_string(package), ALLOWED_CHARS) != strlen(json_object_get_string(package)))) {
     if (!LSMessageRespond(message,
 			"{\"returnValue\": false, \"errorCode\": -1, "
 			"\"errorText\": \"Invalid or missing package parameter\"}",
@@ -2100,10 +2078,10 @@ void *opkg_replace_thread(void *arg) {
   }
 
   // Extract the filename argument from the message
-  json_t *filename = json_find_first_label(object, "filename");
-  if (!filename || (filename->child->type != JSON_STRING) ||
-      (strlen(filename->child->text) >= MAXNAMLEN) ||
-      (strspn(filename->child->text, ALLOWED_CHARS) != strlen(filename->child->text))) {
+  json_object *filename = json_object_object_get(object, "filename");
+  if (!filename || !json_object_is_type(filename, json_type_string) ||
+      (strlen(json_object_get_string(filename)) >= MAXNAMLEN) ||
+      (strspn(json_object_get_string(filename), ALLOWED_CHARS) != strlen(json_object_get_string(filename)))) {
     if (!LSMessageRespond(message,
 			"{\"returnValue\": false, \"errorCode\": -1, "
 			"\"errorText\": \"Invalid or missing filename parameter\", "
@@ -2113,9 +2091,9 @@ void *opkg_replace_thread(void *arg) {
   }
 
   // Extract the url argument from the message
-  json_t *url = json_find_first_label(object, "url");               
-  if (!url || (url->child->type != JSON_STRING) ||
-      (strlen(url->child->text) >= MAXLINLEN)) {
+  json_object *url = json_object_object_get(object, "url");
+  if (!url || !json_object_is_type(url, json_type_string) ||
+      (strlen(json_object_get_string(url)) >= MAXLINLEN)) {
     if (!LSMessageRespond(message,
 			"{\"returnValue\": false, \"errorCode\": -1, "
 			"\"errorText\": \"Invalid or missing url parameter\", "
@@ -2125,9 +2103,9 @@ void *opkg_replace_thread(void *arg) {
   }
 
   bool removed = false;
-  if (!do_remove(message, package->child->text, true, &removed)) goto end;
+  if (!do_remove(message, json_object_get_string(package), true, &removed)) goto end;
   if (removed) {
-    if (!do_install(message, filename->child->text, url->child->text, false)) goto end;
+    if (!do_install(message, json_object_get_string(filename), json_object_get_string(url), false)) goto end;
   }
 
  end:
@@ -2156,7 +2134,6 @@ bool opkg_replace_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
  error:
   LSErrorPrint(&lserror, stderr);
   LSErrorFree(&lserror);
- end:
   return false;
 }
 
@@ -2166,13 +2143,13 @@ void *appinstaller_replace_thread(void *arg) {
 
   LSMessage *message = (LSMessage *)arg;
 
-  json_t *object = json_parse_document(LSMessageGetPayload(message));
+  json_object *object = json_tokener_parse(LSMessageGetPayload(message));
 
   // Extract the package argument from the message
-  json_t *package = json_find_first_label(object, "package");
-  if (!package || (package->child->type != JSON_STRING) ||
-      (strlen(package->child->text) >= MAXNAMLEN) ||
-      (strspn(package->child->text, ALLOWED_CHARS) != strlen(package->child->text))) {
+  json_object *package = json_object_object_get(object, "package");
+  if (!package || !json_object_is_type(package, json_type_string) ||
+      (strlen(json_object_get_string(package)) >= MAXNAMLEN) ||
+      (strspn(json_object_get_string(package), ALLOWED_CHARS) != strlen(json_object_get_string(package)))) {
     if (!LSMessageRespond(message,
 			"{\"returnValue\": false, \"errorCode\": -1, "
 			"\"errorText\": \"Invalid or missing package parameter\"}",
@@ -2181,10 +2158,10 @@ void *appinstaller_replace_thread(void *arg) {
   }
 
   // Extract the filename argument from the message
-  json_t *filename = json_find_first_label(object, "filename");
-  if (!filename || (filename->child->type != JSON_STRING) ||
-      (strlen(filename->child->text) >= MAXNAMLEN) ||
-      (strspn(filename->child->text, ALLOWED_CHARS) != strlen(filename->child->text))) {
+  json_object *filename = json_object_object_get(object, "filename");
+  if (!filename || !json_object_is_type(filename, json_type_string) ||
+      (strlen(json_object_get_string(filename)) >= MAXNAMLEN) ||
+      (strspn(json_object_get_string(filename), ALLOWED_CHARS) != strlen(json_object_get_string(filename)))) {
     if (!LSMessageRespond(message,
 			"{\"returnValue\": false, \"errorCode\": -1, "
 			"\"errorText\": \"Invalid or missing filename parameter\", "
@@ -2194,9 +2171,9 @@ void *appinstaller_replace_thread(void *arg) {
   }
 
   // Extract the url argument from the message
-  json_t *url = json_find_first_label(object, "url");               
-  if (!url || (url->child->type != JSON_STRING) ||
-      (strlen(url->child->text) >= MAXLINLEN)) {
+  json_object *url = json_object_object_get(object, "url");
+  if (!url || !json_object_is_type(url, json_type_string) ||
+      (strlen(json_object_get_string(url)) >= MAXLINLEN)) {
     if (!LSMessageRespond(message,
 			"{\"returnValue\": false, \"errorCode\": -1, "
 			"\"errorText\": \"Invalid or missing url parameter\", "
@@ -2206,9 +2183,9 @@ void *appinstaller_replace_thread(void *arg) {
   }
 
   bool removed = false;
-  if (!do_remove(message, package->child->text, true, &removed)) goto end;
+  if (!do_remove(message, json_object_get_string(package), true, &removed)) goto end;
   if (removed) {
-    if (!do_install(message, filename->child->text, url->child->text, true)) goto end;
+    if (!do_install(message, json_object_get_string(filename), json_object_get_string(url), true)) goto end;
   }
 
  end:
@@ -2237,7 +2214,6 @@ bool appinstaller_replace_method(LSHandle* lshandle, LSMessage *message, void *c
  error:
   LSErrorPrint(&lserror, stderr);
   LSErrorFree(&lserror);
- end:
   return false;
 }
 
@@ -2247,14 +2223,14 @@ bool extract_control_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
 
   char command[MAXLINLEN];
 
-  json_t *object = json_parse_document(LSMessageGetPayload(message));
-  json_t *id;
+  json_object *object = json_tokener_parse(LSMessageGetPayload(message));
+  json_object *id;
 
   // Extract the filename argument from the message
-  id = json_find_first_label(object, "filename");
-  if (!id || (id->child->type != JSON_STRING) ||
-      (strlen(id->child->text) >= MAXNAMLEN) ||
-      (strspn(id->child->text, ALLOWED_CHARS) != strlen(id->child->text))) {
+  id = json_object_object_get(object, "filename");
+  if (!id || !json_object_is_type(id, json_type_string) ||
+      (strlen(json_object_get_string(id)) >= MAXNAMLEN) ||
+      (strspn(json_object_get_string(id), ALLOWED_CHARS) != strlen(json_object_get_string(id)))) {
     if (!LSMessageRespond(message,
 			"{\"returnValue\": false, \"errorCode\": -1, "
 			"\"errorText\": \"Invalid or missing filename parameter\", "
@@ -2263,12 +2239,12 @@ bool extract_control_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
     return true;
   }
   char filename[MAXNAMLEN];
-  sprintf(filename, "/media/internal/.developer/%s", id->child->text);
+  sprintf(filename, "/media/internal/.developer/%s", json_object_get_string(id));
 
   // Extract the url argument from the message
-  id = json_find_first_label(object, "url");               
-  if (!id || (id->child->type != JSON_STRING) ||
-      (strlen(id->child->text) >= MAXLINLEN)) {
+  id = json_object_object_get(object, "url");
+  if (!id || !json_object_is_type(id, json_type_string) ||
+      (strlen(json_object_get_string(id)) >= MAXLINLEN)) {
     if (!LSMessageRespond(message,
 			"{\"returnValue\": false, \"errorCode\": -1, "
 			"\"errorText\": \"Invalid or missing url parameter\", "
@@ -2277,7 +2253,7 @@ bool extract_control_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
     return true;
   }
   char url[MAXLINLEN];
-  strcpy(url, id->child->text);
+  strcpy(url, json_object_get_string(id));
 
   if (!strncmp(url, "file:///media/internal/.developer/", 34)) {
     strcpy(filename, url+7);
@@ -2381,7 +2357,6 @@ bool impersonate_handler(LSHandle* lshandle, LSMessage *reply, void *ctx) {
 // Impersonate a call to the requested service and return the output to webOS.
 //
 bool impersonate_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
-  bool retVal;
   LSError lserror;
   LSErrorInit(&lserror);
   LSMessageRef(message);
@@ -2389,9 +2364,9 @@ bool impersonate_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
   if (access_denied(message)) return true;
 
   // Extract the method argument from the message
-  json_t *object = json_parse_document(LSMessageGetPayload(message));
-  json_t *id = json_find_first_label(object, "id");               
-  if (!id || (id->child->type != JSON_STRING)) {
+  json_object *object = json_tokener_parse(LSMessageGetPayload(message));
+  json_object *id = json_object_object_get(object, "id");
+  if (!id || !json_object_is_type(id, json_type_string)) {
     if (!LSMessageRespond(message,
 			"{\"returnValue\": false, \"errorCode\": -1, \"errorText\": \"Invalid or missing id\"}",
 			&lserror)) goto error;
@@ -2399,9 +2374,9 @@ bool impersonate_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
   }
 
   // Extract the service argument from the message
-  object = json_parse_document(LSMessageGetPayload(message));
-  json_t *service = json_find_first_label(object, "service");               
-  if (!service || (service->child->type != JSON_STRING)) {
+  object = json_tokener_parse(LSMessageGetPayload(message));
+  json_object *service = json_object_object_get(object, "service");
+  if (!service || !json_object_is_type(service, json_type_string)) {
     if (!LSMessageRespond(message,
 			"{\"returnValue\": false, \"errorCode\": -1, \"errorText\": \"Invalid or missing service\"}",
 			&lserror)) goto error;
@@ -2409,9 +2384,9 @@ bool impersonate_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
   }
 
   // Extract the method argument from the message
-  object = json_parse_document(LSMessageGetPayload(message));
-  json_t *method = json_find_first_label(object, "method");               
-  if (!method || (method->child->type != JSON_STRING)) {
+  object = json_tokener_parse(LSMessageGetPayload(message));
+  json_object *method = json_object_object_get(object, "method");
+  if (!method || !json_object_is_type(method, json_type_string)) {
     if (!LSMessageRespond(message,
 			"{\"returnValue\": false, \"errorCode\": -1, \"errorText\": \"Invalid or missing method\"}",
 			&lserror)) goto error;
@@ -2419,9 +2394,9 @@ bool impersonate_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
   }
 
   // Extract the params argument from the message
-  object = json_parse_document(LSMessageGetPayload(message));
-  json_t *params = json_find_first_label(object, "params");               
-  if (!params || (params->child->type != JSON_OBJECT)) {
+  object = json_tokener_parse(LSMessageGetPayload(message));
+  json_object *params = json_object_object_get(object, "params");
+  if (!params || !json_object_is_type(params, json_type_object)) {
     if (!LSMessageRespond(message,
 			"{\"returnValue\": false, \"errorCode\": -1, \"errorText\": \"Invalid or missing params\"}",
 			&lserror)) goto error;
@@ -2429,18 +2404,17 @@ bool impersonate_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
   }
 
   char uri[MAXLINLEN];
-  sprintf(uri, "palm://%s/%s", service->child->text, method->child->text);
+  sprintf(uri, "palm://%s/%s", json_object_get_string(service), json_object_get_string(method));
 
   char *paramstring = NULL;
-  json_tree_to_string (params->child, &paramstring);
-  if (!LSCallFromApplication(priv_serviceHandle, uri, paramstring, id->child->text,
+  paramstring = json_object_to_json_string(params);
+  if (!LSCallFromApplication(priv_serviceHandle, uri, paramstring, json_object_get_string(id),
 			     impersonate_handler, message, NULL, &lserror)) goto error;
 
   return true;
  error:
   LSErrorPrint(&lserror, stderr);
   LSErrorFree(&lserror);
- end:
   return false;
 }
 
