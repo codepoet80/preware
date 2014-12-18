@@ -168,7 +168,6 @@ bool dummy_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
  error:
   LSErrorPrint(&lserror, stderr);
   LSErrorFree(&lserror);
- end:
   return false;
 }
 
@@ -186,7 +185,6 @@ bool version_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
  error:
   LSErrorPrint(&lserror, stderr);
   LSErrorFree(&lserror);
- end:
   return false;
 }
 
@@ -443,7 +441,6 @@ static bool run_command(char *command, LSMessage *message, subscribefun subscrib
  error:
   LSErrorPrint(&lserror, stderr);
   LSErrorFree(&lserror);
- end:
   // %%% We need a way to distinguish command failures from LSMessage failures %%%
   // %%% This may need to be true if we just want to ignore LSMessage failures %%%
   return false;
@@ -489,7 +486,6 @@ static bool report_command_failure(LSMessage *message, char *command, char *stdE
  error:
   LSErrorPrint(&lserror, stderr);
   LSErrorFree(&lserror);
- end:
   return false;
 }
 
@@ -600,7 +596,6 @@ bool set_auth_params_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
  error:
   LSErrorPrint(&lserror, stderr);
   LSErrorFree(&lserror);
- end:
   return false;
 }
 
@@ -845,7 +840,6 @@ bool update_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
  error:
   LSErrorPrint(&lserror, stderr);
   LSErrorFree(&lserror);
- end:
   return false;
 }
 
@@ -910,7 +904,6 @@ static bool read_file(LSMessage *message, char *filename) {
  error:
   LSErrorPrint(&lserror, stderr);
   LSErrorFree(&lserror);
- end:
   return false;
 }
 
@@ -938,7 +931,6 @@ bool get_list_file_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
  error:
   LSErrorPrint(&lserror, stderr);
   LSErrorFree(&lserror);
- end:
   return false;
 }
 
@@ -1039,7 +1031,6 @@ bool get_package_info_method(LSHandle *lshandle, LSMessage *message, void *ctx) 
  error:
   LSErrorPrint(&lserror, stderr);
   LSErrorFree(&lserror);
- end:
   g_free(feedname);
   g_strfreev(packages);
   return false;
@@ -1069,7 +1060,6 @@ bool get_control_file_method(LSHandle* lshandle, LSMessage *message, void *ctx) 
  error:
   LSErrorPrint(&lserror, stderr);
   LSErrorFree(&lserror);
- end:
   return false;
 }
 
@@ -1079,10 +1069,8 @@ bool get_status_file_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
 
   return read_file(message, "/media/cryptofs/apps/var/lib/opkg/status");
 
- error:
   LSErrorPrint(&lserror, stderr);
   LSErrorFree(&lserror);
- end:
   return false;
 }
 
@@ -1111,7 +1099,6 @@ bool get_appinfo_file_method(LSHandle* lshandle, LSMessage *message, void *ctx) 
  error:
   LSErrorPrint(&lserror, stderr);
   LSErrorFree(&lserror);
- end:
   return false;
 }
 
@@ -1123,9 +1110,6 @@ bool get_dir_listing_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
   LSErrorInit(&lserror);
 
   struct dirent *ep;
-
-  // Local buffer to hold each line of output from ls
-  char line[MAXLINLEN];
 
   // Is this the first line of output?
   bool first = true;
@@ -1210,7 +1194,6 @@ bool get_dir_listing_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
  error:
   LSErrorPrint(&lserror, stderr);
   LSErrorFree(&lserror);
- end:
   return false;
 }
 
@@ -1420,7 +1403,6 @@ bool do_download(LSMessage *message, bool gzipped, char *feed, char *url) {
   LSError lserror;
   LSErrorInit(&lserror);
 
-  struct stat info;
   char command[MAXLINLEN];
 
   char pathname[MAXNAMLEN];
@@ -1571,7 +1553,6 @@ bool feed_download_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
  error:
   LSErrorPrint(&lserror, stderr);
   LSErrorFree(&lserror);
- end:
   return false;
 }
 
@@ -1958,7 +1939,6 @@ bool appinstaller_install_method(LSHandle* lshandle, LSMessage *message, void *c
  error:
   LSErrorPrint(&lserror, stderr);
   LSErrorFree(&lserror);
- end:
   return false;
 }
 
@@ -2023,7 +2003,6 @@ bool opkg_install_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
  error:
   LSErrorPrint(&lserror, stderr);
   LSErrorFree(&lserror);
- end:
   return false;
 }
 
@@ -2075,7 +2054,6 @@ bool remove_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
  error:
   LSErrorPrint(&lserror, stderr);
   LSErrorFree(&lserror);
- end:
   return false;
 }
 
@@ -2156,7 +2134,6 @@ bool opkg_replace_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
  error:
   LSErrorPrint(&lserror, stderr);
   LSErrorFree(&lserror);
- end:
   return false;
 }
 
@@ -2237,7 +2214,6 @@ bool appinstaller_replace_method(LSHandle* lshandle, LSMessage *message, void *c
  error:
   LSErrorPrint(&lserror, stderr);
   LSErrorFree(&lserror);
- end:
   return false;
 }
 
@@ -2381,7 +2357,6 @@ bool impersonate_handler(LSHandle* lshandle, LSMessage *reply, void *ctx) {
 // Impersonate a call to the requested service and return the output to webOS.
 //
 bool impersonate_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
-  bool retVal;
   LSError lserror;
   LSErrorInit(&lserror);
   LSMessageRef(message);
@@ -2440,7 +2415,6 @@ bool impersonate_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
  error:
   LSErrorPrint(&lserror, stderr);
   LSErrorFree(&lserror);
- end:
   return false;
 }
 
