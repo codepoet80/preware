@@ -3,7 +3,7 @@
   "name": "Preware",
   "version": "0.0.1",
   "title": "Preware",
-  "description": "My application description...",
+  "description": "Preware is a webOS on-device homebrew installer. ",
   "author": {
     "name": "WebOS Ports",
     "href": "http://www.example.com"
@@ -101,10 +101,6 @@
         "webos": {}
       },
       "appId": ""
-    },
-    "webos": {
-      "enabled": true,
-      "installMode": "Installed"
     }
   },
   "preview": {
