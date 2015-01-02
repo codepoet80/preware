@@ -76,7 +76,7 @@ enyo.kind({
         {
             kind: "enyo.Scrim",
             name: "scrim",
-            classes: "onyx-scrim-translucent onyx-scrim enyo-fit",
+            classes: "enyo-scrim-translucent enyo-scrim enyo-fit",
             style: "text-align: center;",
             floating: true,
             components: [
