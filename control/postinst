@@ -82,10 +82,6 @@ echo "src/gz optware-`/bin/uname -m` http://ipkg.preware.net/feeds/optware/`/bin
 sed -i -e 's|armv7l|armv7|g' $APPS/etc/opkg/optware.conf.new
 sed -i -e 's|armv6l|armv6|g' $APPS/etc/opkg/optware.conf.new
 
-# Install precentral feeds
-echo "src/gz precentral http://ipkg.preware.net/feeds/precentral" > $APPS/etc/opkg/precentral.conf.new
-echo "src/gz precentral-themes http://ipkg.preware.net/feeds/precentral-themes" > $APPS/etc/opkg/precentral-themes.conf.new
-
 # Install prethemer feed
 echo "src/gz prethemer http://www.prethemer.com/feeds/preware/themes" > $APPS/etc/opkg/prethemer.conf.new
 

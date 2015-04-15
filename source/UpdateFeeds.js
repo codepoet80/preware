@@ -67,6 +67,15 @@ enyo.singleton({
         if (!window.device) {
             window.device = {};
         }
+        if ("PalmSystem" in window) {
+            var deviceInfo = JSON.parse(PalmSystem.deviceInfo);
+            if (! device.version) {
+                device.version = deviceInfo.platformVersion;
+            }
+            if (! device.name) {
+                device.name = deviceInfo.modelNameAscii;
+            }
+        }
 
         this.log("device.version: " + (device ? device.version : "undefined"));
         this.log("device.name: " + (device ? device.name : "undefined"));
