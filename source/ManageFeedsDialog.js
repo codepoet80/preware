@@ -32,15 +32,15 @@ enyo.kind({
                 {tag: "div", classes: "webosstyle-groupbox-header", content: $L("New Feed")},
                 {tag: "div", classes: "webosstyle-groupbox-body", style: "width: 100%", components:[
 					{kind: "enyo.FittableColumns", noStretch: true, classes: "settings-item", components: [
-						{kind: "onyx.InputDecorator", style: "width: 100%;", components: [
-							{name: "newFeedName", kind: "onyx.Input", style: "color: white", onfocus: "checkFocus", onblur: "checkBlur" },
-							{name: "newFeedNameLabel", content: $L("Name"), style: "width: 65px; color: SkyBlue;"}
+						{kind: "onyx.InputDecorator", classes: "flex-row", style: "width: 100%;", components: [
+							{name: "newFeedName", kind: "onyx.Input", classes: "flex-auto", style: "color: white", onfocus: "checkFocus", onblur: "checkBlur" },
+							{name: "newFeedNameLabel", content: $L("Name"), classes: "flex-none", style: "padding-left: 5px; color: SkyBlue;"}
 						]},
 					]},
 					{kind: "enyo.FittableColumns", noStretch: true, classes: "settings-item", components: [
-						{kind: "onyx.InputDecorator", style: "width: 100%;", components: [
-							{name: "newFeedURL", kind: "onyx.Input", style: "width: 100%;  color: white", value: "http://", onfocus: "checkFocus", onblur: "checkBlur" },
-							{name: "newFeedURLLabel", content: $L("URL"), style: "width: 65px; color: SkyBlue;"}
+						{kind: "onyx.InputDecorator", classes: "flex-row", style: "width: 100%;", components: [
+							{name: "newFeedURL", kind: "onyx.Input", classes: "flex-auto", style: "width: 100%;  color: white", value: "http://", onfocus: "checkFocus", onblur: "checkBlur" },
+							{name: "newFeedURLLabel", content: $L("URL"), classes: "flex-none", style: "padding-left: 5px; color: SkyBlue;"}
 						]},
 					]},
 					{kind: "enyo.FittableColumns", noStretch: true, classes: "settings-item", components: [
