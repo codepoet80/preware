@@ -288,21 +288,22 @@ enyo.singleton({
             }
         }
         if (!this.deviceVersion || this.deviceVersion === "0.0.0") {
-            console.log("Work around luna-next issue. Set version to 3.0.5, had version: " + this.deviceVersion);
+            console.log("Work around luna-next issue. Setting version to 3.0.5, had version: " + this.deviceVersion);
             this.deviceVersion = "3.0.5";
         }
 
         newPkg = new preware.PackageModel(infoObj);
+        //console.log("newPkg: " + JSON.stringify(newPkg, ['Description', 'minWebOSVersion', 'maxWebOSVersion', 'devices']))
         if (this.deviceVersion && this.deviceVersion.match(/^[0-9:.\-]+$/)) {
             // Filter out apps with a minimum webos version that is greater then current
             if (this.versionNewer(this.deviceVersion, newPkg.minWebOSVersion)) {
-                console.log("Skip package because of device version " + this.deviceVersion + " < " + newPkg.minWebOSVersion);
+                console.log("Skipping package “" + newPkg.Description + "” because device version " + this.deviceVersion + " < " + newPkg.minWebOSVersion);
                 return;
             }
 
             // Filter out apps with a maximum webos version that is less then current
             if (this.versionNewer(newPkg.maxWebOSVersion, this.deviceVersion)) {
-                console.log("Skip package because of device version " + this.deviceVersion + " > " + newPkg.maxWebOSVersion);
+                console.log("Skipping package “" + newPkg.Description + "” because device version " + this.deviceVersion + " > " + newPkg.maxWebOSVersion);
                 return;
             }
         } else {

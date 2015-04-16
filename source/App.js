@@ -32,6 +32,9 @@ enyo.kind({
     ],
     //Handlers
     handleBackGesture: function (inSender, inEvent) {
+        if (this.$.ManageFeedsDialog.get('showing')) {
+            this.$.AppPanels.doReloadList();
+        }
         //hide possible open dialogs on back gesture?
         this.$.SettingsDialog.hide();
         this.$.ManageFeedsDialog.hide();
