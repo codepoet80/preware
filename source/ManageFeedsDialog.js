@@ -15,8 +15,8 @@ enyo.kind({
     scrimWhenModal: false,
     
     components: [
-        {name: "ManageFeedsList", kind: "AroundList", fit: true, count: 0, style:"width: 100%;", enableSwipe: true, percentageDraggedThreshold: 0.01, persistSwipeableItem: true, onSetupItem: "setupItem", onSetupSwipeItem: "setupSwipeItem", aboveComponents: [
-		], components: [
+        {name: "ManageFeedsList", kind: "AroundList", fit: true, count: 0, style:"width: 100%;", touch: true, enableSwipe: true, percentageDraggedThreshold: 0.01, persistSwipeableItem: true, onSetupItem: "setupItem", onSetupSwipeItem: "setupSwipeItem",
+        components: [
 			{name: "feedWrapper", tag: "div", classes: "webosstyle-list-groupbox-item", components: [
 				{name: "feed", kind: "preware.FeedItem", classes: "managefeedslist-feed-item webosstyle-list-groupbox-item-content", onToggle: "feedEnabledToggled"}
 			]}
@@ -227,21 +227,20 @@ enyo.kind({
 		}
 	},
 
-    resizeHandler: function(){
+    handleResize: function(){
     	//Calculate scroller height - if we don't explicitly set the scroller height, it will overflow the dialog
-		var windowHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-    	var dialogHeightPC = this.domStyles.height.replace('%', '') / 100;
-    	var dialogPadding = this.domStyles.padding.replace('px', '');
+    	var dialogHeight = this.getComputedStyleValue("height").replace('px', '');
+    	var dialogPadding = this.getComputedStyleValue("padding-top").replace('px', '');
 
-		var scrollerHeight = Math.round(windowHeight * dialogHeightPC) - (dialogPadding * 2);
+		var scrollerHeight = dialogHeight - (dialogPadding * 2);
 
     	this.$.ManageFeedsList.applyStyle("height", scrollerHeight + "px");
 
 		//Calculate Window Width
 		var windowWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-    	var dialogWidthPC = this.domStyles.width.replace('%', '') / 100;
+    	var dialogWidth = this.getComputedStyleValue("width").replace('px', '');
     	
-    	var groupboxWidth = Math.round(windowWidth * dialogWidthPC) - (dialogPadding * 2);
+    	var groupboxWidth = dialogWidth - (dialogPadding * 2);
 		this.$.newFeedName.applyStyle("width", (groupboxWidth - 90) + "px");
 		this.$.newFeedURL.applyStyle("width", (groupboxWidth - 90) + "px");
 		this.$.addNewFeedButton.applyStyle("width", groupboxWidth + "px");
