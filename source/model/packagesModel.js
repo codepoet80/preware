@@ -395,7 +395,8 @@ enyo.singleton({
         this.unknownFixed += 1;
 
         if (this.unknownFixed === this.unknownCount) {
-            this.displayStatus({message: $L("<strong>Done Fixing!</strong>"), progress: false, progValue: 0});
+            this.doSimpleMessage($L("<strong>Done Fixing!</strong>"));
+            //this.displayStatus({message: $L("<strong>Done Fixing!</strong>"), progress: false, progValue: 0});
             this.loadSaved();
         } else {
             this.displayStatus({
