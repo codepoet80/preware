@@ -103,13 +103,12 @@ enyo.kind({
         this.inherited(arguments);
         this.updateValues();
     },
-    resizeHandler: function(){
+    handleResize: function(){
     	//Calculate scroller height - if we don't explicitly set the scroller height, it will overflow the dialog
-		var windowHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-    	var dialogHeightPC = this.domStyles.height.replace('%', '') / 100;
-    	var dialogPadding = this.domStyles.padding.replace('px', '');
+        var dialogHeight = this.getComputedStyleValue("height").replace('px', '');
+        var dialogPadding = this.getComputedStyleValue("padding-top").replace('px', '');
 
-		var scrollerHeight = Math.round(windowHeight * dialogHeightPC) - (dialogPadding * 2);
+        var scrollerHeight = dialogHeight - (dialogPadding * 2);
 
     	this.$.SettingsScroller.applyStyle("height", scrollerHeight + "px");
 
