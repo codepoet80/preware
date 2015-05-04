@@ -159,7 +159,7 @@ enyo.kind({
         try {
             // load data
             this.pkg =      this.pkg      || info.Package;
-            this.version =  this.version  || info.version;
+            this.version =  this.version  || info.Version;
             this.size =     info.size     || info.Size;
             this.filename = this.filename || info.Filename;
 
