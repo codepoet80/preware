@@ -135,7 +135,7 @@ enyo.kind({
                     allowHtml: true,
                     content: "Message<br>I am a fish."
                 },
-                {kind: "onyx.Button", style: "display: block; width: 100%; margin-top: 4px;", content: "Okay", ontap: "hideSimpleMessage"}
+                {kind: "onyx.Button", style: "display: block; width: 100%; margin-top: 4px;", content: "OK", ontap: "hideSimpleMessage"}
             ]
         },
         {
