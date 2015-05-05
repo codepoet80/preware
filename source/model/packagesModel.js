@@ -200,7 +200,7 @@ enyo.singleton({
                 this.infoListRequest(num + 1);
             } else {
                 // we're done
-                this.displayStatus({
+                this.doSimpleMessage({
                     message: $L("<strong>Done Loading!</strong>"),
                     progress: false,
                     progValue: 0
