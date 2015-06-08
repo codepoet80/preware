@@ -221,7 +221,7 @@ enyo.kind({
 
     //handlers for messages:
     processSimpleMessage: function (inSender, inEvent) {
-        this.displaySimpleMessage(inEvent.message);
+        this.displaySimpleMessage(inEvent.message.message ? inEvent.message.message : inEvent.message);
     },
     displaySimpleMessage: function (inMessage) {
         this.hideProgressMessage();
