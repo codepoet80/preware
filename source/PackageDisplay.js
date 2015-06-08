@@ -295,7 +295,16 @@ enyo.kind({
         
         this.$.PackageVersion.setContent(this.currentPackage.version ? this.currentPackage.version : this.currentPackage.Version);
         
-        this.$.PackageLastUpdated.setContent(this.currentPackage.date ? new Date(parseInt(this.currentPackage.date + "000")).toDateString() : new Date(parseInt(JSON.parse(this.currentPackage.Source).LastUpdated + "000")).toDateString());
+        var updateDate = $L("Unknown");
+        if (this.currentPackage.date)
+        {
+            updateDate = new Date(parseInt(this.currentPackage.date + "000")).toDateString();
+        }
+        else if (this.currentPackage.Source && this.currentPackage.Source !== "")
+        {
+            updateDate = new Date(parseInt(JSON.parse(this.currentPackage.Source).LastUpdated + "000")).toDateString();
+        }
+        this.$.PackageLastUpdated.setContent(updateDate);
         this.$.PackageDownloadSize.setContent(this.humanFileSize(this.currentPackage.size, true));
         
         if (this.currentPackage.versionInstalled != undefined)
