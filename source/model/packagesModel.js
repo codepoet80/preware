@@ -200,11 +200,12 @@ enyo.singleton({
                 this.infoListRequest(num + 1);
             } else {
                 // we're done
-                this.doSimpleMessage({
-                    message: $L("<strong>Done Loading!</strong>"),
-                    progress: false,
-                    progValue: 0
-                });
+                // Displaying a message here is really not necessary.
+                // this.doSimpleMessage({
+                //     message: $L("<strong>Done Loading!</strong>"),
+                //     progress: false,
+                //     progValue: 0
+                // });
                 if (preware.PrefCookie.get().fixUnknown) {
                     this.fixUnknown();
                 } else {
@@ -395,7 +396,7 @@ enyo.singleton({
         this.unknownFixed += 1;
 
         if (this.unknownFixed === this.unknownCount) {
-            this.doSimpleMessage($L("<strong>Done Fixing!</strong>"));
+            //Displaying a message here is unnecessary
             //this.displayStatus({message: $L("<strong>Done Fixing!</strong>"), progress: false, progValue: 0});
             this.loadSaved();
         } else {
