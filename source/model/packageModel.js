@@ -306,9 +306,9 @@ enyo.kind({
                             if (tmp.url === 'palm@palm.com' ||        // v1.1 style
                                     tmp.url === 'nobody@example.com') {// v1.2 style
                                 tmp.url = false;
-                            } else {
+                            } /*else {
                                 tmp.url = 'mailto:' + tmp.url + '?subject=' + this.title;
-                            }
+                            }*/
                         }
                         this.maintainer.push(tmp);
                     } else {

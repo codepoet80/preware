@@ -200,7 +200,8 @@ enyo.kind({
     	var i;
     	for (i=0; i<this.currentPackage.maintainer.length; ++i) {
     		if (this.currentPackage.maintainer[i].url) {
-    			this.$.openService.send({target: this.currentPackage.maintainer[i].url});
+                var mailToTarget = 'mailto:' + this.currentPackage.maintainer[i].url + '?subject=' + this.currentPackage.title;
+    			this.$.openService.send({target: mailToTarget});
     		}
     	}
     },
