@@ -57,7 +57,9 @@ enyo.singleton({
     doSimpleMessage: function (msg) {
         enyo.Signals.send("onBackendSimpleMessage", {message: msg});
     },
-
+    dismissMessages: function () {
+        enyo.Signals.send("onDismissMessages", {});
+    },
     doneUpdating: function () {
         enyo.Signals.send("onPackagesLoadFinished", {});
     },
@@ -201,11 +203,12 @@ enyo.singleton({
             } else {
                 // we're done
                 // Displaying a message here is really not necessary.
-                this.doSimpleMessage({
-                    message: $L("<strong>Done Loading!</strong>"),
-                    progress: false,
-                    progValue: 0
-                });
+                this.dismissMessages();
+                // this.doSimpleMessage({
+                //     message: $L("<strong>Done Loading!</strong>"),
+                //     progress: false,
+                //     progValue: 0
+                // });
                 if (preware.PrefCookie.get().fixUnknown) {
                     this.fixUnknown();
                 } else {
@@ -397,8 +400,8 @@ enyo.singleton({
 
         if (this.unknownFixed === this.unknownCount) {
             //Displaying a message here is unnecessary
-            //this.displayStatus({message: $L("<strong>Done Fixing!</strong>"), progress: false, progValue: 0});
-            this.doSimpleMessage({message: $L("<strong>Done Fixing!</strong>"), progress: false, progValue: 0});
+            //this.doSimpleMessage({message: $L("<strong>Done Fixing!</strong>"), progress: false, progValue: 0});
+            this.dismissMessages();
             this.loadSaved();
         } else {
             this.displayStatus({

@@ -14,7 +14,8 @@ enyo.kind({
             kind: "Signals",
             onPackageRefresh: "handlePackageRefresh",
             onBackendSimpleMessage: "processSimpleMessage",
-            onPackageProgressMessage: "processProgressMessage"
+            onPackageProgressMessage: "processProgressMessage",
+            onDismissMessages: "hideMessages"
         },
 		{name: "openService", kind: "enyo.PalmService", service: "palm://com.palm.applicationManager/", method: "open", onError: "openError"},
         {
@@ -264,6 +265,11 @@ enyo.kind({
     },
     currentPackageChanged: function () {
         this.refreshPackageDisplay();
+    },
+    hideMessages: function() {
+        this.hideSimpleMessage();
+        this.hideActionMessage();
+        this.hideProgressMessage();    
     },
 
     //public functions:
