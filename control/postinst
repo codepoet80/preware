@@ -114,7 +114,7 @@ echo "src Hominid-Software http://hominidsoftware.com/preware" > $APPS/etc/opkg/
 echo "src/gz FeedSpider2 http://feedspider.net/luneos" > $APPS/etc/opkg/feedspider.conf.new
 
 # Install PivotCE feed
-echo "src/gz PivotCE http://feed.pivotce.com" > $APPS/etc/opkg/pivotce.conf.new
+echo "src PivotCE http://feed.pivotce.com" > $APPS/etc/opkg/pivotce.conf.new
 
 
 # Install the alpha testing feeds (disabled by default)
