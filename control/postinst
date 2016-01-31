@@ -60,12 +60,10 @@ APPS=/media/cryptofs/apps
 
 # Create the ipkg config and database areas
 mkdir -p $APPS/etc/opkg
-#mkdir -p $APPS/usr/lib/ipkg/cache
-# TODO: change to $APPS/usr/lib/opkg/cache everywhere in app & service
+mkdir -p $APPS/usr/lib/opkg/cache
 
 # Remove all list database cache files
-#rm -f $APPS/usr/lib/ipkg/lists/*
-# TODO: change to $APPS/usr/lib/opkg/lists/ everywhere in app & service
+rm -f $APPS/usr/lib/opkg/lists/*
 
 # Set up the architecture configuration file
 rm -f $APPS/etc/opkg/arch.conf

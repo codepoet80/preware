@@ -3,42 +3,42 @@ Loading finished, feeds:
     {
         "gzipped":true,
         "name":"optware",
-        "url":"http://ipkg.preware.org/feeds/optware/all"
+        "url":"http://ipkg.preware.net/feeds/optware/all"
     },
     {
         "gzipped":true,
         "name":"optware-i686",
-        "url":"http://ipkg.preware.org/feeds/optware/i686"
+        "url":"http://ipkg.preware.net/feeds/optware/i686"
     },
     {
         "gzipped":true,
         "name":"precentral",
-        "url":"http://ipkg.preware.org/feeds/precentral"
+        "url":"http://ipkg.preware.net/feeds/precentral"
     },
     {
         "gzipped":true,
         "name":"webos-kernels",
-        "url":"http://ipkg.preware.org/feeds/webos-kernels/3.0.5"
+        "url":"http://ipkg.preware.net/feeds/webos-kernels/3.0.5"
     },
     {
         "gzipped":true,
         "name":"webos-patches",
-        "url":"http://ipkg.preware.org/feeds/webos-patches/3.0.5"
+        "url":"http://ipkg.preware.net/feeds/webos-patches/3.0.5"
     },
     {
         "gzipped":true,
         "name":"webosinternals",
-        "url":"http://ipkg.preware.org/feeds/webos-internals/all"
+        "url":"http://ipkg.preware.net/feeds/webos-internals/all"
     },
     {
         "gzipped":true,
         "name":"webosinternals-i686",
-        "url":"http://ipkg.preware.org/feeds/webos-internals/i686"
+        "url":"http://ipkg.preware.net/feeds/webos-internals/i686"
     },
     {
         "gzipped":true,
         "name":"woce",
-        "url":"http://ipkg.preware.org/feeds/woce"
+        "url":"http://ipkg.preware.net/feeds/woce"
     }
 ],
 file:///media/cryptofs/apps/usr/palm/applications/org.webosinternals.preware/source/model/feeds.js:86
