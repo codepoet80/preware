@@ -35,8 +35,8 @@ if [ ! -f ${APPS}/usr/palm/applications/${PID}/appinfo.json -o \
   rm -f /var/palm/event.d/${SID}
 
   # Remove all list database cache files
-  rm -f $APPS/usr/lib/ipkg/lists/*
-  rm -f $APPS/usr/lib/ipkg/cache/*
+  rm -f $APPS/usr/lib/opkg/lists/*
+  rm -f $APPS/usr/lib/opkg/cache/*
 
 fi
 
