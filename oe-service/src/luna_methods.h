@@ -29,7 +29,7 @@ bool register_methods(LSPalmService *serviceHandle, LSError lserror);
 // Size of file chunks to pass back up to webOS.
 #define CHUNKSIZE 4096
 // Max size of any text line in a config file and elsewhere.
-#define MAXLINLEN 1024
+#define MAXLINLEN 4096
 // Max size of a version number or size string.
 #define MAXNUMLEN   32
 
