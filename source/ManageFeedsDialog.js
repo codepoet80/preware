@@ -39,7 +39,7 @@ enyo.kind({
 					]},
 					{kind: "enyo.FittableColumns", noStretch: true, classes: "settings-item", components: [
 						{kind: "onyx.InputDecorator", classes: "flex-row", style: "width: 100%;", components: [
-							{name: "newFeedURL", kind: "onyx.Input", classes: "flex-auto", style: "width: 100%;  color: white", value: "http://", onfocus: "checkFocus", onblur: "checkBlur" },
+							{name: "newFeedURL", kind: "onyx.Input", classes: "flex-auto", style: "width: 100%;  color: white", value: "https://", onfocus: "checkFocus", onblur: "checkBlur" },
 							{name: "newFeedURLLabel", content: $L("URL"), classes: "flex-none", style: "padding-left: 5px; color: SkyBlue;"}
 						]},
 					]},
@@ -353,7 +353,7 @@ enyo.kind({
 
 	clearNewFeed: function() {
 		this.$.newFeedName.setValue("");
-        this.$.newFeedURL.setValue("http://");
+        this.$.newFeedURL.setValue("https://");
         this.$.newFeedCompressedToggle.setValue(false);
 	},
 
