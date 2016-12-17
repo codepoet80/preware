@@ -46,11 +46,6 @@ enyo.singleton({
         enyo.Signals.send("onUpdateFeedsFinished", {});
     },
 
-    //Action Functions
-    log: function (text) {
-        console.log(text);
-    },
-
     //start the update process.
     //first we need some device information.
     //we need device profile and palm profile for a call to

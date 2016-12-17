@@ -7,3 +7,5 @@ enyo2/phonegap*
 cordova.js
 /deploy
 /build
+.idea/
+preware.iml

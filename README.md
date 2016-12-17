@@ -1,9 +1,24 @@
-Summary
+Preware 2
 =======
-Preware is a webOS on-device homebrew installer. 
+Preware 2 is the LuneOS on-device homebrew installer.
 
-Preware in enyo 2
-=========
+The webos-ports feed is enabled by default, and other feeds
+can be enabled or added by selecting `Manage Feeds` from
+the app menu.  Downloaded packages can be installed by
+selection `Install Package` from the app menu.
+
+Building/Installation
+-------
+At present, this only runs under LuneOS 
+(no mocking is set up to develop in the browser).
+
+To rebuild and install on a LuneOS device attached via USB, run this command in the app directory:
+`./build-and-deploy.sh`
+Then, in Chrome, surf to `localhost:1122` to debug.
+
+
+To-do [out of date]
+-----
 
 First step is to convert needed stuff from preware/app/model to enyo. The status is as follows:
 
@@ -27,8 +42,6 @@ not implemented at all:
 - packages.js
 - resourceHandler.js
 - stayAwake.js
-- utility.js (will cause crashes in packageModel.js!)
 
 UI TO-DOs
-- show a spinner while installing a package
 - if a Repeater has no items, display a message in the blank space

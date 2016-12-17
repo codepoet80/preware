@@ -77,7 +77,7 @@ enyo.singleton({
                 }
             }
         } else {
-            console.error("COULD NOT GET COOKIE!!!");
+            this.warn("COULD NOT GET COOKIE!!!");
             this.setAllValues();
         }
     },
@@ -110,39 +110,3 @@ enyo.singleton({
     }
 });
 
-//TODO: how to get app Version?
-enyo.singleton({
-    name: "preware.VersionCookie",
-    isFirst: false,
-    isNew: false,
-    init: function () {
-        var version;
-        this.cookie = false;
-        this.isFirst = false;
-        this.isNew = false;
-
-        version = enyo.getCookie("version");
-        if (version) {
-            if (version === preware.Globals.getAppVersion()) {
-                //was the same version.
-                enyo.log("VersionCookie: Same version.");
-            } else {
-                this.isNew = true;
-                enyo.setCookie("version", preware.Globals.getAppVersion());
-                enyo.log("VersionCookie: New version.");
-            }
-        } else {
-            //first launch
-            this.isFirst = true;
-            this.isNew = true;
-            enyo.setCookie("version", preware.Globals.getAppVersion());
-            enyo.log("VersionCookie: First run.");
-        }
-    },
-    showStartupScene: function () {
-        if (this.isNew || this.isFirst) {
-            return true;
-        }
-        return false;
-    }
-});

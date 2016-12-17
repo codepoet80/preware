@@ -3,7 +3,20 @@
  * http://www.webos-internals.org/wiki/Packaging_Standards
  */
 /*jslint sloppy: true, regexp: true */
-/*global enyo, preware, IPKGService, isNumeric, trim, $L, console */
+/*global enyo, preware, IPKGService, isNumeric, $L, console */
+
+String.prototype.include = function (pattern) {
+    return this.indexOf(pattern) > -1;
+};
+
+// tells you if val is "numeric"
+var isNumeric = function (val) {
+    if (isNaN(parseFloat(val))) {
+        return false;
+    }
+    return true;
+};
+
 
 enyo.kind({
     name: "preware.PackageModel",
@@ -181,17 +194,17 @@ enyo.kind({
                     if (match) {
                         //for(var m = 0; m < match.length; m++) alert(m + ' [' + match[m] + ']');
                         if (match[2]) {
-                            match[2] = trim(match[2]);
+                            match[2] = match[2].trim();
                         } else {
                             match[2] = false;
                         }
                         if (match[3]) {
-                            match[3] = trim(match[3]);
+                            match[3] = match[3].trim();
                         } else {
                             match[3] = false;
                         }
 
-                        this.depends.push({pkg: trim(match[1]), match: match[2], version: match[3]});
+                        this.depends.push({pkg: match[1].trim(), match: match[2], version: match[3]});
                     }
                 }
             }
@@ -298,9 +311,9 @@ enyo.kind({
                 splitRes = info.Maintainer.split(',');
                 r = new RegExp("^([^<]*)<([^>]*)>?"); // this one is win
                 for (i = 0; i < splitRes.length; i += 1) {
-                    match = trim(splitRes[i]).match(r);
+                    match = splitRes[i].trim().match(r);
                     if (match) {
-                        tmp = {name: trim(match[1]), url: match[2]};
+                        tmp = {name: match[1].trim(), url: match[2]};
                         if (tmp.url.include('@')) {
                             // remove stupid default palm address for palm-package'd apps
                             if (tmp.url === 'palm@palm.com' ||        // v1.1 style
@@ -312,7 +325,7 @@ enyo.kind({
                         }
                         this.maintainer.push(tmp);
                     } else {
-                        this.maintainer.push({name: trim(splitRes[i]), url: false});
+                        this.maintainer.push({name: splitRes[i].trim(), url: false});
                     }
                 }
             }

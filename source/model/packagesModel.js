@@ -277,7 +277,7 @@ enyo.singleton({
 
         // Skip packages that are in the status file, but are not actually installed
         if (infoObj.Status &&
-                (infoObj.Status.include('not-installed') || infoObj.Status.include('deinstall'))) {
+                (infoObj.Status.indexOf('not-installed') > -1 || infoObj.Status.indexOf('deinstall') > -1)) {
             console.log("Skip package because of status.");
             return;
         }
@@ -416,7 +416,7 @@ enyo.singleton({
 
     //the all paths from loadFeeds lead here
     loadSaved: function () {
-        preware.SavedPacketlist.load(this.doneLoading.bind(this));
+        this.doneLoading();   // TODO: call preware.SavedPacketlist.load with doneLoading as callback
     },
 
     doneLoading: function () {
@@ -515,9 +515,6 @@ enyo.singleton({
                     justTypeObjs.push({_kind: "org.webosinternals.preware.justType:1", id: this.packages[i].pkg, display: this.packages[i].title, secondary: this.packages[i].type + " - " + this.packages[i].category});
                 }
             }
-            preware.db8Storage.deleteAll(function () {
-                preware.db8Storage.putArray(justTypeObjs);
-            });
         }
 
         // tell the main scene we're done updating
