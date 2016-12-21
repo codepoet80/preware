@@ -515,10 +515,10 @@ enyo.kind({
 					splitRes = curPkg.Maintainer.split(',');
 					r = new RegExp("^([^<]*)<([^>]*)>?"); // this one is win
 					for (i = 0; i < splitRes.length; i += 1) {
-						match = trim(splitRes[i]).match(r);
+						match = splitRes[i].trim().match(r);
 						if (match) {
-							tmp = {name: trim(match[1]), url: match[2]};
-							if (tmp.url.include('@')) {
+							tmp = {name: match[1].trim(), url: match[2]};
+							if (tmp.url.indexOf('@') > -1) {
 								// remove stupid default palm address for palm-package'd apps
 								if (tmp.url === 'palm@palm.com' ||        // v1.1 style
 										tmp.url === 'nobody@example.com') {// v1.2 style
@@ -529,7 +529,7 @@ enyo.kind({
 							}
 							maintainer.push(tmp);
 						} else {
-							maintainer.push({name: trim(splitRes[i]), url: false});
+							maintainer.push({name: splitRes[i].trim(), url: false});
 						}
 					}
 					curPkg.Maintainer = maintainer;

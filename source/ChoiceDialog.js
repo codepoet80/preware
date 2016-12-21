@@ -28,8 +28,8 @@ enyo.kind({
 		{tag: "hr"},
 		{name: "dialogBody", allowHtml: true},
 		{components: [
-			{kind: "onyx.Button", style: "margin-top: 10px; margin-right: 5%; width: 45%", classes: "onyx-affirmative", content: $L("Ok"), ontap: "chooseYes"},
-			{kind: "onyx.Button", style: "margin-top: 10px; margin-left: 5%; width: 45%", classes: "onyx-negative", content: $L("Cancel"), ontap: "chooseNo"}
+			{kind: "onyx.Button", style: "margin-top: 10px; margin-right: 5%; width: 45%", classes: "onyx-blue", content: $L("Ok"), ontap: "chooseYes"},
+			{kind: "onyx.Button", style: "margin-top: 10px; margin-left: 5%; width: 45%", content: $L("Cancel"), ontap: "chooseNo"}
 		]}
 	],
 	

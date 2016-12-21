@@ -17,7 +17,7 @@ enyo.singleton({
             resubscribe: parameters ? parameters.subscribe : false
         });
         var generalSuccess = function (inSender, inResponse) {
-                //console.log("IPKService#generalSuccess: " + JSON.stringify(inResponse));
+                // console.log(JSON.stringify(inSender.request), "IPKService#generalSuccess: " + JSON.stringify(inResponse));
                 if (callback) {
                     callback(inResponse);
                 }
@@ -220,7 +220,7 @@ enyo.singleton({
                 this.log += '<div class="stdErr">';
                 for (s = 0; s < payload.stdErr.length; s += 1) {
                     // These messages just confuse users
-                    if (!payload.stdErr[s].include($L("(offline root mode: not running "))) {
+                    if (!payload.stdErr[s].indexOf($L("(offline root mode: not running ")) > -1) {
                         this.log += '<div>' + payload.stdErr[s] + '</div>';
                     }
                 }

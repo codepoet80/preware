@@ -157,7 +157,7 @@ enyo.kind({
         if (this.folderTree.length > 0) {
             returnArray.push({name: "..", location: this.folderTree[this.folderTree.length - 1], type: "directory"});
         }
-        if (payload.contents.length > 0) {
+        if (payload.contents && payload.contents.length > 0) {
             for (c = 0; c < payload.contents.length; c += 1) {
                 if (!payload.contents[c].name.match(preware.FilePicker.folderRegExp)
                          && ((this.validExtension(payload.contents[c].name) && payload.contents[c].type === 'file') || payload.contents[c].type !== 'file')) {
