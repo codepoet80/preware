@@ -4,7 +4,9 @@
 enyo.kind({
     name: "AppPanels",
     kind: "Panels",
-    arrangerKind: "CollapsingArranger",
+    //FIXME bbito hack for qemux86/Tenderloin landscape compatibility
+    //arrangerKind: "CollapsingArranger",
+    arrangerKind: "CoreNaviArranger",
     peekWidth: 70,   // (600-320)/4
     classes: "app-panels enyo-fill",
     // required ipkgservice
@@ -229,7 +231,9 @@ enyo.kind({
             this.$.PackagePanels.addStyles("box-shadow: 0");
             this.$.PackageDisplayPanels.addStyles("box-shadow: 0");
         } else {
-            this.setArrangerKind("CollapsingArranger");
+            //FIXME bbito hack for qemux86/Tenderloin landscape compatibility
+            //this.setArrangerKind("CollapsingArranger");
+            this.setArrangerKind("CoreNaviArranger");
             this.setDraggable(true);
             this.$.TypePanels.addStyles("box-shadow: -4px 0px 4px rgba(0,0,0,0.3)");
             this.$.CategoryPanels.addStyles("box-shadow: -4px 0px 4px rgba(0,0,0,0.3)");
