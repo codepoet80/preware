@@ -3,7 +3,7 @@ description "Package Manager Service"
 start on stopped finish
 
 pre-start script
-    logger "org.webosinternals.ipkgservice upstart: script called"
+    logger "org.webosports.service.ipkg upstart: script called"
 
     APPS=/media/cryptofs/apps
 
@@ -13,6 +13,6 @@ pre-start script
     fi
 end script
 
-exec @WEBOS_INSTALL_SBINDIR@/org.webosinternals.ipkgservice
+exec @WEBOS_INSTALL_SBINDIR@/org.webosports.service.ipkg
 
 respawn

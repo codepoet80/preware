@@ -1,12 +1,12 @@
 {
   "role": {
-     "exeName":"/var/usr/sbin/org.webosinternals.ipkgservice",
+     "exeName":"/var/usr/sbin/org.webosports.service.ipkg",
      "type": "privileged",
-     "allowedNames": ["org.webosinternals.ipkgservice"]
+     "allowedNames": ["org.webosports.service.ipkg"]
   },
   "permissions": [
     {
-      "service":"org.webosinternals.ipkgservice",
+      "service":"org.webosports.service.ipkg",
       "inbound":["*"],
       "outbound":["*"]
     }

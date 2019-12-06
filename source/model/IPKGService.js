@@ -3,7 +3,7 @@
 
 enyo.singleton({
     name: "preware.IPKGService",
-    identifier: 'palm://org.webosinternals.ipkgservice',
+    identifier: 'palm://org.webosports.service.ipkg',
     log: "",
     logNum: 1,
     doServiceCall: function (callback, method, parameters) {

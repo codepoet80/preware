@@ -183,7 +183,7 @@ enyo.singleton({
                 // i dont know if this will ever happen, but hey, it might
                 this.log($L("Cannot access the service. First try restarting Preware, or reboot your device and try again."));
             } else if (payload.errorCode !== undefined) {
-                if (payload.errorText === "org.webosinternals.ipkgservice is not running.") {
+                if (payload.errorText === "org.webosports.service.ipkg is not running.") {
                     this.log($L("The service is not running. First try restarting Preware, or reboot your device and try again."));
                 } else {
                     this.log(payload.errorText);

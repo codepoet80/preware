@@ -50,7 +50,7 @@ static bool access_denied(LSMessage *message) {
   LSErrorInit(&lserror);
 
   const char *appId = LSMessageGetApplicationID(message);
-  if (!appId || strncmp(appId, "org.webosinternals.preware", 26) || ((strlen(appId) > 26) && (*(appId+26) != ' '))) {
+  if (!appId || strncmp(appId, "org.webosports.app.preware", 26) || ((strlen(appId) > 26) && (*(appId+26) != ' '))) {
     if (!LSMessageRespond(message, "{\"returnValue\": false, \"errorText\": \"Unauthorised access\"}", &lserror)) {
       LSErrorPrint(&lserror, stderr);
       LSErrorFree(&lserror);
@@ -195,7 +195,7 @@ bool restart_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
   LSError lserror;
   LSErrorInit(&lserror);
   (void)LSMessageRespond(message, "{\"returnValue\": true}", &lserror);
-  (void)system("/usr/bin/killall org.webosinternals.ipkgservice");
+  (void)system("/usr/bin/killall org.webosports.service.ipkg");
   // It's likely that this point will never be reached.
   return true;
 }
