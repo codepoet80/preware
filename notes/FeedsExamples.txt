@@ -41,4 +41,4 @@ Loading finished, feeds:
         "url":"http://ipkg.preware.net/feeds/woce"
     }
 ],
-file:///media/cryptofs/apps/usr/palm/applications/org.webosinternals.preware/source/model/feeds.js:86
+file:///media/cryptofs/apps/usr/palm/applications/org.webosports.service.ipkg/source/model/feeds.js:86

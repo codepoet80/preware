@@ -132,7 +132,7 @@ enyo.singleton({
             if (!payload || payload.errorCode !== undefined) {
                 // we probably dont need to check this stuff here,
                 // it would have already been checked and errored out of this process
-                if (payload.errorText === "org.webosinternals.ipkgservice is not running.") {
+                if (payload.errorText === "org.webosports.service.ipkg is not running.") {
                     this.displayStatus({
                         error: true,
                         message: $L("The Package Manager Service is not running. Did you remember to install it? If you did, first try restarting Preware, then try rebooting your device and not launching Preware until you have a stable network connection available.")
@@ -512,7 +512,7 @@ enyo.singleton({
             justTypeObjs = [];
             for (i = 0; i < this.packages.length; i += 1) {
                 if (this.packages[i].blacklisted === false) {
-                    justTypeObjs.push({_kind: "org.webosinternals.preware.justType:1", id: this.packages[i].pkg, display: this.packages[i].title, secondary: this.packages[i].type + " - " + this.packages[i].category});
+                    justTypeObjs.push({_kind: "org.webosports.preware.justType:1", id: this.packages[i].pkg, display: this.packages[i].title, secondary: this.packages[i].type + " - " + this.packages[i].category});
                 }
             }
         }

@@ -138,7 +138,7 @@ enyo.kind({
 			{
 				// we probably dont need to check this stuff here,
 				// it would have already been checked and errored out of this process
-				if (payload.errorText == "org.webosinternals.ipkgservice is not running.")
+				if (payload.errorText == "org.webosports.service.ipkg is not running.")
 				{
 					this.$.alertDialog.show('Preware', $L("The service is not running. First try restarting Preware, or reboot your device and try again."));
 					this.doneLoading();

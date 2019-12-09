@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.7)
 
-project(org.webosinternals.ipkgservice C)
+project(org.webosports.service.ipkg C)
 
 include(webOS/webOS)
 webos_modules_init(1 0 0 QUALIFIER RC2)
@@ -27,8 +27,8 @@ add_definitions(-DVERSION=\"2.0.0\")
 
 file(GLOB SOURCE_FILES src/*.c)
 
-add_executable(org.webosinternals.ipkgservice ${SOURCE_FILES})
-target_link_libraries(org.webosinternals.ipkgservice
+add_executable(org.webosports.service.ipkg ${SOURCE_FILES})
+target_link_libraries(org.webosports.service.ipkg
     ${GLIB2_LDFLAGS} ${LUNASERVICE2_LDFLAGS} ${MJSON_LDFLAGS}
     rt pthread)
 

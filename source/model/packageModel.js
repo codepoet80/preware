@@ -1011,7 +1011,7 @@ enyo.kind({
                             this.runFlags('install');
                         }
                     }
-                } else if (payload.errorText === "org.webosinternals.ipkgservice is not running.") {
+                } else if (payload.errorText === "org.webosports.service.ipkg is not running.") {
                     // we keep this around for services without flags that have a javarestart in their scripts
                     // of course, it might get here on accident, but thats a risk we'll have to take for now [2]
 
@@ -1092,7 +1092,7 @@ enyo.kind({
                             this.runFlags('update');
                         }
                     }
-                } else if (payload.errorText === "org.webosinternals.ipkgservice is not running.") {
+                } else if (payload.errorText === "org.webosports.service.ipkg is not running.") {
                     // we keep this around for services without flags that have a javarestart in their scripts
                     // of course, it might get here on accident, but thats a risk we'll have to take for now
 
@@ -1173,7 +1173,7 @@ enyo.kind({
                         // we run this anyways to get the rescan
                         this.runFlags('remove');
                     }
-                } else if (payload.errorText === "org.webosinternals.ipkgservice is not running.") {
+                } else if (payload.errorText === "org.webosports.service.ipkg is not running.") {
                     // we keep this around for services without flags that have a javarestart in their scripts
                     // of course, it might get here on accident, but thats a risk we'll have to take for now
 
