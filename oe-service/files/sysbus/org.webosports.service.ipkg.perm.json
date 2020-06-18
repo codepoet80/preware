@@ -1,6 +1,8 @@
 {
     "org.webosports.service.ipkg": [ 
-        "public"
+        "applications.internal",
+        "applications.launch",
+        "networking"
     ]
 }
 

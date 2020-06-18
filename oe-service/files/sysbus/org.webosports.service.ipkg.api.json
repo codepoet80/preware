@@ -1,5 +1,5 @@
 {
-    "public": [
+    "applications.internal": [
         "org.webosports.service.ipkg/status",
         "org.webosports.service.ipkg/version",
         "org.webosports.service.ipkg/restart",
