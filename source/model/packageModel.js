@@ -910,7 +910,7 @@ enyo.kind({
 
             preware.IPKGService.logClear();
             // call install service
-            preware.IPKGService.install(this.onInstall.bind(this, multi), this.filename, this.location.replace(/ /g, "%20"));
+            preware.IPKGService.install(this.onInstall.bind(this, multi), this.pkg, this.filename, this.location.replace(/ /g, "%20"));
         } catch (e) {
             console.error('error in packageModel#doInstall: ' + e);
         }
@@ -935,7 +935,7 @@ enyo.kind({
                 preware.IPKGService.replace(this.onUpdate.bind(this, multi), this.pkg, this.filename, this.location.replace(/ /g, "%20"));
                 this.doProgressMessage({message: 'Downloading / Replacing<br />' + this.title});
             } else {
-                preware.IPKGService.install(this.onUpdate.bind(this, multi), this.filename, this.location.replace(/ /g, "%20"));
+                preware.IPKGService.install(this.onUpdate.bind(this, multi), this.pkg, this.filename, this.location.replace(/ /g, "%20"));
             }
         } catch (e) {
             console.error('error in packageModel#doUpdate: ' + e);

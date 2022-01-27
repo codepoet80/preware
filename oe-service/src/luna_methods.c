@@ -1556,24 +1556,25 @@ bool feed_download_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
   return false;
 }
 
-bool do_install(LSMessage *message, char *filename, char *url, bool useSvc) {
+bool do_install(LSMessage *message, char *filename, char *pkg, char *url, bool useSvc) {
   LSError lserror;
   LSErrorInit(&lserror);
 
   struct stat info;
   char command[MAXLINLEN];
 
-  char *installCommand;
+  //char *installCommand;
+  char installCommand[MAXLINLEN];
   subscribefun installFilter;
 
   bool installed = false;
 
   if (useSvc) {
-    installCommand = "/usr/bin/luna-send -n 6 luna://com.palm.appinstaller/installNoVerify '{\"subscribe\":true, \"target\": \"%s\", \"uncompressedSize\": 0}' 2>&1";
+    snprintf(installCommand, MAXLINLEN, "/usr/bin/luna-send -n 6 luna://com.webos.appInstallService/install '{\"subscribe\":true, \"id\": \"%s\", \"ipkUrl\": \"%s\"}' 2>&1", pkg, url);
     installFilter = appinstaller;
   }
   else {
-    installCommand = "/usr/bin/opkg -o /media/cryptofs/apps -force-overwrite install %s 2>&1";
+    snprintf(installCommand, MAXLINLEN, "/usr/bin/opkg -o /media/cryptofs/apps -force-overwrite install %s 2>&1", url);
     installFilter = passthrough;
   }
 
@@ -1827,7 +1828,7 @@ bool do_remove(LSMessage *message, char *package, bool replace, bool *removed) {
 
   if (!stat(appinfo, &info)) {
     snprintf(command, MAXLINLEN,
-	     "/usr/bin/luna-send -n 3 luna://com.palm.appinstaller/remove '{\"subscribe\":true, \"packageName\": \"%s\"}' 2>&1", package);
+	     "/usr/bin/luna-send -n 10 luna://com.webos.appInstallService/remove '{\"subscribe\":true, \"id\": \"%s\"}' 2>&1", package);
   }
   else {
     snprintf(command, MAXLINLEN,
@@ -1911,7 +1912,19 @@ void *appinstaller_install_thread(void *arg) {
     goto end;
   }
 
-  do_install(message, json_object_get_string(filename), json_object_get_string(url), true);
+  // Extract the pkg argument from the message
+  json_object *pkg = json_object_object_get(object, "pkg");
+  if (!pkg || !json_object_is_type(pkg, json_type_string) ||
+      (strlen(json_object_get_string(pkg)) >= MAXLINLEN)) {
+    if (!LSMessageRespond(message,
+			"{\"returnValue\": false, \"errorCode\": -1, "
+			"\"errorText\": \"Invalid or missing pkg parameter\", "
+			"\"stage\": \"failed\"}",
+			&lserror)) goto error;
+    goto end;
+  }
+
+  do_install(message, json_object_get_string(filename), json_object_get_string(pkg), json_object_get_string(url), true);
 
  end:
   LSMessageUnref(message);
@@ -1974,8 +1987,21 @@ void *opkg_install_thread(void *arg) {
 			&lserror)) goto error;
     goto end;
   }
+  
+  // Extract the pkg argument from the message
+  json_object *pkg = json_object_object_get(object, "pkg");
+  if (!pkg || !json_object_is_type(pkg, json_type_string) ||
+      (strlen(json_object_get_string(pkg)) >= MAXLINLEN)) {
+    if (!LSMessageRespond(message,
+			"{\"returnValue\": false, \"errorCode\": -1, "
+			"\"errorText\": \"Invalid or missing pkg parameter\", "
+			"\"stage\": \"failed\"}",
+			&lserror)) goto error;
+    goto end;
+  }
+  
 
-  do_install(message, json_object_get_string(filename), json_object_get_string(url), false);
+  do_install(message, json_object_get_string(filename), json_object_get_string(pkg), json_object_get_string(url), false);
 
  end:
   LSMessageUnref(message);
@@ -2102,10 +2128,22 @@ void *opkg_replace_thread(void *arg) {
     goto end;
   }
 
+  // Extract the pkg argument from the message
+  json_object *pkg = json_object_object_get(object, "pkg");
+  if (!pkg || !json_object_is_type(pkg, json_type_string) ||
+      (strlen(json_object_get_string(pkg)) >= MAXLINLEN)) {
+    if (!LSMessageRespond(message,
+			"{\"returnValue\": false, \"errorCode\": -1, "
+			"\"errorText\": \"Invalid or missing pkg parameter\", "
+			"\"stage\": \"failed\"}",
+			&lserror)) goto error;
+    goto end;
+  }
+
   bool removed = false;
   if (!do_remove(message, json_object_get_string(package), true, &removed)) goto end;
   if (removed) {
-    if (!do_install(message, json_object_get_string(filename), json_object_get_string(url), false)) goto end;
+    if (!do_install(message, json_object_get_string(filename), json_object_get_string(pkg), json_object_get_string(url), false)) goto end;
   }
 
  end:
@@ -2182,10 +2220,22 @@ void *appinstaller_replace_thread(void *arg) {
     goto end;
   }
 
+  // Extract the pkg argument from the message
+  json_object *pkg = json_object_object_get(object, "pkg");
+  if (!pkg || !json_object_is_type(pkg, json_type_string) ||
+      (strlen(json_object_get_string(pkg)) >= MAXLINLEN)) {
+    if (!LSMessageRespond(message,
+			"{\"returnValue\": false, \"errorCode\": -1, "
+			"\"errorText\": \"Invalid or missing pkg parameter\", "
+			"\"stage\": \"failed\"}",
+			&lserror)) goto error;
+    goto end;
+  }
+
   bool removed = false;
   if (!do_remove(message, json_object_get_string(package), true, &removed)) goto end;
   if (removed) {
-    if (!do_install(message, json_object_get_string(filename), json_object_get_string(url), true)) goto end;
+    if (!do_install(message, json_object_get_string(filename), json_object_get_string(pkg), json_object_get_string(url), true)) goto end;
   }
 
  end:
@@ -2477,7 +2527,7 @@ bool installStatus_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
   LSError lserror;
   LSErrorInit(&lserror);
   LSMessageRef(message);
-  retVal = LSCall(priv_serviceHandle, "palm://com.palm.appInstallService/status", "{}",
+  retVal = LSCall(priv_serviceHandle, "palm://com.webos.appInstallService/status", "{}",
 		  installStatus_handler, message, NULL, &lserror);
   if (!retVal) {
     LSErrorPrint(&lserror, stderr);
