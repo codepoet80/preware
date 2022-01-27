@@ -103,17 +103,18 @@ enyo.singleton({
         };
         return this.doServiceCall(callback, "getStatusFile", params);
     },
-    install: function (callback, filename, url) {
+    install: function (callback, pkg, filename, url) {
         var params = {
             subscribe: true,
             filename: filename,
+            pkg: pkg, 
             url: url
         };
         return this.doServiceCall(callback, preware.PrefCookie.get().avoidBugs ? "installSvc" : "installCli", params);
     },
     replace: function (callback, pkg, filename, url) {
         var params = {
-            "package": pkg,
+            pkg: pkg,
             subscribe: true,
             filename: filename,
             url: url
@@ -122,7 +123,7 @@ enyo.singleton({
     },
     remove: function (callback, pkg) {
         var params = {
-            "package": pkg,
+            pkg: pkg,
             subscribe: true
         };
         return this.doServiceCall(callback, "remove", params);
