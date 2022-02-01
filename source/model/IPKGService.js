@@ -107,14 +107,14 @@ enyo.singleton({
         var params = {
             subscribe: true,
             filename: filename,
-            pkg: pkg, 
+            id: pkg, 
             url: url
         };
         return this.doServiceCall(callback, preware.PrefCookie.get().avoidBugs ? "installSvc" : "installCli", params);
     },
     replace: function (callback, pkg, filename, url) {
         var params = {
-            pkg: pkg,
+            id: pkg,
             subscribe: true,
             filename: filename,
             url: url
@@ -123,7 +123,7 @@ enyo.singleton({
     },
     remove: function (callback, pkg) {
         var params = {
-            pkg: pkg,
+            id: pkg,
             subscribe: true
         };
         return this.doServiceCall(callback, "remove", params);
