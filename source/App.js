@@ -12,7 +12,8 @@ enyo.kind({
             onbackbutton: "handleBackGesture",
             onCoreNaviDragStart: "handleCoreNaviDragStart",
             onCoreNaviDrag: "handleCoreNaviDrag",
-            onCoreNaviDragFinish: "handleCoreNaviDragFinish"
+            onCoreNaviDragFinish: "handleCoreNaviDragFinish",
+            onLaunchedWithInstallRequest: "handleLaunchInstallRequest"
         },
         {name: "AppPanels", kind: "AppPanels"},
         {kind: "CoreNavi", fingerTracking: true},
@@ -51,6 +52,11 @@ enyo.kind({
     },
     reloadPackageList: function (inSender, inEvent) {
         this.$.AppPanels.doReloadList();
+    },
+    handleLaunchInstallRequest: function (inSender, inEvent) {
+        //enyo.info("Handling launch with install request on: " + this.name + " for " + inEvent.params);
+        this.showInstallPackageDialog();
+        this.$.InstallPackageDialog.doInstall(inEvent.params);
     },
     showSettingsDialog: function (inSender, inEvent) {
         this.$.SettingsDialog.updateValues();
