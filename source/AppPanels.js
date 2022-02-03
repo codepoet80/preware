@@ -38,7 +38,7 @@ enyo.kind({
             components: [
                 {
                     kind: "PortsSearch",
-                    title: "Preware",
+                    title: "Preware 2",
                     taglines: [
                         "I live... again...",
                         "Miss me?",
@@ -206,7 +206,14 @@ enyo.kind({
     handleDeviceReady: function (inSender, inEvent) {
         if (!this.fired) {
             this.fired = true;
-            UpdateFeeds.startUpdateFeeds();
+            UpdateFeeds.startUpdateFeeds();            
+
+            //This appears to be our first opportunity to evaluate launch parameters, but they must be handled on the owner
+            var launchParams = JSON.parse(PalmSystem.launchParams);
+            if (launchParams && launchParams.type && launchParams.type.toLowerCase() == "install" && launchParams.file) {
+                enyo.warn("Preware was launched with a request to install an app: " + launchParams.file);
+                enyo.Signals.send("onLaunchedWithInstallRequest", { params: launchParams.file });
+            }
         }
     },
     handleBackGesture: function (inSender, inEvent) {

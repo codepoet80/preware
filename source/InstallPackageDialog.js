@@ -194,6 +194,11 @@ enyo.kind({
     create: function (inSender, inEvent) {
         this.inherited(arguments);
     },
+    doInstall: function (installUrl) {
+        enyo.warn("In InstallPackageDialog: " + installUrl);
+        this.$.ipkEdit.setValue(installUrl);
+        this.validatePackageLocation();
+    },
     //handlers
     handleBackGesture: function (inSender, inEvent) {
         if (!this.getShowing() || this.$.filePickerPanel.getShowing()) {
