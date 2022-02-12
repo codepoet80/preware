@@ -10,6 +10,17 @@ if [ "$devfound" = "false" ]; then
     echo "lune-install: no devices found via adb, assuming emulator"
     DEVICE=0
 fi
+ADDRESS=localhost
+PORT=5522
+
+if [ "$2" != "" ]; then
+    ADDRESS=$2
+    PORT=22
+fi
+
+if [ "$3" != "" ]; then
+    PORT=$3
+fi
 
 # launchCommand="/usr/bin/luna-send -n 10 -f luna://com.palm.applicationManager/open '{ \"id\": \"org.webosports.app.preware\", \"params\": { \"type\": \"install\", \"file\":\"http:\/\/packages.webosarchive.com/AppPackages/com.jonandnic.enyo.webbtracker_1.0.1_all.ipk\" } }'"
 launchCommand="/usr/bin/luna-send -n 10 -f luna://com.palm.applicationManager/open '{ \"id\": \"org.webosports.app.preware\", \"params\": { } }'"
@@ -23,9 +34,9 @@ if [ $DEVICE -eq 1 ]; then
     exit
 else
     #deploy for emulator
-    scp -r -P 5522 deploy/org.webosports.app.preware root@localhost:/usr/palm/applications/
-    ssh root@localhost -p 5522 restart luna-next
+    scp -r -P $PORT deploy/org.webosports.app.preware root@$ADDRESS:/usr/palm/applications/
+    ssh root@$ADDRESS -p $PORT restart luna-next
     sleep 5
-    ssh root@localhost -p 5522 $launchCommand
+    ssh root@$ADDRESS -p $PORT $launchCommand
     exit
 fi
