@@ -1563,19 +1563,7 @@ bool do_install(LSMessage *message, char *filename, char *pkg, char *url, bool u
   struct stat info;
   char command[MAXLINLEN];
 
-  char installCommand[MAXLINLEN];
-  subscribefun installFilter;
-
   bool installed = false;
-
-  if (useSvc) {
-    snprintf(installCommand, MAXLINLEN, "/usr/bin/luna-send -n 6 luna://com.webos.appInstallService/install '{\"subscribe\":true, \"id\": \"%s\", \"ipkUrl\": \"%s\"}' 2>&1", pkg, url);
-    installFilter = appinstaller;
-  }
-  else {
-    snprintf(installCommand, MAXLINLEN, "/usr/bin/opkg -o /media/cryptofs/apps -force-overwrite install %s 2>&1", url);
-    installFilter = passthrough;
-  }
 
   char pathname[MAXNAMLEN];
   sprintf(pathname, "/media/internal/.developer/%s", filename);
@@ -1649,6 +1637,17 @@ bool do_install(LSMessage *message, char *filename, char *pkg, char *url, bool u
   }
 
   /* Install the package */
+  char installCommand[MAXLINLEN];
+  subscribefun installFilter;
+
+  if (useSvc) {
+    snprintf(installCommand, MAXLINLEN, "/usr/bin/luna-send -n 6 luna://com.webos.appInstallService/install '{\"subscribe\":true, \"id\": \"%s\", \"ipkUrl\": \"%s\"}' 2>&1", pkg, pathname);
+    installFilter = appinstaller;
+  }
+  else {
+    snprintf(installCommand, MAXLINLEN, "/usr/bin/opkg -o /media/cryptofs/apps -force-overwrite install %s 2>&1", pathname);
+    installFilter = passthrough;
+  }
 
   snprintf(command, MAXLINLEN, installCommand, pathname);
   strcpy(run_command_buffer, "{\"stdOut\": [");
