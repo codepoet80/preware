@@ -1157,7 +1157,7 @@ enyo.kind({
                     enyo.Signals.send("onPackageRefresh");
 
                     // message
-                    msg = this.type + $L(" removed");
+                    msg = this.title + $L(" removed");
 
                     // do finishing stuff
                     if (this.hasFlags('remove')) {
