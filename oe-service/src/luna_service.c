@@ -36,16 +36,14 @@ bool luna_service_initialize(const char *dbusAddress) {
   if (loop==NULL)
     goto end;
 
-  returnVal = LSRegisterPalmService(dbusAddress, &serviceHandle, &lserror);
-  if (returnVal) {
-    pub_serviceHandle = LSPalmServiceGetPublicConnection(serviceHandle);
-    priv_serviceHandle = LSPalmServiceGetPrivateConnection(serviceHandle);
-  } else
+  returnVal = LSRegister(dbusAddress, &serviceHandle, &lserror);
+  if (!returnVal) {
     goto end;
+  }
 
-  returnVal =  register_methods(serviceHandle, lserror);
+  returnVal = register_methods(serviceHandle, lserror);
   if (returnVal) {
-    LSGmainAttachPalmService(serviceHandle, loop, &lserror);
+    LSGmainAttach(serviceHandle, loop, &lserror);
   }
 
  end:
