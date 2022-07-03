@@ -22,7 +22,7 @@
 
 #include <lunaservice.h>
 
-bool register_methods(LSPalmService *serviceHandle, LSError lserror);
+bool register_methods(LSHandle *serviceHandle, LSError lserror);
 
 // Twice the chunk size (so any character can be escaped), plus a terminating null.
 #define MAXBUFLEN 8193

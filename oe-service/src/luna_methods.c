@@ -2432,7 +2432,7 @@ bool impersonate_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
 
   char *paramstring = NULL;
   paramstring = json_object_to_json_string(params);
-  if (!LSCallFromApplication(priv_serviceHandle, uri, paramstring, json_object_get_string(id),
+  if (!LSCallFromApplication(serviceHandle, uri, paramstring, json_object_get_string(id),
 			     impersonate_handler, message, NULL, &lserror)) goto error;
 
   return true;
@@ -2467,7 +2467,7 @@ bool listApps_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
   LSError lserror;
   LSErrorInit(&lserror);
   LSMessageRef(message);
-  retVal = LSCall(priv_serviceHandle, "luna://com.palm.applicationManager/listApps", "{}",
+  retVal = LSCall(serviceHandle, "luna://com.palm.applicationManager/listApps", "{}",
 		  listApps_handler, message, NULL, &lserror);
   if (!retVal) {
     LSErrorPrint(&lserror, stderr);
@@ -2501,7 +2501,7 @@ bool installStatus_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
   LSError lserror;
   LSErrorInit(&lserror);
   LSMessageRef(message);
-  retVal = LSCall(priv_serviceHandle, "luna://com.webos.appInstallService/status", "{}",
+  retVal = LSCall(serviceHandle, "luna://com.webos.appInstallService/status", "{}",
 		  installStatus_handler, message, NULL, &lserror);
   if (!retVal) {
     LSErrorPrint(&lserror, stderr);
@@ -2537,7 +2537,7 @@ bool addResource_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
   LSMessageRef(message);
   const char *payload;
   payload = LSMessageGetPayload(message);
-  retVal = LSCall(priv_serviceHandle, "luna://com.palm.applicationManager/addResourceHandler",
+  retVal = LSCall(serviceHandle, "luna://com.palm.applicationManager/addResourceHandler",
 		  payload, addResource_handler, message, NULL, &lserror);
   if (!retVal) {
     LSErrorPrint(&lserror, stderr);
@@ -2573,7 +2573,7 @@ bool swapResource_method(LSHandle* lshandle, LSMessage *message, void *ctx) {
   LSMessageRef(message);
   const char *payload;
   payload = LSMessageGetPayload(message);
-  retVal = LSCall(priv_serviceHandle, "luna://com.palm.applicationManager/swapResourceHandler",
+  retVal = LSCall(serviceHandle, "luna://com.palm.applicationManager/swapResourceHandler",
 		  payload, swapResource_handler, message, NULL, &lserror);
   if (!retVal) {
     LSErrorPrint(&lserror, stderr);
@@ -2636,8 +2636,8 @@ LSMethod luna_methods[] = {
   { 0, 0 }
 };
 
-bool register_methods(LSPalmService *serviceHandle, LSError lserror) {
+bool register_methods(LSHandle *serviceHandle, LSError lserror) {
   strcpy(device, "webOS"); strcpy(token, "konami");
-  return LSPalmServiceRegisterCategory(serviceHandle, "/", luna_methods,
-				       NULL, NULL, NULL, &lserror);
+  return LSRegisterCategory(serviceHandle, "/", luna_methods,
+				       NULL, NULL, &lserror);
 }
