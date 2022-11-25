@@ -1,5 +1,5 @@
 {
-    "applications.internal": [
+    "ipkg-service.operation": [
         "org.webosports.service.ipkg/status",
         "org.webosports.service.ipkg/version",
         "org.webosports.service.ipkg/restart",
