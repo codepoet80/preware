@@ -1,8 +1,10 @@
 {
     "org.webosports.service.ipkg": [ 
-        "applications.internal",
-        "applications.launch",
-        "networking"
+        "application.launcher",
+        "networkconnection.management",
+        "networkconnection.query",
+        "opkg-service.operation",
+        "wifi.management",
+        "wifi.query"
     ]
 }
-

@@ -9,5 +9,5 @@
 	"icon": "icon.png",
 	"uiRevision": 2,
 	"keywords": ["app", "patch", "package", "software", "catalog"],
-	"requiredPermissions": ["applications.internal", "networking.internal", "system"]
+	"requiredPermissions": ["applicationinstall.management", "application.operation", "application.launcher", "appmanager.management", "ipkg-service.operation", "networkconnection.management",  "networkconnection.query", "wifi.management", "wifi.query"]
 }

@@ -1,5 +1,6 @@
 {
     "exeName":"@WEBOS_INSTALL_SBINDIR@/org.webosports.service.ipkg",
+    "trustLevel" : "oem",
     "type": "privileged",
     "allowedNames": ["org.webosports.service.ipkg"],
     "permissions": [
